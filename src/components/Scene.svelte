@@ -1,0 +1,36 @@
+<script>
+	import { T, useTask } from '@threlte/core';
+	import { interactivity, OrbitControls } from '@threlte/extras';
+	import { spring } from 'svelte/motion';
+
+	interactivity();
+	const scale = spring(0.5);
+	let rotation = 0;
+	useTask((delta) => {
+		rotation += 0.25 * delta;
+	});
+	console.log('test');
+</script>
+
+<T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15}>
+	<OrbitControls autoRotate enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
+</T.PerspectiveCamera>
+
+<T.DirectionalLight position={[0, 10, 10]} castShadow />
+
+<T.Mesh
+	rotation.y={rotation}
+	position.y={1}
+	scale={$scale}
+	on:pointerenter={() => scale.set(1.5)}
+	on:pointerleave={() => scale.set(1)}
+	castShadow
+>
+	<T.BoxGeometry args={[1, 2, 1]} />
+	<T.MeshStandardMaterial color="lightblue" />
+</T.Mesh>
+
+<T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
+	<T.CircleGeometry args={[4, 40]} />
+	<T.MeshStandardMaterial color="white" />
+</T.Mesh>

@@ -1,2 +1,19 @@
-<h1>Welcome to theprototype.io</h1>
-<p>🚧 This page is under construction!</p>
+<script>
+	import App from '../App.svelte'
+</script>
+  
+  <div>
+	<App />
+  </div>
+  
+  <style>
+	:global(body, html) {
+	  margin: 0;
+	}
+  
+	div {
+	  position: absolute;
+	  height: 100%;
+	  width: 100%;
+	}
+  </style>
