@@ -1,0 +1,39 @@
+//https://code.visualstudio.com/Docs/editor/tasks
+//https://medium.com/@simonescigliuzzi/automating-multi-projects-execution-using-vscodes-tasks-10e102da5d96
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "peerjs",
+			"command": "\"peerjs --port 9000 --sslkey \"certs\\localhost.key\" --sslcert \"certs\\localhost.crt\"",
+			"group": "build",
+			"detail": "starts peerjs service with ssl parameters",
+            "hide": true
+		},
+		{
+			"type": "shell",
+			"label": "npm run dev",
+			"command": "npm run dev -- --host",
+			"args": [
+				""
+			],
+			"group": "build",
+			"detail": "starts pnpm dev server",
+            "hide": true
+		},
+		{
+			"label": "Start dev server",
+			"dependsOn": [
+				"peerjs",
+				"npm run dev"
+			],
+			"presentation": {
+				"reveal": "always",
+				"revealProblems": "never",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		}
+	]
+}

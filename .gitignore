@@ -19,3 +19,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Self-Signed certs
+certs/localhost.crt
+certs/localhost.key

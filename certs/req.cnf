@@ -1,0 +1,8 @@
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+C = EU
+CN = localhost
+[v3_req]
