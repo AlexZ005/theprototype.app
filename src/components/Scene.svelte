@@ -3,17 +3,25 @@
 	import { interactivity, OrbitControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 
+	import Grid from '../extensions/Grid.svelte';
+
+	let { showGrid } = $props();
+	const toggleGridVisibility = () => {
+    // showGrid = !$showGrid;
+  };
+
 	interactivity();
 	const scale = spring(0.5);
 	let rotation = 0;
 	useTask((delta) => {
 		rotation += 0.25 * delta;
 	});
-	console.log('test');
 </script>
 
+
+
 <T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15}>
-	<OrbitControls autoRotate enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
+	<OrbitControls enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
 </T.PerspectiveCamera>
 
 <T.DirectionalLight position={[0, 10, 10]} castShadow />
@@ -34,3 +42,5 @@
 	<T.CircleGeometry args={[4, 40]} />
 	<T.MeshStandardMaterial color="white" />
 </T.Mesh>
+
+<Grid {showGrid} />
