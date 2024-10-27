@@ -1,0 +1,19 @@
+/* burger button */
+
+.burger {
+	position: absolute;
+	z-index: 3;
+}
+
+/* hamburger menu */
+
+.hamburger {
+	position: absolute;
+	cursor: pointer;
+	z-index: 2;
+	border-radius: 20px; /* Rounded corners */
+	padding-top: 30px;
+	text-align: center;
+	font-size: 1.5em;
+	letter-spacing: 0.15em;
+}
