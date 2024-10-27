@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <!-- Add a description meta tag -->
+    <meta name="description" content="Error 404 page for ThePrototype.io, a collaborative platform for real-time prototyping." />
+    <link rel="icon" href="/path/to/favicon.png" /> <!-- Update the path to your favicon -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error: Page Not Found</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-color);
+        }
+        
+        .error-container {
+            text-align: center;
+            font-size: 3vw; /* Consistent typography */
+        }
+
+        #morph {
+            margin: auto;
+            padding: 2em;
+            color: white;
+            transition: background-color 2s ease-in-out;
+            width: fit-content;
+        }
+    </style>
+</head>
+<body data-sveltekit-preload-data="hover">
+    <div class="error-container">
+        <!-- Use a consistent font-size -->
+        <p>Error: 404. Page not found.</p>
+        <p style="font-size:5vw;">🧑‍🏭</p>        
+        <div id="morph" style="background-color: red;">
+            404
+        </div>
+        <!-- Make links clickable -->
+        <a href="https://github.com/AlexZ005/theprototype.io/issues">Report an issue</a>
+    </div>
+
+<script>
+    let colors = ['red', 'green', 'blue'];
+    let colorIndex = 0;
+    
+    function changeBackgroundColor() {
+        colorIndex = (colorIndex + 1) % colors.length;
+        document.getElementById("morph").style.backgroundColor = colors[colorIndex];
+    }
+
+    setInterval(changeBackgroundColor, 3000);
+</script>
