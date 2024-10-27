@@ -12,8 +12,24 @@
 		Dropdown,
 	} from 'flowbite-svelte';
 
+    import { fly } from 'svelte/transition';
+    
 	let spanClass = 'flex-1 ms-3 whitespace-nowrap';
+
+    let isOpen = false; // State to control the visibility of the dropdown
+
+    let { open } = $props();
+
+    console.log("open: ", open)
+    
 </script>
+
+{#if open}
+
+<div class="hamburger">
+  <!-- {#each ['Home', 'Example', 'About', 'Contact'] as link, i} -->
+      <div transition:fly={{ x: -15, direction: 'in' }}>
+
 
 <Sidebar>
 	<SidebarWrapper>
@@ -78,6 +94,11 @@
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
+
+</div>
+</div>
+{/if}
+
 
 <style>
 	:global(.switchMenu) {
