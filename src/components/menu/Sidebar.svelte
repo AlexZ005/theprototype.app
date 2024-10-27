@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../../app.css';
+	import '../../styles/menu.css';
 
 	import {
 		Sidebar,
