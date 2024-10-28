@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Accordion, AccordionItem, Modal, Button, Checkbox } from 'flowbite-svelte';
+    import { showGrid } from '../../stores/sceneStore.js';
 
 	let clickOutsideModal = true;
 
@@ -28,7 +29,7 @@
 				</div>
 				<div class="flex">
 					<p class={bottomCoverName}>
-						<Checkbox>&nbsp;Show grid</Checkbox>
+						<Checkbox bind:checked={$showGrid} on:click={() => {if (localStorage.getItem('showGrid')) localStorage.removeItem('showGrid') ; else localStorage.setItem('showGrid', 'false'); }}>&nbsp;Show grid</Checkbox>
 					</p>
 					<p class={bottomCoverDescription}>Display grid on floor</p>
 				</div>
