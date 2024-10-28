@@ -3,21 +3,16 @@
 
 	let clickOutsideModal = true;
 
-    // 
+	//Rounded corners for options
+	let coverClass =
+		'z-10 inline-flex items-center py-2.5 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600';
 	let topcoverName =
-		'w-40 flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-tl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600';
-	let topcoverDescription =
-		'w-full z-10 inline-flex items-center py-2.5 px-5 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-tr-lg dark:bg-gray-700 dark:text-white dark:border-gray-600';
+		'w-40 flex-shrink-0 px-4 rounded-tl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ' + coverClass;
+	let topcoverDescription = 'w-full px-5 rounded-tr-lg ' + coverClass;
 	let bottomCoverName =
-		'w-40 flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-bl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600';
-	let bottomCoverDescription =
-		'w-full z-10 inline-flex items-center py-2.5 px-5 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-br-lg dark:bg-gray-700 dark:text-white dark:border-gray-600';
+		'w-40 flex-shrink-0 px-4 rounded-bl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ' + coverClass;
+	let bottomCoverDescription = 'w-full px-5 rounded-br-lg ' + coverClass;
 
-        let common = topcoverName.split(' ').filter(word => {
-    return [topcoverDescription, bottomCoverName, bottomCoverDescription].every(str => str.includes(word));
-});
-
-console.log(common);
 </script>
 
 <Modal title="Settings" bind:open={clickOutsideModal} outsideclose>
@@ -27,7 +22,7 @@ console.log(common);
 				<svelte:fragment slot="header">Scene</svelte:fragment>
 				<div class="flex">
 					<p class={topcoverName}>
-						<Checkbox>&nbsp;Light</Checkbox>
+						<Checkbox disabled>&nbsp;VR override</Checkbox>
 					</p>
 					<p class={topcoverDescription}>Forces normal play even if immersive-vr is enabled</p>
 				</div>
