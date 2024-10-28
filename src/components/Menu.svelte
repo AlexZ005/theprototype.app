@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Connect from './menu/Connect.svelte';
 	import MenuSidebar from './menu/Sidebar.svelte';
 	import MenuSettings from './menu/Settings.svelte';
 	import { Hamburger } from 'svelte-hamburgers';
@@ -12,6 +13,7 @@
 >
 	<Hamburger bind:open --color="black" />
 </div>
+<Connect />
 <MenuSidebar {open} />
 <MenuSettings />
 
