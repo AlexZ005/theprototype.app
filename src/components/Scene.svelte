@@ -1,10 +1,16 @@
 <script>
-	import { T, useTask } from '@threlte/core';
+	import { T, useTask, useThrelte } from '@threlte/core';
 	import { interactivity, OrbitControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 
 	import Grid from '../extensions/Grid.svelte';
 
+	let { scene } = useThrelte();
+
+	// Store for global scene variables
+	import { globalScene } from '../stores/sceneStore.js';
+  	$globalScene = scene; // console.log($globalScene)
+	
 	let { showGrid } = $props();
 	const toggleGridVisibility = () => {
     // showGrid = !$showGrid;
