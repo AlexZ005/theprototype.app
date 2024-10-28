@@ -11,11 +11,6 @@
 	import { globalScene, objectsGroup } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
 
-	let { showGrid } = $props();
-	const toggleGridVisibility = () => {
-		// showGrid = !$showGrid;
-	};
-
 	interactivity();
 	const scale = spring(0.5);
 	let rotation = 0;
@@ -49,4 +44,4 @@
 
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
-<Grid {showGrid} />
+<Grid />
