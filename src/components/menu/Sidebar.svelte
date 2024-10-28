@@ -69,13 +69,13 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={() => objects.addCube() }>
+				<SidebarDropdownItem label="🧊Cube" on:click={() => objects.addCube()}>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={console.log('Cone')}>
+				<SidebarDropdownItem label="🔼Cone" on:click={() => objects.addCone() }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={console.log('Sphere')}>
+				<SidebarDropdownItem label="🟠Sphere" on:click={() => objects.addSphere() }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
