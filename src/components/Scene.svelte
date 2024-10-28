@@ -8,13 +8,9 @@
 	let { scene } = useThrelte();
 
 	// Store for global scene variables
-	import { globalScene, objectsGroup } from '../stores/sceneStore.js';
+	import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
-
-	let { showGrid } = $props();
-	const toggleGridVisibility = () => {
-		// showGrid = !$showGrid;
-	};
+	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
 
 	interactivity();
 	const scale = spring(0.5);
@@ -49,4 +45,4 @@
 
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
-<Grid {showGrid} />
+<Grid showGrid={$showGrid} />
