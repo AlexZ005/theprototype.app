@@ -1,6 +1,6 @@
-# theprototype.io
+# theprototype.app
 
-The Prototype IO is an online collaborative platform for rapid prototyping.
+ThePrototype is an online collaborative platform for rapid prototyping.
 
 # Start private development server
 
