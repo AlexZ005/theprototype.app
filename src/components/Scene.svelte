@@ -1,14 +1,20 @@
 <script>
-	import { T, useTask } from '@threlte/core';
+	import { T, useTask, useThrelte } from '@threlte/core';
 	import { interactivity, OrbitControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 
 	import Grid from '../extensions/Grid.svelte';
 
+	let { scene } = useThrelte();
+
+	// Store for global scene variables
+	import { globalScene, objectsGroup } from '../stores/sceneStore.js';
+	$globalScene = scene; // console.log($globalScene)
+
 	let { showGrid } = $props();
 	const toggleGridVisibility = () => {
-    // showGrid = !$showGrid;
-  };
+		// showGrid = !$showGrid;
+	};
 
 	interactivity();
 	const scale = spring(0.5);
@@ -17,8 +23,6 @@
 		rotation += 0.25 * delta;
 	});
 </script>
-
-
 
 <T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15}>
 	<OrbitControls enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
@@ -42,5 +46,7 @@
 	<T.CircleGeometry args={[4, 40]} />
 	<T.MeshStandardMaterial color="white" />
 </T.Mesh>
+
+<T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
 <Grid {showGrid} />

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../../app.css';
 	import '../../styles/menu.css';
+    import Objects from '../Objects.svelte';
 
 	import {
 		Sidebar,
@@ -22,7 +23,7 @@
     let { open } = $props();
 
     console.log("open: ", open)
-    
+    let objects;
 </script>
 
 {#if open}
@@ -68,13 +69,13 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={console.log('Cube')}>
+				<SidebarDropdownItem label="🧊Cube" on:click={() => objects.addCube()}>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={console.log('Cone')}>
+				<SidebarDropdownItem label="🔼Cone" on:click={() => objects.addCone() }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={console.log('Sphere')}>
+				<SidebarDropdownItem label="🟠Sphere" on:click={() => objects.addSphere() }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
@@ -82,7 +83,7 @@
 			<input type="file" id="load-file" style="display: none" on:change={console.log('Load')} />
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem label="Clear Scene" {spanClass} on:click={console.log('Clear')}></SidebarItem>
+			<SidebarItem label="Clear Scene" {spanClass} on:click={() => objects.clear()}></SidebarItem>
 
 			<SidebarItem
 				label="Settings"
@@ -95,6 +96,8 @@
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
+
+<Objects bind:this={objects} />
 
 </div>
 </div>
