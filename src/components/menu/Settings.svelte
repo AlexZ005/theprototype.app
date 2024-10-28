@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Accordion, AccordionItem, Modal, Button, Checkbox } from 'flowbite-svelte';
     import { showGrid } from '../../stores/sceneStore.js';
-
-	let clickOutsideModal = true;
+    import { settingsOpen } from '../../stores/appStore.js';
 
 	//Rounded corners for options
 	let coverClass =
@@ -16,7 +15,7 @@
 
 </script>
 
-<Modal title="Settings" bind:open={clickOutsideModal} outsideclose>
+<Modal title="Settings" bind:open={$settingsOpen} outsideclose>
 	<div class="modal-content max-h-[90vh] overflow-y-auto p-4">
 		<Accordion>
 			<AccordionItem>

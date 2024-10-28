@@ -3,6 +3,9 @@
 	import '../../styles/menu.css';
     import Objects from '../Objects.svelte';
 
+    import { settingsOpen } from '../../stores/appStore.js';
+    $settingsOpen = false;
+
 	import {
 		Sidebar,
 		SidebarGroup,
@@ -89,7 +92,7 @@
 				label="Settings"
 				{spanClass}
 				style="padding-right: 40px"
-				on:click={console.log('Settings')}
+				on:click={() => settingsOpen.set(!$settingsOpen)}
 			>
 				<svelte:fragment slot="icon">⚙️</svelte:fragment>
 			</SidebarItem>
