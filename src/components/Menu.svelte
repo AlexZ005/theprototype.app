@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MenuSidebar from './menu/Sidebar.svelte';
+	import MenuSettings from './menu/Settings.svelte';
 	import { Hamburger } from 'svelte-hamburgers';
 	import { DarkMode } from 'flowbite-svelte';
 	let open = $state(false);
@@ -12,5 +13,6 @@
 	<Hamburger bind:open --color="black" />
 </div>
 <MenuSidebar {open} />
+<MenuSettings />
 
 <div class="dark-mode hidden"><DarkMode /></div>
