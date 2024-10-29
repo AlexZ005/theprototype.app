@@ -6,3 +6,7 @@ prompt = no
 C = EU
 CN = localhost
 [v3_req]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = localhost
+DNS.2 = *.localhost
