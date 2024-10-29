@@ -4,6 +4,9 @@
 	import { createPeer, PeerConnection } from '../../lib/peerHandler';
 
 	let displayid = 'disconnected';
+	let myidcap;
+
+	$: myidcap = displayid === 'Generating...' ? displayid : displayid.toUpperCase();
 
 	function updateDisplayId(id) {
 		displayid = id;
@@ -14,6 +17,21 @@
 
 		new PeerConnection(id, updateDisplayId);
 	});
+
+	const copy = () => {
+		if (!navigator.clipboard) {
+			// use old commandExec() way
+		} else {
+			navigator.clipboard
+				.writeText(myidcap)
+				.then(function () {
+					// alert("yeah!"); // success
+				})
+				.catch(function () {
+					// alert("err"); // error
+				});
+		}
+	};
 </script>
 
 <div
@@ -31,6 +49,12 @@
 				color="primary"
 				class="nob rounded-l-none rounded-r-lg bg-blue-500 text-white dark:bg-blue-700 dark:text-gray-200"
 				>Connect</Button
+			>
+			<Button
+				color="primary"
+				class="nob white bg-gray-400	text-white dark:bg-gray-600 dark:text-gray-200"
+				on:click={copy}
+				style="margin-left: 15px;"><p style="white-space: nowrap;">&#x1f4cb; {myidcap}</p></Button
 			>
 		</div>
 
