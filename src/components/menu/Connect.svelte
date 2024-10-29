@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { createPeer, PeerConnection } from '../../lib/peerHandler';
 
+	let peerIdToConnect, peerState;
 	let displayid = $state('Generating...');
 	let myidcap = $state();
 
@@ -17,8 +18,16 @@
 	onMount(async () => {
 		const id = createPeer();
 
-		new PeerConnection(id, updateDisplayId);
+		peerState = new PeerConnection(id, updateDisplayId);
 	});
+
+	// Use the instance method to connect
+const connectToPeer = (peerIdToConnect) => {
+	console.log(peerState)
+    if (peerState) {
+        peerState.connectToPeer(peerIdToConnect);
+    }
+};
 
 	const copy = () => {
 		if (!navigator.clipboard) {
@@ -46,10 +55,12 @@
 				type="text"
 				placeholder="Enter peer ID to connect"
 				class="nob rounded-r-none border-0 "
+				bind:value="{peerIdToConnect}"
 			/>
 			<Button
 				color="primary"
 				class="nob rounded-l-none rounded-r-lg bg-blue-500 text-white dark:bg-blue-700 dark:text-gray-200"
+				on:click="{() => {connectToPeer(peerIdToConnect.toLowerCase())}}"
 				>Connect</Button
 			>
 			<Button

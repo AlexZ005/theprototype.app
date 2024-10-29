@@ -28,4 +28,13 @@ export class PeerConnection {
 			conn.on('data', (data) => console.log(data));
 		}
 	}
+
+	connectToPeer(peerId) {
+        console.log("Connecting to " + peerId);
+            const conn = this.peer.connect(peerId);
+			console.log(conn)
+            this.connections[peerId] = conn;
+            conn.on('open', () => {
+				 console.log('Connection to ${peerId} established')});
+    }
 }
