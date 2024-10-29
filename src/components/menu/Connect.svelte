@@ -3,10 +3,12 @@
 	import { onMount } from 'svelte';
 	import { createPeer, PeerConnection } from '../../lib/peerHandler';
 
-	let displayid = 'disconnected';
-	let myidcap;
+	let displayid = $state('Generating...');
+	let myidcap = $state();
 
-	$: myidcap = displayid === 'Generating...' ? displayid : displayid.toUpperCase();
+	$effect(() => {
+		myidcap = displayid === 'Generating...' ? displayid : displayid.toUpperCase();
+	});
 
 	function updateDisplayId(id) {
 		displayid = id;
