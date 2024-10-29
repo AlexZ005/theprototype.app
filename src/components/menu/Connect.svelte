@@ -23,7 +23,6 @@
 
 	// Use the instance method to connect
 const connectToPeer = (peerIdToConnect) => {
-	console.log(peerState)
     if (peerState) {
         peerState.connectToPeer(peerIdToConnect);
     }

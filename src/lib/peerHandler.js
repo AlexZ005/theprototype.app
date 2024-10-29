@@ -11,6 +11,8 @@ export class PeerConnection {
 	constructor(id, updateIdFn) {
 		this.updateIdFn = updateIdFn;
 
+		this.connections = {};
+
 		this.peer = new Peer(id, {
 			secure: true,
 			host: 'localhost',
@@ -30,11 +32,14 @@ export class PeerConnection {
 	}
 
 	connectToPeer(peerId) {
-        console.log("Connecting to " + peerId);
+		if (!this.connections[peerId]) {
+			console.log("Connecting to " + peerId);
             const conn = this.peer.connect(peerId);
-			console.log(conn)
             this.connections[peerId] = conn;
             conn.on('open', () => {
-				 console.log('Connection to ${peerId} established')});
+				 console.log('Connection to ' + peerId + ' established')});
+        } else {
+			if (this.connections[peerId].peer == peerId) console.log('already connected to ' + peerId)
+		}
     }
 }
