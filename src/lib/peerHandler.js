@@ -13,11 +13,15 @@ export class PeerConnection {
 
 		this.connections = {};
 
+		const regex = /(\.io|\.app)$/i;
+		if (!regex.test(location.hostname)) {
 		this.peer = new Peer(id, {
 			secure: true,
 			host: 'localhost',
 			port: 9000
-		});
+		});} else {
+			this.peer = new Peer(id)
+		}
 
 		this.peer.on('open', (id) => {
 			console.log(id);
