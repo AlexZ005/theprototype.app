@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { peers } from '../../stores/appStore'
 	import { Navbar, NavHamburger, Input, Button } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { createPeer, PeerConnection } from '../../lib/peerHandler';
 
-	let peerIdToConnect, peerState;
+	let peerIdToConnect;
 	let displayid = $state('Generating...');
 	let myidcap = $state();
 
@@ -18,13 +19,13 @@
 	onMount(async () => {
 		const id = createPeer();
 
-		peerState = new PeerConnection(id, updateDisplayId);
+		$peers = new PeerConnection(id, updateDisplayId);
 	});
 
 	// Use the instance method to connect
 const connectToPeer = (peerIdToConnect) => {
-    if (peerState) {
-        peerState.connectToPeer(peerIdToConnect);
+    if ($peers) {
+        $peers.connectToPeer(peerIdToConnect);
     }
 };
 

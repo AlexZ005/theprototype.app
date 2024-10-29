@@ -46,4 +46,10 @@ export class PeerConnection {
 			if (this.connections[peerId].peer == peerId) console.log('already connected to ' + peerId)
 		}
     }
+
+	sendMessage(message) {
+		Object.keys(this.connections).forEach(element => {
+			this.connections[element].send(message);
+		});
+	}
 }
