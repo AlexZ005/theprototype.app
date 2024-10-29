@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Chat from './menu/Chat.svelte';
 	import Connect from './menu/Connect.svelte';
 	import MenuSidebar from './menu/Sidebar.svelte';
 	import MenuSettings from './menu/Settings.svelte';
@@ -16,5 +17,6 @@
 <Connect />
 <MenuSidebar {open} />
 <MenuSettings />
+<Chat />
 
 <div class="dark-mode hidden"><DarkMode /></div>
