@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
+import { peers } from '../stores/appStore';
 
 //Access scene Store
 let scene = $state();
@@ -8,6 +9,10 @@ globalScene.subscribe(value => { scene = value });
 //Access objects Store
 let sceneObjects = $state();
 objectsGroup.subscribe(value => { sceneObjects = value });
+
+//Access peers Store
+let peer = $state();
+peers.subscribe(value => { peer = value });
 
 export function sceneCommand(command) {
     if (command.startsWith('/')) {
@@ -35,12 +40,13 @@ export function sceneCommand(command) {
                 } else {
                     createCube();
                 }   
+                peer.send({type: 'cube', x: command.split(' ')[2], y: command.split(' ')[3], z: command.split(' ')[4]});
             }
         }
     }
 }
 
-function createCube(x,y,z) {
+export function createCube(x,y,z) {
     let mesh = new THREE.BoxGeometry(x, y, z);
     let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     let cube = new THREE.Mesh(mesh, material);

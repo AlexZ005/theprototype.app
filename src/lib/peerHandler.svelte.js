@@ -1,5 +1,5 @@
 import Peer from 'peerjs';
-import { sceneCommand } from './commandsHandler.svelte';
+import { sceneCommand, createCube } from './commandsHandler.svelte';
 import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
@@ -44,6 +44,10 @@ export class PeerConnection {
 					);
 				} else if(data.type == 'sent') {
 					addMessage({message: data.message, type: 'received', sender: data.sender});
+				} else if(data.type == 'info') {
+					addMessage({message: data.message, type: data.type, sender: data.sender});
+				} else if(data.type == 'cube') {
+					createCube(data.x, data.y, data.z);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -93,11 +97,22 @@ export class PeerConnection {
 		}
     }
 
-	sendMessage(message) {
-		if(message.startsWith('/')) sceneCommand(message);
-		addMessage({message: message, type: 'sent', sender: this.peer.id});
+	sendMessage(message, type) {
+		if(message.startsWith('/')) {
+			sceneCommand(message);
+		} else {
+			if(type === undefined) type = 'sent';
+			addMessage({message: message, type: type, sender: this.peer.id});
+			Object.keys(this.connections).forEach(element => {
+				this.connections[element].send({message: message, type: type, sender: this.peer.id});
+			});
+		}
+	}
+
+	send(data) {
+		this.sendMessage('created a cube', 'info');
 		Object.keys(this.connections).forEach(element => {
-			this.connections[element].send({message: message, type: 'sent', sender: this.peer.id});
+			this.connections[element].send(data);
 		});
 	}
 }

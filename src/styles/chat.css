@@ -108,3 +108,8 @@ ul {
 	color: red;
 	content: '⚠️';
 }
+
+.info {
+	color: lightgray;
+	font-style: italic;
+}
