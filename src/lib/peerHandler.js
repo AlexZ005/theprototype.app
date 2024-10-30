@@ -28,22 +28,61 @@ export class PeerConnection {
 			if (this.updateIdFn) this.updateIdFn(id);
 		});
 
-		this.peer.on('connection', handleConnection);
+		this.peer.on('connection', handleConnection.bind(this));
 
 		function handleConnection(conn) {
-			conn.on('data', (data) => console.log(data));
+			conn.on('data', (data) => {console.log(data);
+				if(data.type == 'hosts') {
+					console.log('Connecting to received hosts');
+					data.hosts.forEach( id =>
+					{
+						this.connectToPeer(id);
+					}
+					);
+				}
+			}
+			);
 		}
 	}
 
-	connectToPeer(peerId) {
+	connectToPeer(peerId, id = this.peer.id) {
 		if (!this.connections[peerId]) {
 			console.log("Connecting to " + peerId);
             const conn = this.peer.connect(peerId);
             this.connections[peerId] = conn;
             conn.on('open', () => {
 				 console.log('Connection to ' + peerId + ' established')});
+				 let hosts = [id];
+				 Object.keys(this.connections).forEach(element => {
+					if(element != peerId)
+					hosts.push(element)
+				});
+				console.log("sending to " + peerId + "  remote " + hosts)
+				setTimeout(() => {
+				this.connections[peerId].send({type: 'hosts', hosts: hosts})
+				}, 3000);
         } else {
-			if (this.connections[peerId].peer == peerId) console.log('already connected to ' + peerId)
+			if (this.connections[peerId].peer == peerId) {
+				console.log('already connected to ' + peerId + '. Status: ' + this.connections[peerId].open)
+				if(!this.connections[peerId].open) {
+					console.log('Restoring connection: ' + peerId);
+					const conn = this.peer.connect(peerId);
+           	 		this.connections[peerId] = conn;
+            		conn.on('open', () => {
+					 console.log('Connection to ' + peerId + ' restored')});
+					let hosts = [id];
+				 	Object.keys(this.connections).forEach(element => {
+						if(element != peerId)
+						hosts.push(element)
+					});
+				 	console.log("sending to " + peerId + "  remote " + hosts)
+				 	setTimeout(() => {
+				 		this.connections[peerId].send({type: 'hosts', hosts: hosts})
+				 	}, 3000);
+				}
+
+			}
+			
 		}
     }
 
