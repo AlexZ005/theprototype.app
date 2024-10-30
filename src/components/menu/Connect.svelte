@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { peers } from '../../stores/appStore'
 	import { Navbar, NavHamburger, Input, Button } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
-	import { createPeer, PeerConnection } from '../../lib/peerHandler';
+	import { createPeer, PeerConnection } from '$lib/peerHandler.svelte';
 
+	let peerIdToConnect;
 	let displayid = $state('Generating...');
 	let myidcap = $state();
 
@@ -17,8 +19,15 @@
 	onMount(async () => {
 		const id = createPeer();
 
-		new PeerConnection(id, updateDisplayId);
+		$peers = new PeerConnection(id, updateDisplayId);
 	});
+
+	// Use the instance method to connect
+const connectToPeer = (peerIdToConnect) => {
+    if ($peers) {
+        $peers.connectToPeer(peerIdToConnect);
+    }
+};
 
 	const copy = () => {
 		if (!navigator.clipboard) {
@@ -46,10 +55,12 @@
 				type="text"
 				placeholder="Enter peer ID to connect"
 				class="nob rounded-r-none border-0 "
+				bind:value="{peerIdToConnect}"
 			/>
 			<Button
 				color="primary"
 				class="nob rounded-l-none rounded-r-lg bg-blue-500 text-white dark:bg-blue-700 dark:text-gray-200"
+				on:click="{() => {connectToPeer(peerIdToConnect.toLowerCase())}}"
 				>Connect</Button
 			>
 			<Button
