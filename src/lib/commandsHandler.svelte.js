@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
+import { createGeometry } from '$lib/geometries.svelte'
 import { peers } from '../stores/appStore';
 
 //Access scene Store
@@ -34,21 +35,9 @@ export function sceneCommand(command) {
             }
         }
         else if (command.startsWith('/create')) {
-            if (command.split(' ')[1] == 'cube') {
-                if (command.split(' ')[2] && command.split(' ')[3] && command.split(' ')[4]) {
-                    createCube(command.split(' ')[2], command.split(' ')[3], command.split(' ')[4]);
-                } else {
-                    createCube();
-                }   
-                peer.send({type: 'cube', x: command.split(' ')[2], y: command.split(' ')[3], z: command.split(' ')[4]});
-            }
+                createGeometry(command);
+                peer.send({type: 'create', command: command});
         }
     }
 }
 
-export function createCube(x,y,z) {
-    let mesh = new THREE.BoxGeometry(x, y, z);
-    let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    let cube = new THREE.Mesh(mesh, material);
-    sceneObjects.add(cube);
-}

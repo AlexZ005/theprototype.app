@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
-import { sceneCommand, createCube } from './commandsHandler.svelte';
+import { sceneCommand } from './commandsHandler.svelte';
+import { createGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
@@ -46,8 +47,8 @@ export class PeerConnection {
 					addMessage({message: data.message, type: 'received', sender: data.sender});
 				} else if(data.type == 'info') {
 					addMessage({message: data.message, type: data.type, sender: data.sender});
-				} else if(data.type == 'cube') {
-					createCube(data.x, data.y, data.z);
+				} else if(data.type == 'create') {
+					createGeometry(data.command);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -110,7 +111,8 @@ export class PeerConnection {
 	}
 
 	send(data) {
-		this.sendMessage('created a cube', 'info');
+		if(data.type == 'create')
+		this.sendMessage('created a ' + data.command.split(' ')[1], 'info');
 		Object.keys(this.connections).forEach(element => {
 			this.connections[element].send(data);
 		});
