@@ -18,9 +18,15 @@ export function sceneCommand(command) {
         }
         else if (command.startsWith('/grid')) {
             if (command.split(' ')[1] == 'on')
+            {
                 showGrid.set(true);
+                localStorage.removeItem('showGrid')
+            }
             else if (command.split(' ')[1] == 'off')
+            {
                 showGrid.set(false);
+                localStorage.setItem('showGrid', false);
+            }
         }
         else if (command.startsWith('/create')) {
             if (command.split(' ')[1] == 'cube') {
