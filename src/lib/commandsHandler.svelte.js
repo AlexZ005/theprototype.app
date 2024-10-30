@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
 import { createGeometry } from '$lib/geometries.svelte'
+import { addMessage } from '../stores/appStore';
 import { peers } from '../stores/appStore';
 
 //Access scene Store
@@ -37,6 +38,13 @@ export function sceneCommand(command) {
         else if (command.startsWith('/create')) {
                 createGeometry(command);
                 peer.send({type: 'create', command: command});
+        }
+        else if (command.startsWith('/list')) {
+            addMessage({message: "List of objects:", type: '', sender: 'SYSTEM'});
+            sceneObjects.children.forEach((mesh, index) => {
+                addMessage({message: 'name: \"' + mesh.name + '\" uuid: ' + mesh.uuid, type: 'info', sender: index})
+            }
+        );
         }
     }
 }
