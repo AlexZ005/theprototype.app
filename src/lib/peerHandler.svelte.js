@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 import { sceneCommand } from './commandsHandler.svelte';
+import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
 	return 'xxxxx'.replace(/[xy]/g, function (c) {
@@ -92,6 +93,7 @@ export class PeerConnection {
 
 	sendMessage(message) {
 		if(message.startsWith('/')) sceneCommand(message);
+		addMessage({message: message, type: 'sent', sender: this.peer.id});
 		Object.keys(this.connections).forEach(element => {
 			this.connections[element].send(message);
 		});

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../../styles/chat.css';
-	import { peers } from '../../stores/appStore';
+	import { peers, messages } from '../../stores/appStore';
 
 	let message;
 </script>
@@ -11,7 +11,9 @@
 
 		<div id="chat-messages">
 			<ul id="messages">
-				<li class="message">Hello world!</li>
+				{#each $messages as message (message)}
+					<li class="chat-message {message.type}">{message.sender}: {message.text}</li>
+				{/each}
 			</ul>
 		</div>
 	</div>
