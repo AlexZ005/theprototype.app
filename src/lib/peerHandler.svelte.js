@@ -42,6 +42,8 @@ export class PeerConnection {
 						this.connectToPeer(id);
 					}
 					);
+				} else if(data.type == 'sent') {
+					addMessage({message: data.message, type: 'received', sender: data.sender});
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -95,7 +97,7 @@ export class PeerConnection {
 		if(message.startsWith('/')) sceneCommand(message);
 		addMessage({message: message, type: 'sent', sender: this.peer.id});
 		Object.keys(this.connections).forEach(element => {
-			this.connections[element].send(message);
+			this.connections[element].send({message: message, type: 'sent', sender: this.peer.id});
 		});
 	}
 }
