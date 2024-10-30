@@ -1,5 +1,5 @@
 import Peer from 'peerjs';
-import { globalScene, objectsGroup } from '../stores/sceneStore.js';
+import { sceneCommand } from './commandsHandler.svelte';
 
 export function createPeer() {
 	return 'xxxxx'.replace(/[xy]/g, function (c) {
@@ -14,14 +14,6 @@ export class PeerConnection {
 		this.updateIdFn = updateIdFn;
 
 		this.connections = {};
-
-		//Access scene Store
-		let scene = $state();
-		globalScene.subscribe(value => { scene = value });
-
-		//Access objects Store
-		let sceneObjects = $state();
-		objectsGroup.subscribe(value => { sceneObjects = value });
 
 		const regex = /(\.io|\.app)$/i;
 		if (!regex.test(location.hostname)) {
@@ -49,9 +41,8 @@ export class PeerConnection {
 						this.connectToPeer(id);
 					}
 					);
-				} else if(data == '/clearScene') {
-					console.log(scene)
-					scene.clear()				
+				} else if(data.startsWith('/')) {
+					sceneCommand(data);
 				}
 			}
 			);
@@ -100,6 +91,7 @@ export class PeerConnection {
     }
 
 	sendMessage(message) {
+		if(message.startsWith('/')) sceneCommand(message);
 		Object.keys(this.connections).forEach(element => {
 			this.connections[element].send(message);
 		});

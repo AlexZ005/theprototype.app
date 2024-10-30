@@ -2,7 +2,7 @@
 	import { peers } from '../../stores/appStore'
 	import { Navbar, NavHamburger, Input, Button } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
-	import { createPeer, PeerConnection } from '../../lib/peerHandler.svelte';
+	import { createPeer, PeerConnection } from '$lib/peerHandler.svelte';
 
 	let peerIdToConnect;
 	let displayid = $state('Generating...');
