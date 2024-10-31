@@ -1,6 +1,6 @@
 <script>
 	import { T, useTask, useThrelte } from '@threlte/core';
-	import { interactivity, OrbitControls } from '@threlte/extras';
+	import { interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 
 	import Grid from '../extensions/Grid.svelte';
@@ -45,4 +45,6 @@
 
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
-<Grid showGrid={$showGrid} />
+<TransformControls translationSnap={1}>
+	<Grid showGrid={$showGrid} />
+</TransformControls>
