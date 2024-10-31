@@ -8,7 +8,7 @@
 	let { scene } = useThrelte();
 
 	// Store for global scene variables
-	import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
+	import { globalScene, objectsGroup, showGrid, TControls } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
 
@@ -45,6 +45,6 @@
 
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
-<TransformControls translationSnap={1}>
-	<Grid showGrid={$showGrid} />
-</TransformControls>
+<Grid showGrid={$showGrid} />
+
+<TransformControls bind:controls={$TControls} />

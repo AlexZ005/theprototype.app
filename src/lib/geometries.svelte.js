@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, TControls } from '../stores/sceneStore.js';
 
 //Access scene Store
 let scene = $state();
@@ -8,6 +8,10 @@ globalScene.subscribe(value => { scene = value });
 //Access objects Store
 let sceneObjects = $state();
 objectsGroup.subscribe(value => { sceneObjects = value });
+
+//Access object controls
+let controls = $state();
+TControls.subscribe(value => { controls = value });
 
 export function createGeometry(command) {
     let geometry = command.split(' ')[1]
@@ -18,8 +22,10 @@ export function createGeometry(command) {
         let mesh = new THREE[geometry+'Geometry'](options[0],options[1],options[2],options[3]);
         let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         let object = new THREE.Mesh(mesh, material);
+        object.name = geometry;
         sceneObjects.add(object);
         console.log('createGeometry: ' + geometry);
+        controls.attach(object);
     } else {
         console.log('Invalid geometry: ' + geometry);
     }
