@@ -66,6 +66,35 @@ export function sceneCommand(command) {
                     peer.send({type: 'lock', uuid: command.split(' ')[1], peerId: peer.peer.id});
                 } else {
                     console.log('Object ' + uuid + ' already locked by ' + locked.find(lockedUuid => lockedUuid[1] === uuid)[0]);
+                    
+					//check if peer connection is active
+					if (
+						typeof peer.peer.connections[locked.find((lockedUuid) => lockedUuid[1] === uuid)[0]] ===
+						'undefined'
+					) {
+						console.log('Connection was lost, selecting object.');
+						controls.attach(sceneObjects.getObjectByProperty('uuid', uuid));
+					} else if (peer.peer.connections) {
+						if (
+							peer.peer.connections[locked.find((lockedUuid) => lockedUuid[1] === uuid)[0]].length >
+							0
+						) {
+							peer.peer.connections[locked.find((lockedUuid) => lockedUuid[1] === uuid)[0]].forEach(
+								(conn) => {
+									console.log(conn.open);
+									if (!conn.open) {
+										console.log('Peer ' + conn.peer.id + ' is not connected anymore. Selecting...');
+										controls.attach(sceneObjects.getObjectByProperty('uuid', uuid));
+										peer.send({ type: 'lock', uuid: command.split(' ')[1], peerId: peer.peer.id });
+									}
+								}
+							);
+						} else {
+							console.log('Peer was lost, selecting object.');
+							controls.attach(sceneObjects.getObjectByProperty('uuid', uuid));
+						}
+					}
+
                 }
             }
             else
