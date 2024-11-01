@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, showGrid, TControls } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, showGrid, TControls, lockedObjects } from '../stores/sceneStore.js';
 import { createGeometry } from '$lib/geometries.svelte'
 import { addMessage } from '../stores/appStore';
 import { peers } from '../stores/appStore';
@@ -19,6 +19,10 @@ peers.subscribe(value => { peer = value });
 //Access object controls
 let controls = $state();
 TControls.subscribe(value => { controls = value });
+
+//Access locked objects
+let locked = $state();
+lockedObjects.subscribe(value => { locked = value });
 
 export function sceneCommand(command) {
     if (command.startsWith('/')) {
@@ -44,6 +48,7 @@ export function sceneCommand(command) {
                 console.log(uuid + ' created');
                 if(uuid != null)
                 peer.send({type: 'create', command: command, uuid: uuid});
+                peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
         }
         else if (command.startsWith('/transform')) {
             const regex = /(\translate|\.rotate|\.scale)/i;

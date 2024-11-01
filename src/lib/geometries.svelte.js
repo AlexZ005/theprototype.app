@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, TControls } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, TControls, lockedObjects } from '../stores/sceneStore.js';
 
 //Access scene Store
 let scene = $state();
@@ -12,6 +12,10 @@ objectsGroup.subscribe(value => { sceneObjects = value });
 //Access object controls
 let controls = $state();
 TControls.subscribe(value => { controls = value });
+
+//Access locked objects
+let locked = $state();
+lockedObjects.subscribe(value => { locked = value });
 
 /**
  * Creates a THREE.js geometry object based on the given command string.
@@ -36,7 +40,7 @@ export function createGeometry(command, uuid) {
         object.name = geometry;
         sceneObjects.add(object);
         console.log('createGeometry: ' + geometry);
-        controls.attach(object);
+        if (!uuid) controls.attach(object);
         return object.uuid
     } else {
         console.log('Invalid geometry: ' + geometry);
@@ -49,5 +53,21 @@ export function moveGeometry(uuid, pos, rot, scale) {
         sceneObjects.getObjectByProperty('uuid', uuid).position.set(pos[0], pos[1], pos[2]);
         sceneObjects.getObjectByProperty('uuid', uuid).rotation.set(rot[0], rot[1], rot[2]);
         sceneObjects.getObjectByProperty('uuid', uuid).scale.set(scale[0], scale[1], scale[2]);
+    }
+}
+
+export function lockGeometry(uuid, peerId) {
+    if(sceneObjects.getObjectByProperty('uuid', uuid)) {
+        if (locked != null) {
+            locked.forEach(lockedUuid => {
+                sceneObjects.getObjectByProperty('uuid', lockedUuid).material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+                if (lockedUuid.peerId === uuid) {
+                    locked.splice(locked.indexOf(lockedUuid), 1);
+                }
+            });
+            locked.length = 0;
+        }
+        locked.push(uuid);
+        sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({ color: 0x003500 });
     }
 }
