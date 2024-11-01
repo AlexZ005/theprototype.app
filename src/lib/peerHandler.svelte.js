@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import { sceneCommand } from './commandsHandler.svelte';
-import { createGeometry } from '$lib/geometries.svelte';
+import { createGeometry, moveGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
@@ -48,7 +48,9 @@ export class PeerConnection {
 				} else if(data.type == 'info') {
 					addMessage({message: data.message, type: data.type, sender: data.sender});
 				} else if(data.type == 'create') {
-					createGeometry(data.command);
+					createGeometry(data.command, data.uuid);
+				} else if(data.type == 'move') {
+					moveGeometry(data.uuid, data.pos, data.rot, data.scale);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}

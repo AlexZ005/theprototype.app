@@ -40,8 +40,17 @@ export function sceneCommand(command) {
             }
         }
         else if (command.startsWith('/create')) {
-                createGeometry(command);
-                peer.send({type: 'create', command: command});
+                let uuid = createGeometry(command);
+                console.log(uuid + ' created');
+                if(uuid != null)
+                peer.send({type: 'create', command: command, uuid: uuid});
+        }
+        else if (command.startsWith('/transform')) {
+            const regex = /(\translate|\.rotate|\.scale)/i;
+		    if (!regex.test(command.split(' ')[1]))
+            controls.setMode( command.split(' ')[1])
+            else
+            console.log('Invalid command: ' + command);
         }
         else if (command.startsWith('/select')) {
             if(sceneObjects.getObjectByProperty( 'uuid' , command.split(' ')[1]) != null)
