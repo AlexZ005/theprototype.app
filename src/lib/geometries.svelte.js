@@ -57,17 +57,32 @@ export function moveGeometry(uuid, pos, rot, scale) {
 }
 
 export function lockGeometry(uuid, peerId) {
-    if(sceneObjects.getObjectByProperty('uuid', uuid)) {
-        if (locked != null) {
-            locked.forEach(lockedUuid => {
-                sceneObjects.getObjectByProperty('uuid', lockedUuid).material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-                if (lockedUuid.peerId === uuid) {
-                    locked.splice(locked.indexOf(lockedUuid), 1);
-                }
-            });
-            locked.length = 0;
-        }
-        locked.push(uuid);
-        sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({ color: 0x003500 });
-    }
+	console.log('attempt to lock');
+	if (sceneObjects.getObjectByProperty('uuid', uuid)) {
+		if (locked.length != 0) {
+			if (locked.find((lockedUuid) => lockedUuid[0] === peerId)) {
+				let oldUuid = locked.find((lockedUuid) => lockedUuid[0] === peerId)[1];
+				sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
+					color: 0x00ff00
+				});
+				sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+					color: 0x003500
+				});
+				locked = locked.filter((lockedUuid) => lockedUuid[1] === uuid);
+				locked.push([peerId, uuid]);
+			} else {
+				locked.push([peerId, uuid]);
+				sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+					color: 0x003500
+				});
+			}
+		} else {
+			locked.push([peerId, uuid]);
+			sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+				color: 0x003500
+			});
+		}
+		let testarray = [['test', 'test2']];
+		lockedObjects.set(locked);
+	}
 }

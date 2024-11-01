@@ -58,8 +58,16 @@ export function sceneCommand(command) {
             console.log('Invalid command: ' + command);
         }
         else if (command.startsWith('/select')) {
-            if(sceneObjects.getObjectByProperty( 'uuid' , command.split(' ')[1]) != null)
-            controls.attach(sceneObjects.getObjectByProperty( 'uuid' , command.split(' ')[1]));
+            let uuid = command.split(' ')[1]
+            if(sceneObjects.getObjectByProperty( 'uuid' , uuid) != null) {
+                console.log(locked.filter(lockedUuid => lockedUuid[1] === uuid));
+                if(!locked.filter(lockedUuid => lockedUuid[1] === uuid)) {
+                    controls.attach(sceneObjects.getObjectByProperty( 'uuid' , uuid));
+                    peer.send({type: 'lock', uuid: command.split(' ')[1], peerId: peer.peer.id});
+                } else {
+                    console.log('Object ' + uuid + ' already locked by ' + locked.find(lockedUuid => lockedUuid[1] === uuid)[0]);
+                }
+            }
             else
             console.log('Object uuid not found: ' + command.split(' ')[1]);
         }
