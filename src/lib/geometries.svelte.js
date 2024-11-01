@@ -68,7 +68,7 @@ export function lockGeometry(uuid, peerId) {
 				sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
 					color: 0x003500
 				});
-				locked = locked.filter((lockedUuid) => lockedUuid[1] === uuid);
+				locked = locked.filter((lockedUuid) => lockedUuid[0] != peerId);
 				locked.push([peerId, uuid]);
 			} else {
 				locked.push([peerId, uuid]);
