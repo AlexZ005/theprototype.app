@@ -56,33 +56,47 @@ export function moveGeometry(uuid, pos, rot, scale) {
     }
 }
 
+/**
+ * Locks an object by changing its material color and updating the locked list.
+ * 
+ * @param {string} uuid - The unique identifier of the geometry object to lock.
+ * @param {string} peerId - The unique identifier of the peer requesting the lock.
+ */
 export function lockGeometry(uuid, peerId) {
-	console.log('attempt to lock');
-	if (sceneObjects.getObjectByProperty('uuid', uuid)) {
-		if (locked.length != 0) {
-			if (locked.find((lockedUuid) => lockedUuid[0] === peerId)) {
-				let oldUuid = locked.find((lockedUuid) => lockedUuid[0] === peerId)[1];
-				sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
-					color: 0x00ff00
-				});
-				sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-					color: 0x003500
-				});
-				locked = locked.filter((lockedUuid) => lockedUuid[0] != peerId);
-				locked.push([peerId, uuid]);
-			} else {
-				locked.push([peerId, uuid]);
-				sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-					color: 0x003500
-				});
-			}
-		} else {
-			locked.push([peerId, uuid]);
-			sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-				color: 0x003500
-			});
-		}
-		let testarray = [['test', 'test2']];
-		lockedObjects.set(locked);
-	}
+    // Check if the object with the given UUID exists
+    if (sceneObjects.getObjectByProperty('uuid', uuid)) {
+        // Check if there are any currently locked objects
+        if (locked.length != 0) {
+            // Check if the peer has already locked an object
+            let existingLock = locked.find((lockedUuid) => lockedUuid[0] === peerId);
+            if (existingLock) {
+                let oldUuid = existingLock[1];
+                // Change the material of the previously locked object to green
+                sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
+                    color: 0x00ff00
+                });
+                // Change the material of the newly locked object to a darker green
+                sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+                    color: 0x003500
+                });
+                // Update the locked array by removing the old lock and adding the new one
+                locked = locked.filter((lockedUuid) => lockedUuid[0] != peerId);
+                locked.push([peerId, uuid]);
+            } else {
+                // If the peer hasn't locked an object, lock the new one
+                locked.push([peerId, uuid]);
+                sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+                    color: 0x003500
+                });
+            }
+        } else {
+            // If there are no locked objects, simply lock the new one
+            locked.push([peerId, uuid]);
+            sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
+                color: 0x003500
+            });
+        }
+        // Update the locked objects store
+        lockedObjects.set(locked);
+    }
 }
