@@ -1,5 +1,5 @@
 import Peer from 'peerjs';
-import { sceneCommand } from './commandsHandler.svelte';
+import { sceneCommand, checkLocks } from './commandsHandler.svelte';
 import { createGeometry, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
@@ -32,10 +32,14 @@ export class PeerConnection {
 			if (this.updateIdFn) this.updateIdFn(id);
 		});
 
+		this.peer.on('close', function() { console.log('server closed') });
+		this.peer.on('disconnected', function() { console.log('server disconnected') });
+
 		this.peer.on('connection', handleConnection.bind(this));
 
 		function handleConnection(conn) {
-			conn.on('data', (data) => {console.log(data);
+			conn.on('data', (data) => {
+				// console.log(data);
 				if(data.type == 'hosts') {
 					console.log('Connecting to received hosts');
 					data.hosts.forEach( id =>
@@ -66,6 +70,10 @@ export class PeerConnection {
 			console.log("Connecting to " + peerId);
             const conn = this.peer.connect(peerId);
             this.connections[peerId] = conn;
+
+			conn.on('close', function(data) { checkLocks(data) });
+			conn.on('disconnected', function(data) { checkLocks(data) });
+	
             conn.on('open', () => {
 				 console.log('Connection to ' + peerId + ' established')});
 				 let hosts = [id];
