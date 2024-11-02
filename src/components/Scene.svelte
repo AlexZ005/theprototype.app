@@ -1,14 +1,14 @@
 <script>
 	import { T, useTask, useThrelte } from '@threlte/core';
-	import { interactivity, OrbitControls } from '@threlte/extras';
+	import { interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
-
+	import { peers } from '../stores/appStore';
 	import Grid from '../extensions/Grid.svelte';
 
 	let { scene } = useThrelte();
 
 	// Store for global scene variables
-	import { globalScene, objectsGroup, showGrid } from '../stores/sceneStore.js';
+	import { globalScene, objectsGroup, showGrid, TControls } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
 
@@ -18,6 +18,20 @@
 	useTask((delta) => {
 		rotation += 0.25 * delta;
 	});
+
+	function onchange() {
+		if (typeof $TControls.object !== 'undefined')
+			if (typeof $TControls.object.parent !== 'undefined')
+				if ($TControls.object.parent.name === 'sceneObjects') {
+					$peers.send({
+						type: 'move',
+						uuid: $TControls.object.uuid,
+						pos: $TControls.object.position.toArray(),
+						rot: $TControls.object.rotation.toArray(),
+						scale: $TControls.object.scale.toArray()
+					});
+				}
+	}
 </script>
 
 <T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15}>
@@ -46,3 +60,5 @@
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 
 <Grid showGrid={$showGrid} />
+
+<TransformControls bind:controls={$TControls} {onchange} />

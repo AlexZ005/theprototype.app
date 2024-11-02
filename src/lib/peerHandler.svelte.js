@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
-import { sceneCommand } from './commandsHandler.svelte';
+import { sceneCommand, checkLocks, createObject, sendObjects } from './commandsHandler.svelte';
+import { createGeometry, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
@@ -31,10 +32,14 @@ export class PeerConnection {
 			if (this.updateIdFn) this.updateIdFn(id);
 		});
 
+		this.peer.on('close', function() { console.log('server closed') });
+		this.peer.on('disconnected', function() { console.log('server disconnected') });
+
 		this.peer.on('connection', handleConnection.bind(this));
 
 		function handleConnection(conn) {
-			conn.on('data', (data) => {console.log(data);
+			conn.on('data', (data) => {
+				// console.log(data);
 				if(data.type == 'hosts') {
 					console.log('Connecting to received hosts');
 					data.hosts.forEach( id =>
@@ -44,6 +49,18 @@ export class PeerConnection {
 					);
 				} else if(data.type == 'sent') {
 					addMessage({message: data.message, type: 'received', sender: data.sender});
+				} else if(data.type == 'info') {
+					addMessage({message: data.message, type: data.type, sender: data.sender});
+				} else if(data.type == 'create') {
+					createGeometry(data.command, data.uuid);
+				} else if(data.type == 'move') {
+					moveGeometry(data.uuid, data.pos, data.rot, data.scale);
+				} else if(data.type == 'lock') {
+					lockGeometry(data.uuid, data.peerId);
+				} else if(data.type == 'getobjects') {
+					sendObjects(data.sender)
+				} else if(data.type == 'object') {
+					createObject(data);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -52,11 +69,15 @@ export class PeerConnection {
 		}
 	}
 
-	connectToPeer(peerId, id = this.peer.id) {
+	connectToPeer(peerId, getobjects = true, id = this.peer.id) {
 		if (!this.connections[peerId]) {
 			console.log("Connecting to " + peerId);
             const conn = this.peer.connect(peerId);
             this.connections[peerId] = conn;
+
+			conn.on('close', function(data) { checkLocks(data) });
+			conn.on('disconnected', function(data) { checkLocks(data) });
+	
             conn.on('open', () => {
 				 console.log('Connection to ' + peerId + ' established')});
 				 let hosts = [id];
@@ -67,7 +88,8 @@ export class PeerConnection {
 				console.log("sending to " + peerId + "  remote " + hosts)
 				setTimeout(() => {
 				this.connections[peerId].send({type: 'hosts', hosts: hosts})
-				}, 3000);
+				if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
+				}, 500);
         } else {
 			if (this.connections[peerId].peer == peerId) {
 				console.log('already connected to ' + peerId + '. Status: ' + this.connections[peerId].open)
@@ -85,7 +107,8 @@ export class PeerConnection {
 				 	console.log("sending to " + peerId + "  remote " + hosts)
 				 	setTimeout(() => {
 				 		this.connections[peerId].send({type: 'hosts', hosts: hosts})
-				 	}, 3000);
+						if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
+				 	}, 500);
 				}
 
 			}
@@ -93,11 +116,23 @@ export class PeerConnection {
 		}
     }
 
-	sendMessage(message) {
-		if(message.startsWith('/')) sceneCommand(message);
-		addMessage({message: message, type: 'sent', sender: this.peer.id});
+	sendMessage(message, type) {
+		if(message.startsWith('/')) {
+			sceneCommand(message);
+		} else {
+			if(type === undefined) type = 'sent';
+			addMessage({message: message, type: type, sender: this.peer.id});
+			Object.keys(this.connections).forEach(element => {
+				this.connections[element].send({message: message, type: type, sender: this.peer.id});
+			});
+		}
+	}
+
+	send(data) {
+		if(data.type == 'create')
+		this.sendMessage('created a ' + data.command.split(' ')[1], 'info');
 		Object.keys(this.connections).forEach(element => {
-			this.connections[element].send({message: message, type: 'sent', sender: this.peer.id});
+			this.connections[element].send(data);
 		});
 	}
 }

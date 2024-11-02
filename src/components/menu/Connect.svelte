@@ -24,8 +24,8 @@
 
 	// Use the instance method to connect
 const connectToPeer = (peerIdToConnect) => {
-    if ($peers) {
-        $peers.connectToPeer(peerIdToConnect);
+    if ($peers && peerIdToConnect) {
+        $peers.connectToPeer(peerIdToConnect.toLowerCase(), true);
     }
 };
 
@@ -60,7 +60,7 @@ const connectToPeer = (peerIdToConnect) => {
 			<Button
 				color="primary"
 				class="nob rounded-l-none rounded-r-lg bg-blue-500 text-white dark:bg-blue-700 dark:text-gray-200"
-				on:click="{() => {connectToPeer(peerIdToConnect.toLowerCase())}}"
+				on:click="{() => {connectToPeer(peerIdToConnect)}}"
 				>Connect</Button
 			>
 			<Button
