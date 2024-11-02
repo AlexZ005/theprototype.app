@@ -39,6 +39,8 @@ export function createGeometry(command, uuid) {
         if (uuid) object.uuid = uuid
         object.name = geometry;
         sceneObjects.add(object);
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
         console.log('createGeometry: ' + geometry);
         if (!uuid) controls.attach(object);
         return object.uuid
