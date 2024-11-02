@@ -19,10 +19,12 @@
 		rotation += 0.25 * delta;
 	});
 
+	function oncreate() { $TControls.visible = false; }
 	function onchange() {
 		if (typeof $TControls.object !== 'undefined')
 			if (typeof $TControls.object.parent !== 'undefined')
 				if ($TControls.object.parent.name === 'sceneObjects') {
+					$TControls.visible = true;
 					$peers.send({
 						type: 'move',
 						uuid: $TControls.object.uuid,
@@ -61,4 +63,4 @@
 
 <Grid showGrid={$showGrid} />
 
-<TransformControls bind:controls={$TControls} {onchange} />
+<TransformControls bind:controls={$TControls} {onchange} {oncreate} />
