@@ -24,6 +24,8 @@ TControls.subscribe(value => { controls = value });
 let locked = $state();
 lockedObjects.subscribe(value => { locked = value });
 
+const loader = new THREE.ObjectLoader();
+
 export function sceneCommand(command) {
     if (command.startsWith('/')) {
         console.log('Executing command: ' + command);
@@ -111,3 +113,28 @@ export function checkLocks(data) {
     })
     
 }
+
+export function createObject(object) {
+    let mesh = loader.parse(object.element);
+    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null)
+    sceneObjects.add(mesh);
+}
+
+/**
+ * Sends all objects in the scene to the given peer.
+ * @param {string} peerId - The ID of the peer to send the objects to.
+ */
+export function sendObjects(peerId) {
+    const conn = peer.connections[peerId];
+    console.log("Sending objects to " + conn.peer);
+    // Wait 500ms to ensure the connection is established before sending the objects
+    setTimeout(() => {
+        // Iterate over all objects in the scene
+        sceneObjects.children.forEach(element => {
+            // Send each object as a JSON object
+            conn.send({type: 'object', element: element.toJSON()})
+        })
+    }, 500);
+}
+
+

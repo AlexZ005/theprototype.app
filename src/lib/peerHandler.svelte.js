@@ -1,5 +1,5 @@
 import Peer from 'peerjs';
-import { sceneCommand, checkLocks } from './commandsHandler.svelte';
+import { sceneCommand, checkLocks, createObject, sendObjects } from './commandsHandler.svelte';
 import { createGeometry, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
@@ -57,6 +57,10 @@ export class PeerConnection {
 					moveGeometry(data.uuid, data.pos, data.rot, data.scale);
 				} else if(data.type == 'lock') {
 					lockGeometry(data.uuid, data.peerId);
+				} else if(data.type == 'getobjects') {
+					sendObjects(data.sender)
+				} else if(data.type == 'object') {
+					createObject(data);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -65,7 +69,7 @@ export class PeerConnection {
 		}
 	}
 
-	connectToPeer(peerId, id = this.peer.id) {
+	connectToPeer(peerId, getobjects = true, id = this.peer.id) {
 		if (!this.connections[peerId]) {
 			console.log("Connecting to " + peerId);
             const conn = this.peer.connect(peerId);
@@ -84,7 +88,8 @@ export class PeerConnection {
 				console.log("sending to " + peerId + "  remote " + hosts)
 				setTimeout(() => {
 				this.connections[peerId].send({type: 'hosts', hosts: hosts})
-				}, 3000);
+				if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
+				}, 500);
         } else {
 			if (this.connections[peerId].peer == peerId) {
 				console.log('already connected to ' + peerId + '. Status: ' + this.connections[peerId].open)
@@ -102,7 +107,8 @@ export class PeerConnection {
 				 	console.log("sending to " + peerId + "  remote " + hosts)
 				 	setTimeout(() => {
 				 		this.connections[peerId].send({type: 'hosts', hosts: hosts})
-				 	}, 3000);
+						if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
+				 	}, 500);
 				}
 
 			}
