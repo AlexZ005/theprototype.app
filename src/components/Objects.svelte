@@ -7,6 +7,7 @@
 	export function clear() {
 		// console.log($globalScene);
 		$objectsGroup.clear();
+		$objectsGroup = $objectsGroup //trigger reactivity
 		console.log('Clear objects');
 	}
 
@@ -18,6 +19,7 @@
 		$objectsGroup.add(cube);
 		console.log($globalScene.getObjectByName("cube"));
 		$TControls.attach(cube);
+		$objectsGroup = $objectsGroup //trigger reactivity
 	}
 
 	export function addCone() {
@@ -26,6 +28,7 @@
 		let cone = new THREE.Mesh(mesh, material);
 		$objectsGroup.add(cone);
 		$TControls.attach(cone);
+		$objectsGroup = $objectsGroup //trigger reactivity
 	}
 
 	export function addSphere() {
@@ -34,5 +37,6 @@
 		let cone = new THREE.Mesh(mesh, material);
 		$objectsGroup.add(cone);
 		$TControls.attach(cone);
+		$objectsGroup = $objectsGroup //trigger reactivity
 	}
 </script>
