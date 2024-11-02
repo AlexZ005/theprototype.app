@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { BottomNav } from 'flowbite-svelte';
-	import { TControls } from '../../stores/sceneStore';
-
+	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
+	import { globalScene, TControls } from '../../stores/sceneStore';
+    let myItems = [];
     let classActive = "group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
 </script>
 
@@ -67,3 +67,26 @@
 >
     <i class="fas fa-play text-black dark:text-slate-200 hover:scale-110" style="font-size: 25px;"></i>
 </p>
+
+<div id="object-list" class="hidden" style="position: absolute; top: 50px; left: 50%; transform: translate(-50%,0); z-index: 100">
+  <Listgroup active class="w-48">
+      <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400">List of objects</h3>
+      {#if myItems.length > 0}
+        <div >
+        {#each myItems as item(item.id)}
+            <ListgroupItem class="text-base font-semibold gap-2  items-center justify-between">
+                <p class="">{item.name}</p>      
+                <div>
+                <p class="configure inline-flex" on:click={(event) => { console.log("configure"); } }>⚙️</p>
+                <p class="delete inline-flex" on:click={(event) => { console.log("removing"); } }>✖️</p>
+                </div>
+            </ListgroupItem>
+        {/each}
+      </div>
+      {:else}
+        <ListgroupItem  class="justify-center items-center w-48">
+          Empty Scene
+        </ListgroupItem>
+      {/if}
+  </Listgroup>
+</div>
