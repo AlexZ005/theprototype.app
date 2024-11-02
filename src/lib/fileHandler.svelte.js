@@ -11,10 +11,10 @@ objectsGroup.subscribe(value => { sceneObjects = value });
 let peer = $state();
 peers.subscribe(value => { peer = value });
 
-export function save() {
-	console.log('Saving...');
+export function save(format) {
+	console.log('Saving...');        
 	//This exports entire scene with all objects
-	const exporter = new GLTFExporter({outputEncoding: 'JSON'});
+	const exporter = new GLTFExporter({outputEncoding: format});
 	exporter.parse(
 		sceneObjects,
 		function (result) {
@@ -25,7 +25,7 @@ export function save() {
 			let url = window.URL.createObjectURL(blob);
 			a.href = url;
 			let date = new Date().toISOString().replace(/[T:.Z]/g, '-');
-			a.download = `ThePrototype-${date}UTC.json`;
+			a.download = `ThePrototype-${date}UTC.${format.toLocaleLowerCase()}`;
 			a.click();
 			window.URL.revokeObjectURL(url);
 		},
@@ -36,6 +36,7 @@ export function save() {
 }
 
 export async function load(file) {
+try {
 	const reader = new FileReader();
 	reader.readAsText(file);
 	await new Promise((resolve, reject) => {
@@ -52,6 +53,17 @@ export async function load(file) {
 			(error) => reject(error)
 		);
 	});
+
+    if (file.name.split('.').pop() == 'gltf') {
+    let uuids = []
+    result.scene.children.forEach(object => {
+      let mesh = object.clone()
+      uuids.push(mesh.uuid)
+      console.log(object.name)
+      sceneObjects.add(mesh)
+    });
+  
+    } else if (file.name.split('.').pop() == 'json') {
 	//AuxScene is default name for GLTFExporter
 	const childs = result.scene.getObjectByName('AuxScene').children[0].children;
 
@@ -72,4 +84,8 @@ export async function load(file) {
 	objectsArray.length = 0;
 	console.log('Scene load complete');
 	return result;
+}
+} catch (error) {
+    console.error('Error loading scene:', error);
+}
 }
