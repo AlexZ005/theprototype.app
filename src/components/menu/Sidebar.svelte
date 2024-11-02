@@ -2,7 +2,7 @@
 	import '../../app.css';
 	import '../../styles/menu.css';
     import Objects from '../Objects.svelte';
-
+	import { save, load } from '$lib/fileHandler.svelte';
     import { settingsOpen } from '../../stores/appStore.js';
     $settingsOpen = false;
 
@@ -19,7 +19,12 @@
 
     import { fly } from 'svelte/transition';
     
+	let saveFormat = 'json';
 	let spanClass = 'flex-1 ms-3 whitespace-nowrap';
+	let saveClass = 'px-4 py-2 text-sm font-medium text-gray-900 border-gray-200 hover:bg-gray-100\
+	hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800\
+	dark:text-gray-400 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700\
+	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
     let isOpen = false; // State to control the visibility of the dropdown
 
@@ -83,9 +88,40 @@
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
 
-			<input type="file" id="load-file" style="display: none" on:change={console.log('Load')} />
+			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} />
 		</SidebarGroup>
 		<SidebarGroup border>
+
+        <div class="inline-flex rounded-md shadow-sm" role="group">
+			<button type="button" class={saveClass + " border rounded-s-lg"}
+			on:click={() => document.getElementById('load-file').click()}>
+			  📁<br />Load
+			</button>
+			<button type="button" class={saveClass + " border-t border-b border-r"}
+			on:click={() => save(saveFormat)}>
+			  💾<br />Save
+			</button>
+			<button type="button" class="px-1 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-r border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
+			>
+		   
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<polyline points="18 9 12 15 6 9"></polyline>
+			</svg>    
+			
+			</button>
+			<Dropdown placement='right' class="w-44 p-3 space-y-3 text-sm">
+			  <li>
+				<Radio name="group1" bind:group={saveFormat} value={'scene'} disabled>Scene</Radio>
+			  </li>
+			  <li>
+				<Radio name="group1" bind:group={saveFormat} value={'json'}>JSON</Radio>
+			  </li>
+			  <li>
+				<Radio name="group1" bind:group={saveFormat} value={'gltf'}>GLTF</Radio>
+			  </li>
+			</Dropdown>
+		  </div>
+
 			<SidebarItem label="Clear Scene" {spanClass} on:click={() => objects.clear()}></SidebarItem>
 
 			<SidebarItem
