@@ -2,7 +2,7 @@
 	import '../../app.css';
 	import '../../styles/menu.css';
     import Objects from '../Objects.svelte';
-
+	import { save, load } from '$lib/fileHandler.svelte';
     import { settingsOpen } from '../../stores/appStore.js';
     $settingsOpen = false;
 
@@ -87,7 +87,7 @@
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
 
-			<input type="file" id="load-file" style="display: none" on:change={console.log('Load')} />
+			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} />
 		</SidebarGroup>
 		<SidebarGroup border>
 
@@ -97,7 +97,7 @@
 			  📁<br />Load
 			</button>
 			<button type="button" class={saveClass + " border-t border-b border-r"}
-			on:click={() => console.log('Save')}>
+			on:click={() => save()}>
 			  💾<br />Save
 			</button>
 		  </div>
