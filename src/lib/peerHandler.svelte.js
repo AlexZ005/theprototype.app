@@ -60,7 +60,7 @@ export class PeerConnection {
 				} else if(data.type == 'getobjects') {
 					sendObjects(data.sender)
 				} else if(data.type == 'object') {
-					createObject(data);
+					createObject(data, data.uuids);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}

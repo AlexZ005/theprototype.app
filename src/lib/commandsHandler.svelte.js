@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid, TControls, lockedObjects } from '../stores/sceneStore.js';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry } from '$lib/geometries.svelte'
 import { addMessage } from '../stores/appStore';
 import { peers } from '../stores/appStore';
@@ -114,10 +116,28 @@ export function checkLocks(data) {
     
 }
 
-export function createObject(object) {
+export async function createObject(object, uuid) {
+    if (uuid == null) {
     let mesh = loader.parse(object.element);
     if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null)
     sceneObjects.add(mesh);
+        
+    } else {
+        console.log("Adding GLTF object " + uuid)
+        const loader = new GLTFLoader();
+        const result = await new Promise((resolve, reject) => {
+          loader.parse(object.object, '', (gltf) => resolve(gltf), (error) => reject(error));
+        });
+        console.log(result)
+        result.scene.uuid = uuid
+        result.scene.children.forEach((object, index) => {
+          let mesh = object.clone()
+          mesh.uuid = uuid[index]
+          object.uuid = uuid[index]
+          console.log(object.name)
+          sceneObjects.add(mesh)
+        });
+    }
     //Trigger reactivity for UI list of objects
     objectsGroup.update((value) => value);
 }
@@ -133,8 +153,22 @@ export function sendObjects(peerId) {
     setTimeout(() => {
         // Iterate over all objects in the scene
         sceneObjects.children.forEach(element => {
+            if (element.isMesh) {
             // Send each object as a JSON object
             conn.send({type: 'object', element: element.toJSON()})
+            } else {
+                const exporter = new GLTFExporter({outputEncoding: 'json'});
+                exporter.parse(
+                    element,
+                    function (result) {
+                        var blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
+                        conn.send({type: 'object', element: blob, uuids: [element.uuid]})
+                    },
+                    function (error) {
+                        console.log(error);
+                    }
+                );                
+            }
         })
     }, 500);
 }

@@ -62,7 +62,10 @@ try {
       console.log(object.name)
       sceneObjects.add(mesh)
     });
-  
+    //Trigger reactivity for UI list of objects
+    objectsGroup.update((value) => value);
+    //Send object to peers
+    peer.send({type: 'object', object: json, uuids: uuids})
     } else if (file.name.split('.').pop() == 'json') {
 	//AuxScene is default name for GLTFExporter
 	const childs = result.scene.getObjectByName('AuxScene').children[0].children;
