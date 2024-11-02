@@ -118,6 +118,8 @@ export function createObject(object) {
     let mesh = loader.parse(object.element);
     if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null)
     sceneObjects.add(mesh);
+    //Trigger reactivity for UI list of objects
+    objectsGroup.update((value) => value);
 }
 
 /**
