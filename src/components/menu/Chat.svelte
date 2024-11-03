@@ -1,11 +1,11 @@
 <script lang="ts">
 	import '../../styles/chat.css';
-	import { peers, messages } from '../../stores/appStore';
+	import { peers, messages, chatHidden } from '../../stores/appStore';
 
 	let message;
 </script>
 
-<div id="chat" class="">
+<div id="chat" class="{$chatHidden}">
 	<div id="chat-window">
 		<div id="chat-handle" class="drag-handle"></div>
 

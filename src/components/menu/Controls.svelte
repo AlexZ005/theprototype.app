@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
 	import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-    import { propertiesClose } from '../../stores/appStore.js';
+    import { chatHidden, propertiesClose } from '../../stores/appStore.js';
     
     let classActive = "group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
     
@@ -81,7 +81,7 @@
 	</p>
 	<p
 		class={classActive+' rounded-r-full'}
-		on:click={(event) => document.getElementById('chat').classList.toggle('hidden')}
+		on:click={(event) => { chatHidden.set($chatHidden === 'hidden' ? '' : 'hidden') }}
 	>
 		<i class="fas fa-message text-black dark:text-slate-200"></i>
 	</p>

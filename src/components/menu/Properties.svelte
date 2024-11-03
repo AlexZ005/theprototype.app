@@ -1,8 +1,8 @@
 <script>
 import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-import { propertiesClose } from '../../stores/appStore.js';
-import { peers } from '../../stores/appStore';
+import { propertiesClose,  } from '../../stores/appStore.js';
+import { peers, chatHidden } from '../../stores/appStore';
 import { sineIn } from 'svelte/easing';
 
 let { min_x, max_x, min_y, max_y, min_z, max_z } = $state(0) //reactivity for slider min/max values
@@ -37,9 +37,20 @@ function event(node) {
     });
 
 }
+
+// Drawer show full screen
+let drawerStyle = $state();
+
+$effect(() => {
+    if ($chatHidden === '') {
+        drawerStyle="bottom: 350px"
+    } else {
+        drawerStyle="bottom: 0px"
+    }
+})
 </script>
   
-  <Drawer activateClickOutside={false} backdrop={false} placement="right" rightOffset="end-0 top-16 " transitionType="fly" transitionParams={transitionParamsRight} bind:hidden={$propertiesClose} id="sidebar6">
+  <Drawer style={drawerStyle} activateClickOutside={false} backdrop={false} placement="right" height="full" position="fixed" rightOffset="end-0 top-16" leftOffset="start-0 " topOffset="top-16"   transitionType="fly" transitionParams={transitionParamsRight} bind:hidden={$propertiesClose} id="sidebar6">
     <div class="flex items-center">
       <h5 id="drawer-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
         Properties
