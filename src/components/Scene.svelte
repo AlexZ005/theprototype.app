@@ -8,7 +8,7 @@
 	let { scene } = useThrelte();
 
 	// Store for global scene variables
-	import { globalScene, objectsGroup, showGrid, TControls } from '../stores/sceneStore.js';
+	import { globalScene, objectsGroup, showGrid, TControls, selectedObject } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
 
@@ -21,6 +21,8 @@
 
 	function oncreate() { $TControls.visible = false; }
 	function onchange() {
+		//This would update reactively the object properties UI
+		$selectedObject = $selectedObject // Trigger reactivity
 		if (typeof $TControls.object !== 'undefined')
 			if (typeof $TControls.object.parent !== 'undefined')
 				if ($TControls.object.parent.name === 'sceneObjects') {

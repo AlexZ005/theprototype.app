@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
-	import { globalScene, objectsGroup, TControls } from '../../stores/sceneStore';
+	import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
+    import { propertiesClose } from '../../stores/appStore.js';
+    
     let classActive = "group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
     
     function dragMe(node) {
@@ -104,7 +106,11 @@
         <div >
         {#each $objectsGroup.children as item(item.id)}
             <ListgroupItem class="text-base font-semibold gap-2  items-center justify-between"
-              on:click={(event) => $TControls.attach($objectsGroup.getObjectByProperty('uuid',item.uuid))}>
+                on:click={() => {
+                    propertiesClose.set(false);
+                    selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
+                    $TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
+                }}>
                 <p class="">{item.name}</p>      
                 <div>
                 <p class="configure inline-flex" on:click={(event) => { console.log("configure"); } }>⚙️</p>

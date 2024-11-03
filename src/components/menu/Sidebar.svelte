@@ -1,10 +1,9 @@
 <script lang="ts">
 	import '../../app.css';
 	import '../../styles/menu.css';
-    import Objects from '../Objects.svelte';
 	import { save, load } from '$lib/fileHandler.svelte';
-    import { settingsOpen } from '../../stores/appStore.js';
-    $settingsOpen = false;
+    import { settingsOpen, propertiesClose } from '../../stores/appStore.js';
+	import { sceneCommand } from '$lib/commandsHandler.svelte';	
 
 	import {
 		Sidebar,
@@ -26,12 +25,7 @@
 	dark:text-gray-400 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700\
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
-    let isOpen = false; // State to control the visibility of the dropdown
-
     let { open } = $props();
-
-    console.log("open: ", open)
-    let objects;
 </script>
 
 {#if open}
@@ -77,13 +71,13 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={() => objects.addCube()}>
+				<SidebarDropdownItem label="🧊Cube" on:click={() => { propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={() => objects.addCone() }>
+				<SidebarDropdownItem label="🔼Cone" on:click={() => { propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={() => objects.addSphere() }>
+				<SidebarDropdownItem label="🟠Sphere" on:click={() => { propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
@@ -122,7 +116,7 @@
 			</Dropdown>
 		  </div>
 
-			<SidebarItem label="Clear Scene" {spanClass} on:click={() => objects.clear()}></SidebarItem>
+			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { sceneCommand('/clear all')}}></SidebarItem>
 
 			<SidebarItem
 				label="Settings"
@@ -136,7 +130,6 @@
 	</SidebarWrapper>
 </Sidebar>
 
-<Objects bind:this={objects} />
 
 </div>
 </div>

@@ -33,7 +33,10 @@ export function sceneCommand(command) {
         console.log('Executing command: ' + command);
         if (command.startsWith('/clear')) {
             if (command.split(' ')[1] == 'all')
+            {
+                controls.detach();
                 sceneObjects.clear();
+            }
         }
         else if (command.startsWith('/grid')) {
             if (command.split(' ')[1] == 'on')
@@ -116,12 +119,13 @@ export function checkLocks(data) {
     
 }
 
-export async function createObject(object, uuid) {
+export async function createObject(object, uuid, override) {
     if (uuid == null) {
     let mesh = loader.parse(object.element);
-    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null)
+    if (override)
+    sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', mesh.uuid));
+    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
     sceneObjects.add(mesh);
-        
     } else {
         console.log("Adding GLTF object " + uuid)
         const loader = new GLTFLoader();

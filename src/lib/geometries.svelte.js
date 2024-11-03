@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, TControls, lockedObjects } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 
 //Access scene Store
 let scene = $state();
@@ -43,6 +43,7 @@ export function createGeometry(command, uuid) {
         objectsGroup.update((value) => value);
         console.log('createGeometry: ' + geometry);
         if (!uuid) controls.attach(object);
+        if (!uuid) selectedObject.set(object);
         return object.uuid
     } else {
         console.log('Invalid geometry: ' + geometry);

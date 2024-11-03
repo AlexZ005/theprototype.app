@@ -80,7 +80,9 @@ function event(node) {
     </div>
     </div>
 
-    <Button on:click={() => {console.log('send updated object to peers')}}>Set</Button>
+    <!-- updateMatrixWorld required to include position in JSON -->
+    <Button on:click={() => {$selectedObject.updateMatrixWorld();
+        $peers.send({type: 'object', element: $selectedObject.toJSON(), override: true}) } }>Set</Button>
     
     <Button on:click={() => {$TControls.detach(); $objectsGroup.remove($selectedObject)}}>Delete</Button>
     
