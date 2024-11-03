@@ -47,7 +47,7 @@ const connectToPeer = (peerIdToConnect) => {
 
 <div
 	class="p-8"
-	style="position: absolute; top: 35px; left: 50%; transform: translate(-50%, -50%); z-index: 1;"
+	style="position: absolute; top: 35px; left: 50%; transform: translate(-50%, -50%); z-index: 3;"
 >
 	<Navbar rounded color="form">
 		<div class="inline-flex rounded-md shadow-sm" role="group">

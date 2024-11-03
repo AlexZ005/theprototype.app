@@ -96,7 +96,7 @@
     <i class="fas fa-play text-black dark:text-slate-200 hover:scale-110" style="font-size: 25px;"></i>
 </p>
 
-<div id="object-list" class="hidden" use:dragMe style="z-index: 100">
+<div id="object-list" class="hidden" use:dragMe style="z-index: 1">
   <Listgroup active class="w-48">
       <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400">List of objects</h3>
       {#if $objectsGroup}

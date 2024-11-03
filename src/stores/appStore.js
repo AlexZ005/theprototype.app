@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 
 export const settingsOpen = writable(null);
+export const propertiesClose = writable(false);
 export const peers = writable(null);
 
 export const messages = writable([]);
