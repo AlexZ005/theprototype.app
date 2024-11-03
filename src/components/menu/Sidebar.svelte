@@ -116,7 +116,7 @@
 			</Dropdown>
 		  </div>
 
-			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { sceneCommand('/clear all')}}></SidebarItem>
+			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { propertiesClose.set(true); sceneCommand('/clear all')}}></SidebarItem>
 
 			<SidebarItem
 				label="Settings"
