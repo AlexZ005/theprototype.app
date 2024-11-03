@@ -131,6 +131,8 @@ export function checkLocks(data) {
 export async function deleteObject(uuid) {
     if(selected.uuid == uuid) controls.detach();
     sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', uuid));
+    //Trigger reactivity for UI list of objects on remote
+    objectsGroup.update((value) => value);
 }
 
 export async function createObject(object, uuid, override) {

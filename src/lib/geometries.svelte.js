@@ -74,7 +74,8 @@ export function lockGeometry(uuid, peerId) {
             let existingLock = locked.find((lockedUuid) => lockedUuid[0] === peerId);
             if (existingLock) {
                 let oldUuid = existingLock[1];
-                // Change the material of the previously locked object to green
+                // Change the material of the previously locked object if it was not removed to green
+                if (sceneObjects.getObjectByProperty('uuid', oldUuid))
                 sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
                     color: 0x00ff00
                 });
