@@ -4,6 +4,7 @@
 	import { save, load } from '$lib/fileHandler.svelte';
     import { settingsOpen, propertiesClose } from '../../stores/appStore.js';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';	
+	import { sineIn } from 'svelte/easing';
 
 	import {
 		Sidebar,
@@ -14,6 +15,7 @@
 		SidebarDropdownItem,
 		Radio,
 		Dropdown,
+		Drawer
 	} from 'flowbite-svelte';
 
     import { fly } from 'svelte/transition';
@@ -26,15 +28,34 @@
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
     let { open } = $props();
+
+	let transitionParamsRight = {
+		x: -320,
+		duration: 200,
+		easing: sineIn
+	};
+
 </script>
 
-{#if open}
+{#if true}
 
-<div class="hamburger">
+<div class="hamburger" style="z-index: 49;">
   <!-- {#each ['Home', 'Example', 'About', 'Contact'] as link, i} -->
-      <div transition:fly={{ x: -15, direction: 'in' }}>
-
-
+      <!-- <div transition:fly={{ x: -15, direction: 'in' }}> -->
+<div>
+<Drawer
+	hidden={open}
+	activateClickOutside={false}
+	backdrop={false}
+	placement="left"
+	position="fixed"
+	rightOffset="end-0 top-16"
+	leftOffset="start-0 top-16 h-full"
+	topOffset="top-16"
+	transitionType="fly"
+	transitionParams={transitionParamsRight}
+	id="sidebar70"
+>
 <Sidebar>
 	<SidebarWrapper>
 		<SidebarGroup>
@@ -103,7 +124,7 @@
 			</svg>    
 			
 			</button>
-			<Dropdown placement='right' class="w-44 p-3 space-y-3 text-sm">
+			<Dropdown placement='bottom' class="w-44 p-3 space-y-3 text-sm">
 			  <li>
 				<Radio name="group1" bind:group={saveFormat} value={'scene'} disabled>Scene</Radio>
 			  </li>
@@ -129,6 +150,7 @@
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
+</Drawer>
 
 
 </div>

@@ -43,9 +43,9 @@ let drawerStyle = $state();
 
 $effect(() => {
     if ($chatHidden === '') {
-        drawerStyle="bottom: 350px"
+        drawerStyle="bottom: 350px; z-index: 48"
     } else {
-        drawerStyle="bottom: 0px"
+        drawerStyle="bottom: 0px; z-index: 48"
     }
 })
 </script>

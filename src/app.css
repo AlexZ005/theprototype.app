@@ -23,3 +23,8 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Removes Flowbite button borders */
+* { 
+    --tw-ring-opacity: 0 !important;
+  }

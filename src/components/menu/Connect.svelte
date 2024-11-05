@@ -47,7 +47,7 @@ const connectToPeer = (peerIdToConnect) => {
 
 <div
 	class="p-8"
-	style="position: absolute; top: 35px; left: 50%; transform: translate(-50%, -50%); z-index: 3;"
+	style="position: absolute; top: 35px; left: 50%; transform: translate(-50%, -50%); z-index: 300;"
 >
 	<Navbar rounded color="form">
 		<div class="inline-flex rounded-md shadow-sm" role="group">
@@ -65,12 +65,11 @@ const connectToPeer = (peerIdToConnect) => {
 			>
 			<Button
 				color="primary"
-				class="nob white bg-gray-400	text-white dark:bg-gray-600 dark:text-gray-200"
+				class="nob white bg-gray-400	text-white dark:bg-gray-600 dark:text-gray-200 ring-0"
 				on:click={copy}
 				style="margin-left: 15px;"><p style="white-space: nowrap;">&#x1f4cb; {myidcap}</p></Button
 			>
 		</div>
 
-		<NavHamburger />
 	</Navbar>
 </div>

@@ -40,7 +40,7 @@
 <BottomNav
 	position="absolute"
 	navType="application"
-	classOuter="h-10 w-70 bg-white rounded-full dark:bg-gray-700 "
+	classOuter="h-10 w-70 bg-white rounded-full dark:bg-gray-700 z-10"
 	classInner="grid-cols-7"
 >
 	<p
@@ -91,7 +91,7 @@
 
 <p
     class={classActive+' bg-primary-600 font-medium dark:focus:ring-primary-800 rounded-full'}
-    style="position: absolute; height: 50px; width: 50px; bottom: 10px; z-index: 100;
+    style="position: absolute; height: 50px; width: 50px; bottom: 10px; z-index: 11;
         display: flex; left: 50%; transform: translate(-50%,0)"
     on:click={() => {
         checkPlay();
