@@ -56,10 +56,10 @@ function event(node) {
         if (moving) {
             $peers.send({
 						type: 'move',
-						uuid: $TControls.object.uuid,
-						pos: $TControls.object.position.toArray(),
-						rot: $TControls.object.rotation.toArray(),
-						scale: $TControls.object.scale.toArray()
+						uuid: $selectedObject.uuid,
+						pos: $selectedObject.position.toArray(),
+						rot: $selectedObject.rotation.toArray(),
+						scale: $selectedObject.scale.toArray()
 					});
         }
     });
@@ -131,6 +131,11 @@ $effect(() => {
     bind:value={color}
     on:input={(event) => {
         $selectedObject.material.color.set(event.detail.hex);
+        $peers.send({
+						type: 'color',
+						uuid: $selectedObject.uuid,
+                        color: event.detail.hex
+					});
     }}
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />

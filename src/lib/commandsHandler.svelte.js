@@ -128,6 +128,11 @@ export function checkLocks(data) {
     
 }
 
+export async function colorObject(uuid, color) {
+    let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
+    if (mesh) mesh.material.color.set(color);
+}
+
 export async function deleteObject(uuid) {
     if(selected.uuid == uuid) controls.detach();
     sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', uuid));
