@@ -128,9 +128,18 @@ export function checkLocks(data) {
     
 }
 
-export async function colorObject(uuid, color) {
-    let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
-    if (mesh) mesh.material.color.set(color);
+export async function colorObject(uuid, color, near, far) {
+    if (uuid == 'background') {
+        scene.background = new THREE.Color(color);
+    } else if (uuid = 'fog') {
+        if (near != null && far != null)
+        scene.fog = new THREE.Fog(color, near, far);
+        else
+        scene.fog = null;
+    } else {
+        let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
+        if (mesh) mesh.material.color.set(color);
+    }
 }
 
 export async function deleteObject(uuid) {

@@ -64,7 +64,7 @@ export class PeerConnection {
 				} else if(data.type == 'delete') {
 					deleteObject(data.uuid);
 				} else if(data.type == 'color') {
-					colorObject(data.uuid, data.color);
+					colorObject(data.uuid, data.color, data.near, data.far);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}

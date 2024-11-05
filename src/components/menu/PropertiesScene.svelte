@@ -7,6 +7,7 @@
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
 	import { sineIn } from 'svelte/easing';
 
+    const hexColor = /^#[0-9A-F]{6}$/i;
 	let backgroundColor = $state();
 	let fogColor = $state();
 	let near = $state(0);
@@ -30,6 +31,23 @@
 			drawerStyle = 'bottom: 0px; z-index: 48';
 		}
 	});
+
+    function sendBackgroundColor() {
+        $peers.send({
+				type: 'color',
+				uuid: 'background',
+				color: backgroundColor
+			});
+    }
+    function sendFogColor() {
+        $peers.send({
+				type: 'color',
+				uuid: 'fog',
+				color: fogColor,
+                near: near,
+                far: far
+			});
+    }
 </script>
 
 <Drawer 
@@ -83,6 +101,7 @@
 		on:input={(event) => {
 			$globalScene.background = new THREE.Color(backgroundColor);
 			backgroundColor = event.detail.hex;
+            sendBackgroundColor();
 		}}
 	/>
     <Input
@@ -90,6 +109,7 @@
     bind:value={backgroundColor}
     onchange={() => {
         $globalScene.fog = new THREE.Fog(backgroundColor, near, far);
+        sendBackgroundColor();
     }}
 />
     <br />
@@ -113,30 +133,40 @@
 		on:input={(event) => {
 			$globalScene.fog = new THREE.Fog(event.detail.hex, near, far);
 			fogColor = event.detail.hex;
+            sendFogColor();
 		}}
 	/>
 	<Input
 		type="text"
-		bind:value={fogColor} />
+		bind:value={fogColor}
+        oninput={() => { if(hexColor.test(fogColor)) { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); } }} />
 
 	<div class="flex items-center space-x-2 p-1">
 		<span class="w-2/3 truncate pr-2 text-right">
 			<Range id="near" step="0.1" min="0" max="10" bind:value={near}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); }} />
+            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
 		</span>
 		<span class="w-1/3">
 			<NumberInput bind:value={near}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); }} />
+            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
 		</span>
 	</div>
 	<div class="flex items-center space-x-2 p-1">
 		<span class="w-2/3 truncate pr-2 text-right">
-			<Range id="far" step="0.1" min="0" max="46" bind:value={far}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); }} />
+			<Range id="far" step="0.1" min="0" max="100" bind:value={far}
+            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
 		</span>
 		<span class="w-1/3">
 			<NumberInput bind:value={far}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); }} />
+            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
 		</span>
 	</div>
+
+    <Button
+    on:click={() => {
+        $globalScene.fog = null;
+        near = null; far = null;
+        sendFogColor();
+    }}>Remove Fog</Button
+>
 </Drawer>
