@@ -1,10 +1,10 @@
 <script>
 import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-import { propertiesClose,  } from '../../stores/appStore.js';
-import { peers, chatHidden } from '../../stores/appStore';
+import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
 import { sineIn } from 'svelte/easing';
 
+let moving;
 let { min_position_x, max_position_x, min_position_y, max_position_y, min_position_z, max_position_z,
       min_rotation_x, max_rotation_x, min_rotation_y, max_rotation_y, min_rotation_z, max_rotation_z,
       min_scale_x, max_scale_x, min_scale_y, max_scale_y, min_scale_z, max_scale_z
@@ -43,8 +43,24 @@ function event(node) {
     min_scale_z = $selectedObject.scale.z-($selectedObject.scale.z+2)
     max_scale_z = $selectedObject.scale.z+(($selectedObject.scale.z-2)*-1)
     
-    window.addEventListener('mouseup', () => {
+    node.addEventListener('mousedown', () => {
+        moving = true;
+    });
 
+    window.addEventListener('mousemove', (e) => {
+        if (moving) {
+            $peers.send({
+						type: 'move',
+						uuid: $TControls.object.uuid,
+						pos: $TControls.object.position.toArray(),
+						rot: $TControls.object.rotation.toArray(),
+						scale: $TControls.object.scale.toArray()
+					});
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        moving = false;
         min_position_x = $selectedObject.position.x-5
         max_position_x = $selectedObject.position.x+5
         min_position_y = $selectedObject.position.y-5
