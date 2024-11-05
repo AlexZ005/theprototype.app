@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
-	import { globalScene, objectsGroup, TControls } from '../../stores/sceneStore';
+	import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
+    import { chatHidden, propertiesClose } from '../../stores/appStore.js';
+    import { sceneCommand } from '$lib/commandsHandler.svelte';	
+
+    let previoslySelectedObject;
     let classActive = "group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
     
     function dragMe(node) {
@@ -79,7 +83,7 @@
 	</p>
 	<p
 		class={classActive+' rounded-r-full'}
-		on:click={(event) => document.getElementById('chat').classList.toggle('hidden')}
+		on:click={(event) => { chatHidden.set($chatHidden === 'hidden' ? '' : 'hidden') }}
 	>
 		<i class="fas fa-message text-black dark:text-slate-200"></i>
 	</p>
@@ -96,7 +100,7 @@
     <i class="fas fa-play text-black dark:text-slate-200 hover:scale-110" style="font-size: 25px;"></i>
 </p>
 
-<div id="object-list" class="hidden" use:dragMe style="z-index: 100">
+<div id="object-list" class="hidden" use:dragMe style="z-index: 1">
   <Listgroup active class="w-48">
       <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400">List of objects</h3>
       {#if $objectsGroup}
@@ -104,12 +108,34 @@
         <div >
         {#each $objectsGroup.children as item(item.id)}
             <ListgroupItem class="text-base font-semibold gap-2  items-center justify-between"
-              on:click={(event) => $TControls.attach($objectsGroup.getObjectByProperty('uuid',item.uuid))}>
+                on:click={() => {
+                    previoslySelectedObject = $selectedObject;
+                    selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
+                    $TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
+                }}>
                 <p class="">{item.name}</p>      
                 <div>
-                <p class="configure inline-flex" on:click={(event) => { console.log("configure"); } }>⚙️</p>
-                <p class="delete inline-flex" on:click={(event) => { console.log("removing"); } }>✖️</p>
                 </div>
+                <p class="configure inline-flex" on:click={(event) => { propertiesClose.set(false); } }>⚙️</p>
+                <p class="delete inline-flex"
+                on:click={(event) => {
+                    // When press on ListgroupItem even on delete button, it activates
+                    // Select previous one as we about to delete tje current one
+                    setTimeout(() => {
+                        console.log(previoslySelectedObject.name)
+                        if (previoslySelectedObject && 
+                            previoslySelectedObject.uuid !== item.uuid && 
+                            $objectsGroup.getObjectByProperty('uuid', previoslySelectedObject.uuid)) {
+                                selectedObject.set(previoslySelectedObject);
+                                $TControls.attach(previoslySelectedObject);
+                                previoslySelectedObject = null
+                        } else {
+                            propertiesClose.set(true);
+                            $TControls.detach();
+                        }
+                        sceneCommand("/clear " + item.uuid);
+                    }, 100)
+                }}>✖️</p>
             </ListgroupItem>
         {/each}
       </div>

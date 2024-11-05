@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, showGrid, TControls, lockedObjects } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry } from '$lib/geometries.svelte'
@@ -26,6 +26,10 @@ TControls.subscribe(value => { controls = value });
 let locked = $state();
 lockedObjects.subscribe(value => { locked = value });
 
+//Access selected object
+let selected = $state();
+selectedObject.subscribe(value => { selected = value });
+
 const loader = new THREE.ObjectLoader();
 
 export function sceneCommand(command) {
@@ -33,7 +37,13 @@ export function sceneCommand(command) {
         console.log('Executing command: ' + command);
         if (command.startsWith('/clear')) {
             if (command.split(' ')[1] == 'all')
+            {
+                controls.detach();
                 sceneObjects.clear();
+            } else {
+                sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', command.split(' ')[1]));
+                peer.send({type: 'delete', uuid: command.split(' ')[1], peerId: peer.peer.id});
+            }
         }
         else if (command.startsWith('/grid')) {
             if (command.split(' ')[1] == 'on')
@@ -89,6 +99,8 @@ export function sceneCommand(command) {
         );
         }
     }
+    //Trigger reactivity for UI list of objects
+    objectsGroup.update((value) => value);
 }
 
 export function checkLocks(data) {
@@ -116,12 +128,20 @@ export function checkLocks(data) {
     
 }
 
-export async function createObject(object, uuid) {
+export async function deleteObject(uuid) {
+    if(selected.uuid == uuid) controls.detach();
+    sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', uuid));
+    //Trigger reactivity for UI list of objects on remote
+    objectsGroup.update((value) => value);
+}
+
+export async function createObject(object, uuid, override) {
     if (uuid == null) {
     let mesh = loader.parse(object.element);
-    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null)
+    if (override)
+    sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', mesh.uuid));
+    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
     sceneObjects.add(mesh);
-        
     } else {
         console.log("Adding GLTF object " + uuid)
         const loader = new GLTFLoader();

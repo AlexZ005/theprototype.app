@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, TControls, lockedObjects } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 
 //Access scene Store
 let scene = $state();
@@ -43,6 +43,7 @@ export function createGeometry(command, uuid) {
         objectsGroup.update((value) => value);
         console.log('createGeometry: ' + geometry);
         if (!uuid) controls.attach(object);
+        if (!uuid) selectedObject.set(object);
         return object.uuid
     } else {
         console.log('Invalid geometry: ' + geometry);
@@ -73,7 +74,8 @@ export function lockGeometry(uuid, peerId) {
             let existingLock = locked.find((lockedUuid) => lockedUuid[0] === peerId);
             if (existingLock) {
                 let oldUuid = existingLock[1];
-                // Change the material of the previously locked object to green
+                // Change the material of the previously locked object if it was not removed to green
+                if (sceneObjects.getObjectByProperty('uuid', oldUuid))
                 sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
                     color: 0x00ff00
                 });
