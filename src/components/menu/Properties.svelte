@@ -2,7 +2,11 @@
 import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
+import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
+import CustomWrapper from '$lib/ColorWrapper.svelte';
 import { sineIn } from 'svelte/easing';
+
+let color = $state();
 
 let moving;
 let { min_position_x, max_position_x, min_position_y, max_position_y, min_position_z, max_position_z,
@@ -48,6 +52,7 @@ function event(node) {
     });
 
     window.addEventListener('mousemove', (e) => {
+        color = $selectedObject.material.color.getHexString()
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -107,6 +112,28 @@ $effect(() => {
     {#if $selectedObject.name !== undefined}
     {st=null}
     
+    <p class="text-white dark:text-slate-200">Color:</p> 
+    <br />
+    <ColorPicker
+    label="test"
+    isAlpha={false}
+    isTextInput={false}
+    isDialog={false}
+    components={{...ChromeVariant, wrapper: CustomWrapper}} 
+    isOpen={true}
+    sliderDirection="horizontal"
+    --picker-indicator-size="20px"
+    --cp-bg-color="#1f2937"
+    --cp-border-color="#353f4e"
+    --picker-height="70px"
+    --picker-width="50px"
+    --slider-width="10px"    
+    bind:value={color}
+    on:input={(event) => {
+        $selectedObject.material.color.set(event.detail.hex);
+    }}
+    />
+    <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
     <br /><p class="text-white dark:text-slate-200">Position:</p>
     
     <div use:event>
