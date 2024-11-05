@@ -2,7 +2,7 @@
 	import '../../app.css';
 	import '../../styles/menu.css';
 	import { save, load } from '$lib/fileHandler.svelte';
-    import { settingsOpen, propertiesClose } from '../../stores/appStore.js';
+    import { settingsOpen, propertiesClose, scenePropertiesClose } from '../../stores/appStore.js';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';	
 	import { sineIn } from 'svelte/easing';
 
@@ -92,13 +92,13 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={() => { propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
+				<SidebarDropdownItem label="🧊Cube" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={() => { propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
+				<SidebarDropdownItem label="🔼Cone" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={() => { propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
+				<SidebarDropdownItem label="🟠Sphere" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
@@ -137,6 +137,7 @@
 			</Dropdown>
 		  </div>
 
+			<SidebarItem label="Configure Scene" {spanClass} on:click={() => { propertiesClose.set(true); scenePropertiesClose.set(false); }}></SidebarItem>
 			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { propertiesClose.set(true); sceneCommand('/clear all')}}></SidebarItem>
 
 			<SidebarItem

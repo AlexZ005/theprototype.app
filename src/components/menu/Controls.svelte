@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
 	import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-    import { chatHidden, propertiesClose } from '../../stores/appStore.js';
+    import { chatHidden, propertiesClose, scenePropertiesClose } from '../../stores/appStore.js';
     import { sceneCommand } from '$lib/commandsHandler.svelte';	
 
     let previoslySelectedObject;
@@ -116,7 +116,11 @@
                 <p class="">{item.name}</p>      
                 <div>
                 </div>
-                <p class="configure inline-flex" on:click={(event) => { propertiesClose.set(false); } }>⚙️</p>
+                <p class="configure inline-flex"
+				on:click={(event) => {
+					scenePropertiesClose.set(true);
+					propertiesClose.set(false);
+				} }>⚙️</p>
                 <p class="delete inline-flex"
                 on:click={(event) => {
                     // When press on ListgroupItem even on delete button, it activates
