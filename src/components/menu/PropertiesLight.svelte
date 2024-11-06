@@ -47,6 +47,7 @@
 		});
 
         window.addEventListener('mousemove', (e) => {
+        if ($selectedObject.type.endsWith('Light')) {
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -55,6 +56,7 @@
 						rot: $selectedObject.rotation.toArray(),
 						scale: $selectedObject.scale.toArray()
 					});
+        }
         }
     });
 

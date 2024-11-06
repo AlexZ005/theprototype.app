@@ -52,6 +52,7 @@ function event(node) {
     });
 
     window.addEventListener('mousemove', (e) => {
+        if (!$selectedObject.type.endsWith('Light')) {
         color = $selectedObject.material.color.getHexString()
         if (moving) {
             $peers.send({
@@ -61,6 +62,7 @@ function event(node) {
 						rot: $selectedObject.rotation.toArray(),
 						scale: $selectedObject.scale.toArray()
 					});
+        }
         }
     });
 
@@ -243,7 +245,6 @@ $effect(() => {
         </span>
     </div>
     </div>
-    
     {:else}
     {st=0}
 
