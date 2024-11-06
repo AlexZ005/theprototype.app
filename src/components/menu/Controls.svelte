@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
 	import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-    import { chatHidden, propertiesClose, scenePropertiesClose } from '../../stores/appStore.js';
+    import { chatHidden, propertiesClose, lightPropertiesClose, scenePropertiesClose } from '../../stores/appStore.js';
     import { sceneCommand } from '$lib/commandsHandler.svelte';	
 
     let previoslySelectedObject;
@@ -118,8 +118,16 @@
                 </div>
                 <p class="configure inline-flex"
 				on:click={(event) => {
-					scenePropertiesClose.set(true);
-					propertiesClose.set(false);
+					if (item.type.endsWith('Light')) {
+						console.log(item.type)
+						lightPropertiesClose.set(false);
+						scenePropertiesClose.set(true);
+						propertiesClose.set(true);
+					} else {
+						lightPropertiesClose.set(true);
+						scenePropertiesClose.set(true);
+						propertiesClose.set(false);
+					}
 				} }>⚙️</p>
                 <p class="delete inline-flex"
                 on:click={(event) => {
