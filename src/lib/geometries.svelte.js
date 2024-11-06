@@ -88,7 +88,15 @@ export function createLight(command, uuid) {
         return light.uuid
     }
 }
-    
+
+export function changeName(uuid, name) {
+    if(sceneObjects.getObjectByProperty('uuid', uuid)) {
+        sceneObjects.getObjectByProperty('uuid', uuid).name = name;
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+    }
+}
+   
 export function moveGeometry(uuid, pos, rot, scale) {
     if(sceneObjects.getObjectByProperty('uuid', uuid)) {
         sceneObjects.getObjectByProperty('uuid', uuid).position.set(pos[0], pos[1], pos[2]);

@@ -120,6 +120,21 @@
 	</div>
 	{#if $selectedObject}
 		{(st = null)}
+
+        <p class="text-white dark:text-slate-200">Name:</p>
+        <Input class="text-white dark:text-slate-200" bind:value={$selectedObject.name}
+            onchange={() => {
+            //Trigger reactivity for UI list of objects
+            objectsGroup.update((value) => value);
+            $peers.send({
+                type: 'name',
+                name: $selectedObject.name,
+                uuid: $selectedObject.uuid
+            });
+            }}></Input>
+        <p class="text-white dark:text-slate-200">UUID:</p>
+        <Input class="text-white dark:text-slate-200" disabled value={$selectedObject.uuid}></Input>
+
 		<p class="text-white dark:text-slate-200">Color:</p>
 		<br />
 		<ColorPicker

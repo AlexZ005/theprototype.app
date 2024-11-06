@@ -111,7 +111,21 @@ $effect(() => {
     </div>
     {#if $selectedObject.name !== undefined}
     {st=null}
-    
+
+    <p class="text-white dark:text-slate-200">Name:</p>
+    <Input class="text-white dark:text-slate-200" bind:value={$selectedObject.name}
+        onchange={() => {
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        $peers.send({
+            type: 'name',
+            name: $selectedObject.name,
+            uuid: $selectedObject.uuid
+        });
+        }}></Input>
+    <p class="text-white dark:text-slate-200">UUID:</p>
+    <Input class="text-white dark:text-slate-200" disabled value={$selectedObject.uuid}></Input>
+
     <p class="text-white dark:text-slate-200">Color:</p> 
     <br />
     <ColorPicker
@@ -229,12 +243,6 @@ $effect(() => {
         </span>
     </div>
     </div>
-
-    <!-- updateMatrixWorld required to include position in JSON -->
-    <Button on:click={() => {$selectedObject.updateMatrixWorld();
-        $peers.send({type: 'object', element: $selectedObject.toJSON(), override: true}) } }>Set</Button>
-    
-    <Button on:click={() => {$TControls.detach(); $objectsGroup.remove($selectedObject)}}>Delete</Button>
     
     {:else}
     {st=0}
