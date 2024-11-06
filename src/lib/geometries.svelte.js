@@ -51,6 +51,44 @@ export function createGeometry(command, uuid) {
     }
 }
 
+export function createLight(command, uuid) {
+    let lightType = command.split(' ')[1].toLowerCase();
+    let light;
+    if (lightType == 'ambient') {
+        light = new THREE.AmbientLight(0xffffff, 1);
+        light.name = 'Ambient';
+    } else if (lightType == 'directional') {
+        light = new THREE.DirectionalLight(0xffffff, 1);
+        light.name = 'Directional';
+    } else if (lightType == 'point') {
+        light = new THREE.PointLight(0xffffff, 1);
+        light.name = 'Point';
+    } else if (lightType == 'spot') {
+        light = new THREE.SpotLight(0xffffff, 1);
+        light.name = 'Spot';
+    } else if (lightType == 'hemisphere') {
+        light = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
+        light.name = 'Hemisphere';
+        if (uuid) light.uuid = uuid
+    } else if ( lightType == 'rectArea') {
+        light = new THREE.RectAreaLight(0xffffff, 1, 10, 10);
+        light.name = 'RectArea';
+    } else {
+        console.log('Invalid light: ' + light);
+        return null
+    }       
+    if (light){
+        if (uuid) light.uuid = uuid
+        sceneObjects.add(light);
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        console.log('createLight: ' + light);
+        if (!uuid) controls.attach(light);
+        if (!uuid) selectedObject.set(light);
+        return light.uuid
+    }
+}
+    
 export function moveGeometry(uuid, pos, rot, scale) {
     if(sceneObjects.getObjectByProperty('uuid', uuid)) {
         sceneObjects.getObjectByProperty('uuid', uuid).position.set(pos[0], pos[1], pos[2]);

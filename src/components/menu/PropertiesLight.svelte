@@ -7,7 +7,8 @@
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
 	import { sineIn } from 'svelte/easing';
 
-	let color = $state();
+    const hexColor = /^#[0-9A-F]{6}$/i;
+    let color = $state();
 	let near = $state(10);
 	let far = $state(15);
 	let hemisphereGroundColor = $state(0xffffff);
@@ -45,6 +46,18 @@
 			moving = true;
 		});
 
+        window.addEventListener('mousemove', (e) => {
+        if (moving) {
+            $peers.send({
+						type: 'move',
+						uuid: $selectedObject.uuid,
+						pos: $selectedObject.position.toArray(),
+						rot: $selectedObject.rotation.toArray(),
+						scale: $selectedObject.scale.toArray()
+					});
+        }
+    });
+
 		window.addEventListener('mouseup', () => {
 			moving = false;
 			min_position_x = $selectedObject.position.x - 5;
@@ -66,6 +79,13 @@
 			drawerStyle = 'bottom: 0px; z-index: 48';
 		}
 	});
+    function sendUpdate() {        
+        $peers.send({
+            type: 'object',
+            element: $selectedObject.toJSON(),
+            override: true
+        });
+    }
 </script>
 
 <Drawer
@@ -119,14 +139,18 @@
 			on:input={(event) => {
 				$selectedObject.color.set(event.detail.hex);
 				color = event.detail.hex;
+                sendUpdate();
 			}}
 		/>
 		<Input
 			type="text"
 			bind:value={color}
-			onchange={() => {
-				$globalScene.fog = new THREE.Fog(color, near, far);
-			}}
+            oninput={() => {
+                if(hexColor.test(color)) {
+                    $selectedObject.color.set(color);
+                    sendUpdate();
+                }
+            }}
 		/>
 
 		{#if $selectedObject.type == 'HemisphereLight'}
@@ -149,13 +173,18 @@
 				on:input={(event) => {
 					$selectedObject.groundColor.set(event.detail.hex);
 					hemisphereGroundColor = event.detail.hex;
+                    sendUpdate();
+
 				}}
 			/>
 			<Input
 				type="text"
-				bind:value={color}
-				onchange={() => {
-					$globalScene.fog = new THREE.Fog(color, near, far);
+				bind:value={hemisphereGroundColor}
+				oninput={() => {
+                    if(hexColor.test(hemisphereGroundColor)) {
+                        $selectedObject.groundColor.set(hemisphereGroundColor);
+                        sendUpdate();
+                    }
 				}}
 			/>
 		{/if}
@@ -165,10 +194,12 @@
 
 		<div class="flex items-center space-x-2 p-1">
 			<span class="w-2/3 truncate pr-2 text-right">
-				<Range step="0.1" min="0" max="10" bind:value={$selectedObject.intensity} />
+				<Range step="0.1" min="0" max="10" bind:value={$selectedObject.intensity}
+                onchange={() => { sendUpdate(); }} />
 			</span>
 			<span class="w-1/3">
-				<NumberInput bind:value={$selectedObject.intensity} />
+				<NumberInput bind:value={$selectedObject.intensity}
+                oninput={() => { sendUpdate(); }} />
 			</span>
 		</div>
 
@@ -221,7 +252,8 @@
 			</div>
 
 			{#if $selectedObject.type == 'DirectionalLight'}
-				<Checkbox bind:checked={$selectedObject.castShadow}>Cast Shadow</Checkbox>
+				<Checkbox bind:checked={$selectedObject.castShadow}
+                    onchange={() => { sendUpdate(); }}>Cast Shadow</Checkbox>
 
 				<br />
 				<p class="text-white dark:text-slate-200">Shadow Intensity:</p>
@@ -230,17 +262,20 @@
 						<Range
 							step="0.1"
 							min="0"
-							max="10"
+							max="5"
 							bind:value={$selectedObject.shadow.intensity}
+                            onchange={() => { sendUpdate(); }}
 						/>
 					</span>
 					<span class="w-1/3">
-						<NumberInput bind:value={$selectedObject.shadow.intensity} />
+						<NumberInput bind:value={$selectedObject.shadow.intensity}
+                        oninput={() => { sendUpdate(); }} />
 					</span>
 				</div>
 			{/if}
 		{/if}
-		<Checkbox bind:checked={$selectedObject.visible}>Visible</Checkbox>
+		<Checkbox bind:checked={$selectedObject.visible}
+        onchange={() => { sendUpdate(); }}>Visible</Checkbox>
 	{:else}
 		{(st = 0)}
 	{/if}

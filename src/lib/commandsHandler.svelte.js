@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { createGeometry } from '$lib/geometries.svelte'
+import { createGeometry, createLight } from '$lib/geometries.svelte'
 import { addMessage } from '../stores/appStore';
 import { peers } from '../stores/appStore';
 
@@ -62,6 +62,13 @@ export function sceneCommand(command) {
                 console.log(uuid + ' created');
                 if(uuid != null)
                 peer.send({type: 'create', command: command, uuid: uuid});
+                peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
+        }
+        else if (command.startsWith('/light')) {
+                let uuid = createLight(command);
+                console.log(uuid + ' created');
+                if(uuid != null)
+                peer.send({type: 'light', command: command, uuid: uuid});
                 peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
         }
         else if (command.startsWith('/transform')) {
@@ -149,6 +156,7 @@ export async function deleteObject(uuid) {
     objectsGroup.update((value) => value);
 }
 
+
 export async function createObject(object, uuid, override) {
     if (uuid == null) {
     let mesh = loader.parse(object.element);
@@ -187,7 +195,7 @@ export function sendObjects(peerId) {
     setTimeout(() => {
         // Iterate over all objects in the scene
         sceneObjects.children.forEach(element => {
-            if (element.isMesh) {
+            if (element.type != 'Object3D') {
             // Send each object as a JSON object
             conn.send({type: 'object', element: element.toJSON()})
             } else {
