@@ -168,15 +168,13 @@ export async function createObject(object, uuid, override) {
         console.log("Adding GLTF object " + uuid)
         const loader = new GLTFLoader();
         const result = await new Promise((resolve, reject) => {
-          loader.parse(object.object, '', (gltf) => resolve(gltf), (error) => reject(error));
+          loader.parse(object.element, '', (gltf) => resolve(gltf), (error) => reject(error));
         });
-        console.log(result)
         result.scene.uuid = uuid
         result.scene.children.forEach((object, index) => {
           let mesh = object.clone()
           mesh.uuid = uuid[index]
           object.uuid = uuid[index]
-          console.log(object.name)
           sceneObjects.add(mesh)
         });
     }
@@ -195,16 +193,16 @@ export function sendObjects(peerId) {
     setTimeout(() => {
         // Iterate over all objects in the scene
         sceneObjects.children.forEach(element => {
-            if (element.type != 'Object3D') {
-            // Send each object as a JSON object
-            conn.send({type: 'object', element: element.toJSON()})
+            if (element.type.endsWith('Light')) {
+                // Send each object as a JSON object
+                conn.send({type: 'object', element: element.toJSON()})
             } else {
                 const exporter = new GLTFExporter({outputEncoding: 'json'});
                 exporter.parse(
                     element,
                     function (result) {
-                        var blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
-                        conn.send({type: 'object', element: blob, uuids: [element.uuid]})
+                        console.log('packing gltf');
+                        conn.send({type: 'object', element: result, uuids: [element.uuid]})
                     },
                     function (error) {
                         console.log(error);
