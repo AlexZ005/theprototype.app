@@ -109,6 +109,8 @@
         {#each $objectsGroup.children as item(item.id)}
             <ListgroupItem class="text-base font-semibold gap-2  items-center justify-between"
                 on:click={() => {
+					propertiesClose.set(true);
+					lightPropertiesClose.set(true);
                     previoslySelectedObject = $selectedObject;
                     selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
                     $TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
@@ -118,6 +120,9 @@
                 </div>
                 <p class="configure inline-flex"
 				on:click={(event) => {
+					// When press on ListgroupItem even on configure button, it activates
+					// The delay adds cool effect and protects from error on click
+					setTimeout(() => {
 					if (item.type.endsWith('Light')) {
 						console.log(item.type)
 						lightPropertiesClose.set(false);
@@ -128,6 +133,7 @@
 						scenePropertiesClose.set(true);
 						propertiesClose.set(false);
 					}
+				}, 100)
 				} }>⚙️</p>
                 <p class="delete inline-flex"
                 on:click={(event) => {

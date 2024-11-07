@@ -1,5 +1,5 @@
 <script>
-import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+import { Tooltip, Accordion, AccordionItem, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
 import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
@@ -114,8 +114,8 @@ $effect(() => {
     {#if $selectedObject.name !== undefined}
     {st=null}
 
-    <p class="text-white dark:text-slate-200">Name:</p>
-    <Input class="text-white dark:text-slate-200" bind:value={$selectedObject.name}
+    
+    <Input id="name" class="text-white dark:text-slate-200 -rounded rounded-tl-lg rounded-tr-lg" bind:value={$selectedObject.name}
         onchange={() => {
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
@@ -124,12 +124,17 @@ $effect(() => {
             name: $selectedObject.name,
             uuid: $selectedObject.uuid
         });
-        }}></Input>
-    <p class="text-white dark:text-slate-200">UUID:</p>
-    <Input class="text-white dark:text-slate-200" disabled value={$selectedObject.uuid}></Input>
-
-    <p class="text-white dark:text-slate-200">Color:</p> 
-    <br />
+        }} />
+        <Tooltip placement='top' arrow={false} triggeredBy="#name">Name</Tooltip>
+    
+    <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
+    <div use:event>
+    <Accordion class="text-white dark:text-slate-200 w-full" flush>
+  <AccordionItem>
+    <svelte:fragment slot="header">Color</svelte:fragment>
+    
+    
     <ColorPicker
     label="test"
     isAlpha={false}
@@ -155,9 +160,12 @@ $effect(() => {
     }}
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
+    </AccordionItem>
+    <AccordionItem>
+    <svelte:fragment slot="header">Transform</svelte:fragment>
     <br /><p class="text-white dark:text-slate-200">Position:</p>
     
-    <div use:event>
+    
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
             <Range id="posx" step="0.1" min={min_position_x} max={max_position_x} bind:value={$selectedObject.position.x} />
@@ -244,6 +252,8 @@ $effect(() => {
         <NumberInput bind:value={$selectedObject.scale.z} />
         </span>
     </div>
+    </AccordionItem>
+    </Accordion>
     </div>
     {:else}
     {st=0}

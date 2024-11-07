@@ -1,6 +1,5 @@
 <script>
-	import * as THREE from 'three';
-	import { Drawer, Checkbox, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+	import { Accordion, AccordionItem, Tooltip, Drawer, Checkbox, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 	import { globalScene, objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 	import { peers, chatHidden, lightPropertiesClose } from '../../stores/appStore.js';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
@@ -122,23 +121,26 @@
 	</div>
 	{#if $selectedObject}
 		{(st = null)}
+    <div use:event>
+        <Input id="name" class="text-white dark:text-slate-200 -rounded rounded-tl-lg rounded-tr-lg" bind:value={$selectedObject.name}
+        onchange={() => {
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        $peers.send({
+            type: 'name',
+            name: $selectedObject.name,
+            uuid: $selectedObject.uuid
+        });
+        }} />
+        <Tooltip placement='top' arrow={false} triggeredBy="#name">Name</Tooltip>
+    
+    <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
 
-        <p class="text-white dark:text-slate-200">Name:</p>
-        <Input class="text-white dark:text-slate-200" bind:value={$selectedObject.name}
-            onchange={() => {
-            //Trigger reactivity for UI list of objects
-            objectsGroup.update((value) => value);
-            $peers.send({
-                type: 'name',
-                name: $selectedObject.name,
-                uuid: $selectedObject.uuid
-            });
-            }}></Input>
-        <p class="text-white dark:text-slate-200">UUID:</p>
-        <Input class="text-white dark:text-slate-200" disabled value={$selectedObject.uuid}></Input>
-
-		<p class="text-white dark:text-slate-200">Color:</p>
-		<br />
+    <br />
+    <Accordion multiple class="text-white dark:text-slate-200 w-full" flush>
+        <AccordionItem>
+        <svelte:fragment slot="header">Color</svelte:fragment>
 		<ColorPicker
 			isAlpha={false}
 			isTextInput={false}
@@ -169,9 +171,11 @@
                 }
             }}
 		/>
+    </AccordionItem>
 
-		{#if $selectedObject.type == 'HemisphereLight'}
-			<p class="text-white dark:text-slate-200">Ground Color:</p>
+    {#if $selectedObject.type == 'HemisphereLight'}
+    <AccordionItem>
+        <svelte:fragment slot="header">Ground Color</svelte:fragment>
 			<br />
 			<ColorPicker
 				isAlpha={false}
@@ -204,10 +208,12 @@
                     }
 				}}
 			/>
+        </AccordionItem>
 		{/if}
 
-		<br />
-		<p class="text-white dark:text-slate-200">Intensity:</p>
+        <AccordionItem>
+            <svelte:fragment slot="header">Intensity</svelte:fragment>		
+		
 
 		<div class="flex items-center space-x-2 p-1">
 			<span class="w-2/3 truncate pr-2 text-right">
@@ -219,12 +225,13 @@
                 oninput={() => { sendUpdate(); }} />
 			</span>
 		</div>
+    </AccordionItem>
 
 		{#if $selectedObject.type !== 'AmbientLight'}
-			<br />
-			<p class="text-white dark:text-slate-200">Position:</p>
+        <AccordionItem>
+        <svelte:fragment slot="header">Position</svelte:fragment>
 
-			<div use:event>
+			
 				<div class="flex items-center space-x-2 p-1">
 					<span class="w-2/3 truncate pr-2 text-right">
 						<Range
@@ -266,9 +273,10 @@
 						<NumberInput bind:value={$selectedObject.position.z} />
 					</span>
 				</div>
-			</div>
-
+            </AccordionItem>
 			{#if $selectedObject.type == 'DirectionalLight'}
+            <AccordionItem>
+            <svelte:fragment slot="header">Parameters</svelte:fragment>
 				<Checkbox bind:checked={$selectedObject.castShadow}
                     onchange={() => { sendUpdate(); }}>Cast Shadow</Checkbox>
 
@@ -289,10 +297,15 @@
                         oninput={() => { sendUpdate(); }} />
 					</span>
 				</div>
+            </AccordionItem>
 			{/if}
+
 		{/if}
+        </Accordion>
+        <br />
 		<Checkbox bind:checked={$selectedObject.visible}
         onchange={() => { sendUpdate(); }}>Visible</Checkbox>
+        </div>
 	{:else}
 		{(st = 0)}
 	{/if}
