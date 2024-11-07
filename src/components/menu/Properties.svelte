@@ -1,5 +1,5 @@
 <script>
-import { Tooltip, Accordion, AccordionItem, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+import { Tooltip, Accordion, AccordionItem, Checkbox, Select, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
 import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
@@ -21,6 +21,15 @@ let transitionParamsRight = {
 };
 
 let st = $state(0)
+
+let materials = [
+    { value: 'MeshBasicMaterial', name: 'Basic' },
+    { value: 'MeshStandardMaterial', name: 'Standard' },
+    { value: 'MeshNormalMaterial', name: 'Normals' },
+    { value: 'MeshPhongMaterial', name: 'Phong' },
+    { value: 'MeshToonMaterial', name: 'Toon' },
+    { value: 'ShadowMaterial', name: 'Shadow' }
+  ];
 
 function event(node) {
       //Center slide
@@ -252,6 +261,21 @@ $effect(() => {
         <NumberInput bind:value={$selectedObject.scale.z} />
         </span>
     </div>
+    </AccordionItem>
+    <AccordionItem open>
+        <svelte:fragment slot="header">Material</svelte:fragment>
+        <p class="mb-4 font-semibold text-gray-900 dark:text-white">
+            <Checkbox bind:checked={$selectedObject.visible}
+            onchange={() => { }}>Visible</Checkbox>
+        </p>
+
+        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type} />
+
+        <p class="mb-4 font-semibold text-gray-900 dark:text-white">Shadow</p>
+        <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
+            <li class="w-full"><Checkbox bind:checked={$selectedObject.castShadow} class="p-3">Cast</Checkbox></li>
+            <li class="w-full"><Checkbox bind:checked={$selectedObject.receiveShadow} class="p-3">Receive</Checkbox></li>
+        </ul>
     </AccordionItem>
     </Accordion>
     </div>
