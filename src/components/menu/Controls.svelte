@@ -113,19 +113,46 @@
 						<ListgroupItem
 							class="items-center justify-between gap-2  text-base font-semibold"
 							on:click={() => {
+								if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)) {
 									propertiesClose.set(true);
 									lightPropertiesClose.set(true);
 									previoslySelectedObject = $selectedObject;
 									selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
 									$TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
 									$peers.send({ type: 'lock', uuid: item.uuid, peerId: $peers.peer.id });
+								}
 							}}
 						>
+							{#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)}
 
 								<div class="container">
 									<div class="grid grid-cols-2">
 										<div class="text-overflow-ellipsis w-full overflow-hidden">
 											<p class="">{item.name}</p>
+										</div>
+										<div class="">
+											<div class="flex flex-row justify-end">
+												<li class="configure inline-flex">🔒</li>
+												
+												<p class="configure grayscale">⚙️</p>
+												
+												<p class="delete grayscale">✖️</p>
+											</div>
+											<Tooltip placement='left' arrow={false}>Locked by {$lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)[0]}</Tooltip>
+										</div>
+									</div>
+								</div>
+
+								
+							{:else}
+								<div class="container">
+									<div class="grid grid-cols-2">
+										<div class="text-overflow-ellipsis w-full overflow-hidden">
+											{#if $selectedObject.uuid === item.uuid}
+												<p class="text-blue-200">{item.name}</p>
+												{:else}
+											<p class="">{item.name}</p>
+											{/if}
 										</div>
 										<div class="">
 											<div class="flex flex-row justify-end">
@@ -184,6 +211,8 @@
 										</div>
 									</div>
 								</div>
+
+								{/if}
 								
 						</ListgroupItem>
 					{/each}
