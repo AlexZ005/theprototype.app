@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
 	import { T, useTask, useThrelte } from '@threlte/core';
 	import { interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 	import { peers } from '../stores/appStore';
 	import Grid from '../extensions/Grid.svelte';
+	import Outline from './Outline.svelte'
 
 	let { scene } = useThrelte();
-
 	// Store for global scene variables
 	import { globalScene, objectsGroup, showGrid, TControls, selectedObject } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
@@ -66,3 +66,5 @@
 <Grid showGrid={$showGrid} />
 
 <TransformControls bind:controls={$TControls} {onchange} {oncreate} />
+
+<Outline />

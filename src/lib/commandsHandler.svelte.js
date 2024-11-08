@@ -118,15 +118,9 @@ export function checkLocks(data) {
 
         if(!peer.peer.connections[objectLock[0]]) {
             console.log('Connection ' + objectLock[0] + ' not found. Releasing...');
-            sceneObjects.getObjectByProperty('uuid', objectLock[1]).material = new THREE.MeshBasicMaterial({
-                color: 0x00ff00
-            });
             locked = locked.filter((lockedUuid) => lockedUuid[1] === objectLock[1]);
         } else if(peer.peer.connections[objectLock[0]].length <= 1) {
             console.log('Peer ' + objectLock[0] + ' is not connected anymore. Releasing...' + objectLock[1]);
-            sceneObjects.getObjectByProperty('uuid', objectLock[1]).material = new THREE.MeshBasicMaterial({
-                color: 0x00ff00
-            });
             locked = locked.filter((lockedUuid) => lockedUuid[1] != objectLock[1]);
         }
         lockedObjects.set(locked);
