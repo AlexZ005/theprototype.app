@@ -4,6 +4,7 @@
 	import Controls from './menu/Controls.svelte';
 	import Properties from './menu/Properties.svelte';
 	import PropertiesScene from './menu/PropertiesScene.svelte';
+	import PropertiesLight from './menu/PropertiesLight.svelte';
 	import MenuSidebar from './menu/Sidebar.svelte';
 	import MenuSettings from './menu/Settings.svelte';
 	import { Hamburger } from 'svelte-hamburgers';
@@ -22,6 +23,7 @@
 <Properties />
 <MenuSidebar {open} />
 <PropertiesScene />
+<PropertiesLight />
 <MenuSettings />
 <Chat />
 

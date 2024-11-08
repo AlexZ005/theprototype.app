@@ -2,7 +2,7 @@
 	import '../../app.css';
 	import '../../styles/menu.css';
 	import { save, load } from '$lib/fileHandler.svelte';
-    import { settingsOpen, propertiesClose, scenePropertiesClose } from '../../stores/appStore.js';
+    import { settingsOpen, propertiesClose, scenePropertiesClose, lightPropertiesClose } from '../../stores/appStore.js';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';	
 	import { sineIn } from 'svelte/easing';
 
@@ -44,7 +44,7 @@
       <!-- <div transition:fly={{ x: -15, direction: 'in' }}> -->
 <div>
 <Drawer
-	hidden={open}
+	hidden={!open}
 	activateClickOutside={false}
 	backdrop={false}
 	placement="left"
@@ -92,13 +92,57 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
+				<SidebarDropdownItem label="🧊Cube" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
+				<SidebarDropdownItem label="🔼Cone" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
+				<SidebarDropdownItem label="🟠Sphere" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
+					<svelte:fragment slot="icon"></svelte:fragment>
+				</SidebarDropdownItem>
+			</SidebarDropdownWrapper>
+
+			<SidebarDropdownWrapper label="Lights">
+				<svelte:fragment slot="arrowup">
+					<svg
+						style="transform: rotate(180deg);"
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<polyline points="18 9 12 15 6 9"></polyline>
+					</svg>
+				</svelte:fragment>
+				<svelte:fragment slot="arrowdown">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<polyline points="18 9 12 15 6 9"></polyline>
+					</svg>
+				</svelte:fragment>
+				
+				<SidebarDropdownItem label="Ambient" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light ambient') }}>
+					<svelte:fragment slot="icon"></svelte:fragment>
+				</SidebarDropdownItem>
+				<SidebarDropdownItem label="Directional" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light directional') } }>
+					<svelte:fragment slot="icon"></svelte:fragment>
+				</SidebarDropdownItem>
+				<SidebarDropdownItem label="Hemisphere" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light hemisphere') } }>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
@@ -137,8 +181,8 @@
 			</Dropdown>
 		  </div>
 
-			<SidebarItem label="Configure Scene" {spanClass} on:click={() => { propertiesClose.set(true); scenePropertiesClose.set(false); }}></SidebarItem>
-			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { propertiesClose.set(true); sceneCommand('/clear all')}}></SidebarItem>
+			<SidebarItem label="Configure Scene" {spanClass} on:click={() => { lightPropertiesClose.set(true); propertiesClose.set(true); scenePropertiesClose.set(false); }}></SidebarItem>
+			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { lightPropertiesClose.set(true); propertiesClose.set(true); sceneCommand('/clear all')}}></SidebarItem>
 
 			<SidebarItem
 				label="Settings"

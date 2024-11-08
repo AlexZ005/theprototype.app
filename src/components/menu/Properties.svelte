@@ -1,5 +1,6 @@
 <script>
-import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+import * as THREE from 'three';
+import { Tooltip, Accordion, AccordionItem, Checkbox, Select, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
 import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
@@ -21,6 +22,15 @@ let transitionParamsRight = {
 };
 
 let st = $state(0)
+
+let materials = [
+    { value: 'MeshBasicMaterial', name: 'Basic' },
+    { value: 'MeshStandardMaterial', name: 'Standard' },
+    { value: 'MeshNormalMaterial', name: 'Normals' },
+    { value: 'MeshPhongMaterial', name: 'Phong' },
+    { value: 'MeshToonMaterial', name: 'Toon' },
+    { value: 'ShadowMaterial', name: 'Shadow' }
+  ];
 
 function event(node) {
       //Center slide
@@ -52,6 +62,8 @@ function event(node) {
     });
 
     window.addEventListener('mousemove', (e) => {
+        if (!$selectedObject.type.endsWith('Light')) {
+        if ($selectedObject.material.type !== "MeshNormalMaterial")
         color = $selectedObject.material.color.getHexString()
         if (moving) {
             $peers.send({
@@ -61,6 +73,7 @@ function event(node) {
 						rot: $selectedObject.rotation.toArray(),
 						scale: $selectedObject.scale.toArray()
 					});
+        }
         }
     });
 
@@ -100,6 +113,14 @@ $effect(() => {
         drawerStyle="bottom: 0px; z-index: 48"
     }
 })
+
+function sendUpdate() {        
+        $peers.send({
+            type: 'object',
+            element: $selectedObject.toJSON(),
+            override: true
+        });
+    }
 </script>
   
   <Drawer style={drawerStyle} activateClickOutside={false} backdrop={false} placement="right" height="full" position="fixed" rightOffset="end-0 top-16" leftOffset="start-0 " topOffset="top-16"   transitionType="fly" transitionParams={transitionParamsRight} bind:hidden={$propertiesClose} id="sidebar6">
@@ -111,9 +132,28 @@ $effect(() => {
     </div>
     {#if $selectedObject.name !== undefined}
     {st=null}
+
     
-    <p class="text-white dark:text-slate-200">Color:</p> 
-    <br />
+    <Input id="name" class="text-white dark:text-slate-200 -rounded rounded-tl-lg rounded-tr-lg" bind:value={$selectedObject.name}
+        onchange={() => {
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        $peers.send({
+            type: 'name',
+            name: $selectedObject.name,
+            uuid: $selectedObject.uuid
+        });
+        }} />
+        <Tooltip placement='top' arrow={false} triggeredBy="#name">Name</Tooltip>
+    
+    <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
+    <div use:event>
+    <Accordion class="text-white dark:text-slate-200 w-full" flush>
+  <AccordionItem>
+    <svelte:fragment slot="header">Color</svelte:fragment>
+    
+    
     <ColorPicker
     label="test"
     isAlpha={false}
@@ -130,18 +170,23 @@ $effect(() => {
     --slider-width="10px"    
     bind:value={color}
     on:input={(event) => {
+        if ($selectedObject.material.type !== "MeshNormalMaterial"){
         $selectedObject.material.color.set(event.detail.hex);
         $peers.send({
 						type: 'color',
 						uuid: $selectedObject.uuid,
                         color: event.detail.hex
 					});
+        }
     }}
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
+    </AccordionItem>
+    <AccordionItem>
+    <svelte:fragment slot="header">Transform</svelte:fragment>
     <br /><p class="text-white dark:text-slate-200">Position:</p>
     
-    <div use:event>
+    
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
             <Range id="posx" step="0.1" min={min_position_x} max={max_position_x} bind:value={$selectedObject.position.x} />
@@ -228,14 +273,40 @@ $effect(() => {
         <NumberInput bind:value={$selectedObject.scale.z} />
         </span>
     </div>
-    </div>
+    </AccordionItem>
+    <AccordionItem open>
+        <svelte:fragment slot="header">Material</svelte:fragment>
+        <p class="mb-4 font-semibold text-gray-900 dark:text-white">
+            <Checkbox bind:checked={$selectedObject.visible}
+            onchange={() => { sendUpdate(); }}>Visible</Checkbox>
+        </p>
 
-    <!-- updateMatrixWorld required to include position in JSON -->
-    <Button on:click={() => {$selectedObject.updateMatrixWorld();
-        $peers.send({type: 'object', element: $selectedObject.toJSON(), override: true}) } }>Set</Button>
-    
-    <Button on:click={() => {$TControls.detach(); $objectsGroup.remove($selectedObject)}}>Delete</Button>
-    
+        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type}
+            on:change={(event) => {
+                console.log(event.srcElement.value);
+                $selectedObject.material = new THREE[event.srcElement.value];
+                sendUpdate();
+            }}
+        />
+
+        <p class="mb-4 font-semibold text-gray-900 dark:text-white">Shadow</p>
+        <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
+            <li class="w-full">
+                <Checkbox bind:checked={$selectedObject.castShadow}
+                    onchange={() => { sendUpdate(); }}
+                    class="p-3">Cast
+                </Checkbox>
+            </li>
+            <li class="w-full">
+                <Checkbox bind:checked={$selectedObject.receiveShadow}
+                    onchange={() => { sendUpdate(); }} 
+                    class="p-3">Receive
+                </Checkbox>
+            </li>
+        </ul>
+    </AccordionItem>
+    </Accordion>
+    </div>
     {:else}
     {st=0}
 

@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import { sceneCommand, checkLocks, createObject, sendObjects, deleteObject, colorObject } from './commandsHandler.svelte';
-import { createGeometry, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
+import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { addMessage } from '../stores/appStore';
 
 export function createPeer() {
@@ -39,7 +39,7 @@ export class PeerConnection {
 
 		function handleConnection(conn) {
 			conn.on('data', (data) => {
-				console.log(data);
+				// console.log(data);
 				if(data.type == 'hosts') {
 					console.log('Connecting to received hosts');
 					data.hosts.forEach( id =>
@@ -53,6 +53,10 @@ export class PeerConnection {
 					addMessage({message: data.message, type: data.type, sender: data.sender});
 				} else if(data.type == 'create') {
 					createGeometry(data.command, data.uuid);
+				} else if(data.type == 'light') {
+					createLight(data.command, data.uuid);
+				} else if(data.type == 'name') {
+					changeName(data.uuid, data.name);
 				} else if(data.type == 'move') {
 					moveGeometry(data.uuid, data.pos, data.rot, data.scale);
 				} else if(data.type == 'lock') {
