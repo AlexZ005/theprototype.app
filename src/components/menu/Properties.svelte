@@ -1,4 +1,5 @@
 <script>
+import * as THREE from 'three';
 import { Tooltip, Accordion, AccordionItem, Checkbox, Select, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
@@ -62,6 +63,7 @@ function event(node) {
 
     window.addEventListener('mousemove', (e) => {
         if (!$selectedObject.type.endsWith('Light')) {
+        if ($selectedObject.material.type !== "MeshNormalMaterial")
         color = $selectedObject.material.color.getHexString()
         if (moving) {
             $peers.send({
@@ -111,6 +113,14 @@ $effect(() => {
         drawerStyle="bottom: 0px; z-index: 48"
     }
 })
+
+function sendUpdate() {        
+        $peers.send({
+            type: 'object',
+            element: $selectedObject.toJSON(),
+            override: true
+        });
+    }
 </script>
   
   <Drawer style={drawerStyle} activateClickOutside={false} backdrop={false} placement="right" height="full" position="fixed" rightOffset="end-0 top-16" leftOffset="start-0 " topOffset="top-16"   transitionType="fly" transitionParams={transitionParamsRight} bind:hidden={$propertiesClose} id="sidebar6">
@@ -160,12 +170,14 @@ $effect(() => {
     --slider-width="10px"    
     bind:value={color}
     on:input={(event) => {
+        if ($selectedObject.material.type !== "MeshNormalMaterial"){
         $selectedObject.material.color.set(event.detail.hex);
         $peers.send({
 						type: 'color',
 						uuid: $selectedObject.uuid,
                         color: event.detail.hex
 					});
+        }
     }}
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
@@ -266,15 +278,31 @@ $effect(() => {
         <svelte:fragment slot="header">Material</svelte:fragment>
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">
             <Checkbox bind:checked={$selectedObject.visible}
-            onchange={() => { }}>Visible</Checkbox>
+            onchange={() => { sendUpdate(); }}>Visible</Checkbox>
         </p>
 
-        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type} />
+        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type}
+            on:change={(event) => {
+                console.log(event.srcElement.value);
+                $selectedObject.material = new THREE[event.srcElement.value];
+                sendUpdate();
+            }}
+        />
 
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">Shadow</p>
         <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
-            <li class="w-full"><Checkbox bind:checked={$selectedObject.castShadow} class="p-3">Cast</Checkbox></li>
-            <li class="w-full"><Checkbox bind:checked={$selectedObject.receiveShadow} class="p-3">Receive</Checkbox></li>
+            <li class="w-full">
+                <Checkbox bind:checked={$selectedObject.castShadow}
+                    onchange={() => { sendUpdate(); }}
+                    class="p-3">Cast
+                </Checkbox>
+            </li>
+            <li class="w-full">
+                <Checkbox bind:checked={$selectedObject.receiveShadow}
+                    onchange={() => { sendUpdate(); }} 
+                    class="p-3">Receive
+                </Checkbox>
+            </li>
         </ul>
     </AccordionItem>
     </Accordion>

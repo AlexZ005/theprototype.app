@@ -34,7 +34,7 @@ export function createGeometry(command, uuid) {
     let geometryList = ["Box","Capsule","Circle","Cone","Cylinder","Dodecahedron","Edges","Extrude","Icosahedron","Lathe","Octahedron","Plane","Polyhedron","Ring","Shape","Sphere","Tetrahedron","Torus","TorusKnot","Tube","Wireframe"]
     if (geometryList.includes(geometry)) {
         let mesh = new THREE[geometry+'Geometry'](options[0],options[1],options[2],options[3]);
-        let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        let material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
         let object = new THREE.Mesh(mesh, material);
         if (uuid) object.uuid = uuid
         object.name = geometry;
