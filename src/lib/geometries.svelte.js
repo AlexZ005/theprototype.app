@@ -119,32 +119,16 @@ export function lockGeometry(uuid, peerId) {
             // Check if the peer has already locked an object
             let existingLock = locked.find((lockedUuid) => lockedUuid[0] === peerId);
             if (existingLock) {
-                let oldUuid = existingLock[1];
-                // Change the material of the previously locked object if it was not removed to green
-                if (sceneObjects.getObjectByProperty('uuid', oldUuid))
-                sceneObjects.getObjectByProperty('uuid', oldUuid).material = new THREE.MeshBasicMaterial({
-                    color: 0x00ff00
-                });
-                // Change the material of the newly locked object to a darker green
-                sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-                    color: 0x003500
-                });
                 // Update the locked array by removing the old lock and adding the new one
                 locked = locked.filter((lockedUuid) => lockedUuid[0] != peerId);
                 locked.push([peerId, uuid]);
             } else {
                 // If the peer hasn't locked an object, lock the new one
                 locked.push([peerId, uuid]);
-                sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-                    color: 0x003500
-                });
             }
         } else {
             // If there are no locked objects, simply lock the new one
             locked.push([peerId, uuid]);
-            sceneObjects.getObjectByProperty('uuid', uuid).material = new THREE.MeshBasicMaterial({
-                color: 0x003500
-            });
         }
         // Update the locked objects store
         lockedObjects.set(locked);
