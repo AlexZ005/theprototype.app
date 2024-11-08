@@ -36,6 +36,7 @@
 		"@threlte/core": "^8.0.0-next.21",
 		"@threlte/extras": "^9.0.0-next.28",
 		"peerjs": "^1.5.4",
+		"postprocessing": "^6.36.4",
 		"svelte-hamburgers": "^5.0.0",
 		"three": "^0.168"
 	}
