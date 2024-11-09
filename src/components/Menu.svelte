@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Chat from './menu/Chat.svelte';
+	import Toasts from './menu/Toasts.svelte';
 	import Connect from './menu/Connect.svelte';
 	import Controls from './menu/Controls.svelte';
 	import Properties from './menu/Properties.svelte';
@@ -25,6 +26,7 @@
 <PropertiesScene />
 <PropertiesLight />
 <MenuSettings />
+<Toasts />
 <Chat />
 
 <div class="dark-mode hidden"><DarkMode /></div>

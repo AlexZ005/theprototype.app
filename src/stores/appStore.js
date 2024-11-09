@@ -7,6 +7,9 @@ export const lightPropertiesClose = writable(true);
 export const chatHidden = writable('hidden');
 export const peers = writable(null);
 
+export const loading = writable([]);
+export const loadingcount = writable([]);
+
 export const messages = writable([]);
 
 export function addMessage(newMessage, type, sender) {

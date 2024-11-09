@@ -3,7 +3,7 @@ import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selected
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight } from '$lib/geometries.svelte'
-import { addMessage } from '../stores/appStore';
+import { addMessage, loading, loadingcount } from '../stores/appStore';
 import { peers } from '../stores/appStore';
 
 //Access scene Store
@@ -129,6 +129,16 @@ export function checkLocks(data) {
     
 }
 
+export async function createLoader(count, uuids) {
+    console.log("create loader for " + count + " objects: " + uuids);
+    loading.set(uuids);
+    loadingcount.set(count);
+    //Trigger reactivity for UI list of objects on remote
+    loading.update((value) => value);
+    //Trigger reactivity for UI list of objects on remote
+    loadingcount.update((value) => value);
+}
+
 export async function colorObject(uuid, color, near, far) {
     if (uuid == 'background') {
         scene.background = new THREE.Color(color);
@@ -185,6 +195,14 @@ export function sendObjects(peerId) {
     console.log("Sending objects to " + conn.peer);
     // Wait 500ms to ensure the connection is established before sending the objects
     setTimeout(() => {
+        let uuids = [];
+        sceneObjects.children.forEach(element => {
+            uuids.push(element.uuid)
+        })
+  
+        // Send amount of objects to be sent and their uuids
+        conn.send({type: 'loading', count: sceneObjects.children.length, uuids: uuids});
+
         // Iterate over all objects in the scene
         sceneObjects.children.forEach(element => {
             if (element.type.endsWith('Light')) {
