@@ -4,6 +4,7 @@ export const settingsOpen = writable(null);
 export const propertiesClose = writable(true);
 export const scenePropertiesClose = writable(true);
 export const lightPropertiesClose = writable(true);
+export const flowGraphClose = writable(false);
 export const chatHidden = writable('hidden');
 export const peers = writable(null);
 
