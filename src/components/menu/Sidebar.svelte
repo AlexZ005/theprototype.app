@@ -2,8 +2,13 @@
 	import '../../app.css';
 	import '../../styles/menu.css';
 	import { save, load } from '$lib/fileHandler.svelte';
-    import { settingsOpen, propertiesClose, scenePropertiesClose, lightPropertiesClose } from '../../stores/appStore.js';
-	import { sceneCommand } from '$lib/commandsHandler.svelte';	
+	import {
+		settingsOpen,
+		propertiesClose,
+		scenePropertiesClose,
+		lightPropertiesClose
+	} from '../../stores/appStore.js';
+	import { sceneCommand } from '$lib/commandsHandler.svelte';
 	import { sineIn } from 'svelte/easing';
 
 	import {
@@ -18,30 +23,26 @@
 		Drawer
 	} from 'flowbite-svelte';
 
-    import { fly } from 'svelte/transition';
-    
 	let saveFormat = 'json';
 	let spanClass = 'flex-1 ms-3 whitespace-nowrap';
-	let saveClass = 'px-4 py-2 text-sm font-medium text-gray-900 border-gray-200 hover:bg-gray-100\
+	let saveClass =
+		'px-4 py-2 text-sm font-medium text-gray-900 border-gray-200 hover:bg-gray-100\
 	hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800\
 	dark:text-gray-400 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700\
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
-    let { open } = $props();
+	let { open } = $props();
 
 	let transitionParamsRight = {
 		x: -320,
 		duration: 200,
 		easing: sineIn
 	};
-
 </script>
 
 {#if true}
 
 <div class="hamburger" style="z-index: 49;">
-  <!-- {#each ['Home', 'Example', 'About', 'Contact'] as link, i} -->
-      <!-- <div transition:fly={{ x: -15, direction: 'in' }}> -->
 <div>
 <Drawer
 	hidden={!open}
@@ -59,7 +60,6 @@
 <Sidebar>
 	<SidebarWrapper>
 		<SidebarGroup>
-			<!-- <div class="text-sm font-medium text-gray-500">Primitives</div> -->
 			<SidebarDropdownWrapper label="Primitives">
 				<svelte:fragment slot="arrowup">
 					<svg
@@ -92,14 +92,38 @@
 						<polyline points="18 9 12 15 6 9"></polyline>
 					</svg>
 				</svelte:fragment>
-				<SidebarDropdownItem label="🧊Cube" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Box 2 2 2') }}>
+				<SidebarDropdownItem
+				label="🧊Cube"
+				on:click={() => {
+					lightPropertiesClose.set(true);
+					scenePropertiesClose.set(true);
+					propertiesClose.set(false);
+					sceneCommand('/create Box 2 2 2');
+				}}
+			>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🔼Cone" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Cone 1') } }>
+				<SidebarDropdownItem
+					label="🔼Cone"
+					on:click={() => {
+						lightPropertiesClose.set(true);
+						scenePropertiesClose.set(true);
+						propertiesClose.set(false);
+						sceneCommand('/create Cone 1');
+					}}
+				>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="🟠Sphere" on:click={() => { lightPropertiesClose.set(true); scenePropertiesClose.set(true); propertiesClose.set(false); sceneCommand('/create Sphere 1') } }>
-					<svelte:fragment slot="icon"></svelte:fragment>
+				<SidebarDropdownItem
+					label="🟠Sphere"
+					on:click={() => {
+						lightPropertiesClose.set(true);
+						scenePropertiesClose.set(true);
+						propertiesClose.set(false);
+						sceneCommand('/create Sphere 1');
+					}}
+				>
+				<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
 
@@ -136,13 +160,37 @@
 					</svg>
 				</svelte:fragment>
 				
-				<SidebarDropdownItem label="Ambient" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light ambient') }}>
+					<SidebarDropdownItem
+					label="Ambient"
+					on:click={() => {
+						scenePropertiesClose.set(true);
+						propertiesClose.set(true);
+						lightPropertiesClose.set(false);
+						sceneCommand('/light ambient');
+					}}
+				>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="Directional" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light directional') } }>
+				<SidebarDropdownItem
+					label="Directional"
+					on:click={() => {
+						scenePropertiesClose.set(true);
+						propertiesClose.set(true);
+						lightPropertiesClose.set(false);
+						sceneCommand('/light directional');
+					}}
+				>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
-				<SidebarDropdownItem label="Hemisphere" on:click={() => { scenePropertiesClose.set(true); propertiesClose.set(true); lightPropertiesClose.set(false); sceneCommand('/light hemisphere') } }>
+				<SidebarDropdownItem
+					label="Hemisphere"
+					on:click={() => {
+						scenePropertiesClose.set(true);
+						propertiesClose.set(true);
+						lightPropertiesClose.set(false);
+						sceneCommand('/light hemisphere');
+					}}
+				>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
@@ -179,10 +227,26 @@
 				<Radio name="group1" bind:group={saveFormat} value={'gltf'}>GLTF</Radio>
 			  </li>
 			</Dropdown>
-		  </div>
+		</div>
 
-			<SidebarItem label="Configure Scene" {spanClass} on:click={() => { lightPropertiesClose.set(true); propertiesClose.set(true); scenePropertiesClose.set(false); }}></SidebarItem>
-			<SidebarItem label="Clear Scene" {spanClass} on:click={() => { lightPropertiesClose.set(true); propertiesClose.set(true); sceneCommand('/clear all')}}></SidebarItem>
+			<SidebarItem
+				label="Configure Scene"
+				{spanClass}
+				on:click={() => {
+					lightPropertiesClose.set(true);
+					propertiesClose.set(true);
+					scenePropertiesClose.set(false);
+				}}
+			></SidebarItem>
+			<SidebarItem
+				label="Clear Scene"
+				{spanClass}
+				on:click={() => {
+					lightPropertiesClose.set(true);
+					propertiesClose.set(true);
+					sceneCommand('/clear all');
+				}}
+			></SidebarItem>
 
 			<SidebarItem
 				label="Settings"

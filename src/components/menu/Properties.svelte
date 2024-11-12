@@ -1,6 +1,17 @@
 <script>
 import * as THREE from 'three';
-import { Tooltip, Accordion, AccordionItem, Checkbox, Select, Drawer, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+import {
+	Tooltip,
+	Accordion,
+	AccordionItem,
+	Checkbox,
+	Select,
+	Drawer,
+	CloseButton,
+	NumberInput,
+	Input,
+	Range
+} from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
 import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
 import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
@@ -123,7 +134,21 @@ function sendUpdate() {
     }
 </script>
   
-  <Drawer style={drawerStyle} activateClickOutside={false} backdrop={false} placement="right" height="full" position="fixed" rightOffset="end-0 top-16" leftOffset="start-0 " topOffset="top-16"   transitionType="fly" transitionParams={transitionParamsRight} bind:hidden={$propertiesClose} id="sidebar6">
+  <Drawer
+	style={drawerStyle}
+	activateClickOutside={false}
+	backdrop={false}
+	placement="right"
+	height="full"
+	position="fixed"
+	rightOffset="end-0 top-16"
+	leftOffset="start-0 "
+	topOffset="top-16"
+	transitionType="fly"
+	transitionParams={transitionParamsRight}
+	bind:hidden={$propertiesClose}
+	id="sidebar6"
+  >
     <div class="flex items-center">
       <h5 id="drawer-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
         Properties

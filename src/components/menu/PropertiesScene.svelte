@@ -111,7 +111,7 @@
         $globalScene.fog = new THREE.Fog(backgroundColor, near, far);
         sendBackgroundColor();
     }}
-/>
+    />
     <br />
 	<p class="text-white dark:text-slate-200">Fog Color:</p>
 	<br />
@@ -139,26 +139,50 @@
 	<Input
 		type="text"
 		bind:value={fogColor}
-        oninput={() => { if(hexColor.test(fogColor)) { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); } }} />
+		oninput={() => {
+			if (hexColor.test(fogColor)) {
+				$globalScene.fog = new THREE.Fog(fogColor, near, far);
+				sendFogColor();
+			}
+		}}
+	/>
 
 	<div class="flex items-center space-x-2 p-1">
 		<span class="w-2/3 truncate pr-2 text-right">
 			<Range id="near" step="0.1" min="0" max="10" bind:value={near}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
+				oninput={() => {
+					$globalScene.fog = new THREE.Fog(fogColor, near, far);
+					sendFogColor();
+				}}
+			/>
 		</span>
 		<span class="w-1/3">
-			<NumberInput bind:value={near}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
+			<NumberInput
+				bind:value={near}
+				oninput={() => {
+					$globalScene.fog = new THREE.Fog(fogColor, near, far);
+					sendFogColor();
+				}}
+			/>
 		</span>
 	</div>
 	<div class="flex items-center space-x-2 p-1">
 		<span class="w-2/3 truncate pr-2 text-right">
 			<Range id="far" step="0.1" min="0" max="100" bind:value={far}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
+				oninput={() => {
+					$globalScene.fog = new THREE.Fog(fogColor, near, far);
+					sendFogColor();
+				}}
+			/>
 		</span>
 		<span class="w-1/3">
-			<NumberInput bind:value={far}
-            oninput={() => { $globalScene.fog = new THREE.Fog(fogColor, near, far); sendFogColor(); }} />
+			<NumberInput
+				bind:value={far}
+				oninput={() => {
+					$globalScene.fog = new THREE.Fog(fogColor, near, far);
+					sendFogColor();
+				}}
+			/>
 		</span>
 	</div>
 
