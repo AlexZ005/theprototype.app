@@ -1,5 +1,16 @@
 <script lang="ts">
-	import { Avatar, Tooltip, Popover, Button } from 'flowbite-svelte';
+	import {
+		Avatar,
+		Tooltip,
+		Popover,
+		Button,
+		Modal,
+		Input,
+		Dropdown,
+		DropdownHeader,
+		DropdownItem,
+		DropdownDivider
+	} from 'flowbite-svelte';
 	import {
 		chatHidden,
 		propertiesClose,
@@ -8,16 +19,37 @@
 		peers
 	} from '../../stores/appStore.js';
 
+    let openDropdown = $state(false);
+  	let profileSettingsModal = $state(false);
+
 	$effect(() => {
 		Object.keys($peers.connections).forEach((element) => {
 			// if(element != peerId)
 			console.log(element);
 		});
 	});
+
+	let classProfileSettings = 'z-10 z-10 inline-flex w-40 flex-shrink-0 flex-shrink-0 items-center rounded-s-lg border\
+	 border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 focus:outline-none\
+	 focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600\
+	 dark:focus:ring-gray-700';
+
+	 let username = $state(null);
+	 let avatarImage = $state('');
+	 function avatar_load(event) {
+		let avatarFile = event.target.files[0];
+		if (event.target.files && avatarFile) {
+			const reader = new FileReader();
+			reader.onload = function(fileLoadedEvent) {			
+			avatarImage = fileLoadedEvent.target.result;
+			};
+			reader.readAsDataURL(avatarFile);
+		}
+	 }
 </script>
 
-<div style="position: fixed; right: 0px; z-index: 999;">
-	<div class="flex" style=" position: absolute; top: 15px; right: 100px;">
+<div style="position: fixed; right: 0px; z-index: 997;">
+	<div class="flex" style=" position: absolute; top: 15px; right: 100px; z-index: 997;">
 		{#if $peers}
 			{#if Object.keys($peers.connections).length > 2}
 				<Avatar href="/" stacked />
@@ -94,14 +126,99 @@
 			{/if}
 		{/if}
 	</div>
-	<div id="avatar-menu" class="mr-5 flex w-52 items-center md:order-2">
-		<div class="flex items-center space-x-3">
+	<div id="avatar-menu" class="mr-5 flex w-52 items-center md:order-2; z-index: 999;">
+		<div class="flex items-center space-x-3" style="z-index: 999;">
 			<Avatar
 				href="/"
-				src=""
-				style="position: absolute; top: 10px; right: 10px;"
-				class="h-12 w-12 rounded-full border-2 dark:border-gray-800 "
+				src={avatarImage}
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
 			/>
 		</div>
 	</div>
+	<Dropdown
+    placement="bottom"
+    bind:open={openDropdown}
+    triggeredBy="#avatar-menu"
+    class="w-52"
+    style="border-top-right-radius: 1.5rem; padding-right: 0px; z-index: 998;"
+	>
+	<DropdownHeader>
+		<span class="block text-lg">{username ? username : 'Anonymous'}</span>
+		<DropdownDivider />
+	</DropdownHeader>
+	<DropdownItem>
+		<p class="text-gray-500 dark:text-gray-400">Customize Character</p>
+	</DropdownItem>
+	<DropdownItem
+		onclick={() => {
+			profileSettingsModal = true;
+			openDropdown = false;
+		}}>Profile Settings</DropdownItem>
+	</Dropdown>
 </div>
+
+
+
+<Modal title="" bind:open={profileSettingsModal} outsideclose>
+
+	<center><b>Profile Settings</b></center>
+
+	<div class="modal-content max-h-[90vh] overflow-y-auto p-4">
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings}
+			>
+				Avatar
+			</p>
+			<input type="file" id="avatar-file" style="display: none" on:change={e => avatar_load(e)}/>
+			{#if avatarImage != ''}
+			<img id="avatar-preview" src={avatarImage} class="h-14 w-14 dark:border-gray-800" 
+			on:click={() => document.getElementById('avatar-file').click()}
+			/>
+			{:else}
+			<svg on:click={() => document.getElementById('avatar-file').click()}
+			fill="currentColor"
+			viewBox="0 0 16 16"
+			xmlns="http://www.w3.org/2000/svg"
+			class="h-14 w-14 border-2 dark:border-gray-400"
+			><path
+				fill-rule="evenodd"
+				d="M8 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+				clip-rule="evenodd"
+			></path></svg>
+			{/if}
+		</div>
+		<br />
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings + " rounded-bl-none"}
+			>
+				Peer ID
+			</p>
+			<Input
+				id="peer-id"
+				class="!rounded-s-none rounded-br-none"
+				placeholder="&#xf2c3; {$peers.peer.id}"
+				style="font-family:Arial, FontAwesome"
+				disabled
+			/>
+		</div>
+
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings + " rounded-tl-none"}
+			>
+				Username
+			</p>
+			<Input
+				id="update-username"
+				class="!rounded-s-none rounded-tr-none"
+				placeholder="&#xf007; Username"
+				style="font-family:Arial, FontAwesome"
+				bind:value={username}
+			/>
+		</div>
+	</div>
+	<br />
+</Modal>
