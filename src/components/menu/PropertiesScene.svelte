@@ -26,7 +26,7 @@
 
 	$effect(() => {
 		if ($chatHidden === '') {
-			drawerStyle = 'bottom: 350px; z-index: 48';
+            drawerStyle="bottom: 350px; z-index: 48; border-bottom-left-radius: 0.5rem;"
 		} else {
 			drawerStyle = 'bottom: 0px; z-index: 48';
 		}
@@ -63,6 +63,7 @@
 	transitionType="fly"
 	transitionParams={transitionParamsRight}
 	bind:hidden={$scenePropertiesClose}
+    class="rounded-tl-lg"
 	id="sidebar6"
 >
 	<div class="flex items-center">

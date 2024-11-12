@@ -55,6 +55,7 @@
 	topOffset="top-16"
 	transitionType="fly"
 	transitionParams={transitionParamsRight}
+	class="rounded-tr-lg"
 	id="sidebar70"
 >
 <Sidebar>
