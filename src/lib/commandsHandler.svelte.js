@@ -110,6 +110,13 @@ export function sceneCommand(command) {
     objectsGroup.update((value) => value);
 }
 
+export function lockRestore(lockeditems) {
+    // Filter out the current peer id locks
+    locked = locked.concat(lockeditems.filter((lock) => lock[0] != peer.peer.id));
+    // Update the locked objects store
+    lockedObjects.set(locked);
+}
+
 export function checkLocks(data) {
 
     console.log(peer.peer.connections);

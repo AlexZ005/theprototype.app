@@ -1,6 +1,7 @@
 import Peer from 'peerjs';
-import { sceneCommand, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader } from './commandsHandler.svelte';
+import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
+import { lockedObjects, selectedObject } from '../stores/sceneStore';
 import { addMessage, peers } from '../stores/appStore';
 
 export function createPeer() {
@@ -10,6 +11,14 @@ export function createPeer() {
 		return v.toString(16);
 	});
 }
+
+//Access locked objects
+let locked = $state();
+lockedObjects.subscribe(value => { locked = value });
+
+//Access selected object
+let selected = $state();
+selectedObject.subscribe(value => { selected = value });
 
 export class PeerConnection {
 	constructor(id, updateIdFn) {
@@ -61,6 +70,8 @@ export class PeerConnection {
 					moveGeometry(data.uuid, data.pos, data.rot, data.scale);
 				} else if(data.type == 'lock') {
 					lockGeometry(data.uuid, data.peerId);
+				} else if(data.type == 'locked') {
+					lockRestore(data.lockeditems);
 				} else if(data.type == 'getobjects') {
 					sendObjects(data.sender)
 				} else if(data.type == 'object') {
@@ -99,6 +110,9 @@ export class PeerConnection {
 				});
 				console.log("sending to " + peerId + "  remote " + hosts)
 				setTimeout(() => {
+				let locks = [...locked];
+				if(selected.uuid) locks.push([id, selected.uuid]);
+				this.connections[peerId].send({type: 'locked', lockeditems: locks})
 				this.connections[peerId].send({type: 'hosts', hosts: hosts})
 				if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
 				}, 500);
