@@ -10,6 +10,7 @@
 	import MenuSettings from './menu/Settings.svelte';
 	import { Hamburger } from 'svelte-hamburgers';
 	import { DarkMode } from 'flowbite-svelte';
+	import Users from './menu/Users.svelte';
 	let open = $state(false);
 </script>
 
@@ -27,6 +28,7 @@
 <PropertiesLight />
 <MenuSettings />
 <Toasts />
+<Users />
 <Chat />
 
 <div class="dark-mode hidden"><DarkMode /></div>

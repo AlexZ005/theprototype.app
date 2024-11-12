@@ -1,0 +1,309 @@
+<script lang="ts">
+	import {
+		Avatar,
+		Tooltip,
+		Popover,
+		Button,
+		Modal,
+		Input,
+		Dropdown,
+		DropdownHeader,
+		DropdownItem,
+		DropdownDivider
+	} from 'flowbite-svelte';
+	import {
+		chatHidden,
+		propertiesClose,
+		lightPropertiesClose,
+		scenePropertiesClose,
+		username,
+		userdata,
+		peers
+	} from '../../stores/appStore.js';
+
+    let openDropdown = $state(false);
+  	let profileSettingsModal = $state(false);
+
+	$effect(() => {
+		Object.keys($peers.connections).forEach((element) => {
+			// if(element != peerId)
+			console.log(element);
+		});
+	});
+
+	let classProfileSettings = 'z-10 z-10 inline-flex w-40 flex-shrink-0 flex-shrink-0 items-center rounded-s-lg border\
+	 border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 focus:outline-none\
+	 focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600\
+	 dark:focus:ring-gray-700';
+
+	 let avatarImage = $state('');
+	 function avatar_load(event) {
+		let avatarFile = event.target.files[0];
+		if (event.target.files && avatarFile) {
+			const reader = new FileReader();
+			reader.onload = function(fileLoadedEvent) {			
+			avatarImage = fileLoadedEvent.target.result;
+			localStorage.setItem('avatar', avatarImage);
+
+			//find and update, same for image
+			$userdata.forEach(element => {
+				console.log("for "  + element[0])
+				if (element[0] === $peers.peer.id)
+					element[2] = avatarImage
+			})
+
+			$peers.send({type: 'userdata', userdata: $userdata})
+			
+			};
+			reader.readAsDataURL(avatarFile);
+		}
+	 }
+</script>
+
+<div style="position: fixed; right: 0px; z-index: 997;">
+	<div class="flex" style=" position: absolute; top: 15px; right: 100px; z-index: 997;">
+		{#if $peers}
+			{#if Object.keys($peers.connections).length > 2}
+
+				{#each $userdata as user}
+				{#if Object.keys($peers.connections)[0] == user[0]}				
+				<Avatar href="/" stacked src={user[2]} />
+				<Tooltip placement="top" arrow={false}>
+					<div style="display: flex; align-items: center;">
+					Peer: {Object.keys($peers.connections)[0]}
+					{#if $peers.peer.connections[Object.keys($peers.connections)[0]].length >= 1}
+						<span style="font-size: 8px;">🟢</span>
+					{:else}
+						<span style="font-size: 8px;">🟡</span>
+					{/if}
+					</div>
+					<div style="display: flex; overflow: hidden;">
+						<p style="">User:&nbsp;</p>
+						<p style="">{user[1]}</p>
+					</div>
+				</Tooltip>
+				{/if}
+				{/each}
+
+				{#each $userdata as user}
+				{#if Object.keys($peers.connections)[1] == user[0]}				
+				<Avatar href="/" stacked src={user[2]} />
+				<Tooltip placement="top" arrow={false}>
+					<div style="display: flex; align-items: center;">
+					Peer: {Object.keys($peers.connections)[1]}
+					{#if $peers.peer.connections[Object.keys($peers.connections)[1]].length >= 1}
+						<span style="font-size: 8px;">🟢</span>
+					{:else}
+						<span style="font-size: 8px;">🟡</span>
+					{/if}
+					</div>
+					<div style="display: flex; overflow: hidden;">
+						<p style="">User:&nbsp;</p>
+						<p style="">{user[1]}</p>
+					</div>
+				</Tooltip>
+				{/if}
+				{/each}
+
+				<Avatar
+					id="b2"
+					stacked
+					class="bg-gray-700 text-sm text-white hover:bg-gray-600"
+					onclick={() => console.log($peers.connections)}
+					><button>+{Object.keys($peers.connections).length - 2}</button></Avatar
+				>
+
+				<Popover
+					triggeredBy="#b2"
+					class="w-64 bg-white text-sm font-light text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+				>
+					<div class="p-3">
+						{#each Object.keys($peers.connections) as peer, i}
+							{#if i > 1}
+
+							{#each $userdata as user}
+							{#if peer == user[0]}
+							<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
+								<li class="w-1/3 p-4">
+									<Avatar href="/" stacked src={user[2]} />
+								</li>
+								<li class="w-2/3">
+									
+									<span class="flex">Peer: {peer}
+									{#if $peers.peer.connections[peer].length >= 1}
+										<span style="font-size: 8px;">🟢</span>
+									{:else}
+										<span style="font-size: 8px;">🟡</span>
+									{/if}
+									</span>
+									
+									<div style="display: flex; overflow: hidden;">
+									<p style="">User:&nbsp;</p>
+									<p style="">{user[1]}</p>
+									</div>
+								</li>
+							</ul>
+							{/if}
+							{/each}
+
+							{/if}
+						{/each}
+					</div>
+				</Popover>
+			{:else}
+				<div style=" position: absolute; right: 0px;">
+					<div class="flex items-center space-x-3">
+						{#each Object.keys($peers.connections) as peer}
+
+
+						{#each $userdata as user}
+						{#if peer == user[0]}
+							<Avatar href="/" stacked src={user[2]} />
+							<Tooltip placement="top" arrow={false} class="w-40">
+								<div style="display: flex; align-items: center;">
+									Peer: {peer}&nbsp;
+									{#if $peers.peer.connections[peer].length >= 1}
+										<span style="font-size: 8px;">🟢</span>
+									{:else}
+										<span style="font-size: 8px;">🟡</span>
+									{/if}
+								</div>
+								<div style="display: flex; overflow: hidden;">
+									<p style="">User:&nbsp;</p>
+									<p style="">{user[1]}</p>
+								</div>
+							</Tooltip>
+						{/if}
+						{/each}
+						{/each}
+					</div>
+				</div>
+			{/if}
+		{/if}
+	</div>
+	<div id="avatar-menu" class="mr-5 flex w-52 items-center md:order-2; z-index: 999;">
+		<div class="flex items-center space-x-3" style="z-index: 999;">
+			{#if avatarImage != ''}
+			<Avatar
+				href="/"
+				src={avatarImage}
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
+			/>
+			{:else if typeof localStorage !== 'undefined' && localStorage.getItem('avatar')}
+			<Avatar
+				href="/"
+				src={localStorage.getItem('avatar')}
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
+			/>
+			{:else}
+			<Avatar
+				href="/"
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
+			/>
+			{/if}
+			
+		</div>
+	</div>
+	<Dropdown
+    placement="bottom"
+    bind:open={openDropdown}
+    triggeredBy="#avatar-menu"
+    class="w-52"
+    style="border-top-right-radius: 1.5rem; padding-right: 0px; z-index: 998;"
+	>
+	<DropdownHeader>
+		<span class="block text-lg">{localStorage.getItem('username') ? localStorage.getItem('username') : 'Anonymous'}</span>
+		<DropdownDivider />
+	</DropdownHeader>
+	<DropdownItem>
+		<p class="text-gray-500 dark:text-gray-400">Customize Character</p>
+	</DropdownItem>
+	<DropdownItem
+		onclick={() => {
+			profileSettingsModal = true;
+			openDropdown = false;
+		}}>Profile Settings</DropdownItem>
+	</Dropdown>
+</div>
+
+
+
+<Modal title="" bind:open={profileSettingsModal} outsideclose>
+
+	<center><b>Profile Settings</b></center>
+
+	<div class="modal-content max-h-[90vh] overflow-y-auto p-4">
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings}
+			>
+				Avatar
+			</p>
+			<input type="file" id="avatar-file" style="display: none" on:change={e => avatar_load(e)}/>
+			{#if avatarImage != ''}
+			<img id="avatar-preview" src={avatarImage} class="h-14 w-14 dark:border-gray-800" 
+			on:click={() => document.getElementById('avatar-file').click()}
+			/>
+			{:else if localStorage.getItem('avatar') != null}
+			<img id="avatar-preview" src={localStorage.getItem('avatar')} class="h-14 w-14 dark:border-gray-800" 
+			on:click={() => document.getElementById('avatar-file').click()}
+			/>
+			{:else}
+			<svg on:click={() => document.getElementById('avatar-file').click()}
+			fill="currentColor"
+			viewBox="0 0 16 16"
+			xmlns="http://www.w3.org/2000/svg"
+			class="h-14 w-14 border-2 dark:border-gray-400"
+			><path
+				fill-rule="evenodd"
+				d="M8 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+				clip-rule="evenodd"
+			></path></svg>
+			{/if}
+		</div>
+		<br />
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings + " rounded-bl-none"}
+			>
+				Peer ID
+			</p>
+			<Input
+				id="peer-id"
+				class="!rounded-s-none rounded-br-none"
+				placeholder="&#xf2c3; {$peers.peer.id}"
+				style="font-family:Arial, FontAwesome"
+				disabled
+			/>
+		</div>
+
+		<div class="flex px-10">
+			<p
+				class={classProfileSettings + " rounded-tl-none"}
+			>
+				Username
+			</p>
+			<Input
+				id="update-username"
+				class="!rounded-s-none rounded-tr-none"
+				placeholder="&#xf007; Username"
+				style="font-family:Arial, FontAwesome"
+				bind:value={$username}
+				onchange={() => { localStorage.setItem('username', $username);
+
+					//find and update, same for image
+					$userdata.forEach(element => {
+						console.log("for "  + element[0])
+						if (element[0] === $peers.peer.id)
+							element[1] = $username
+					})
+					$peers.send({type: 'userdata', userdata: $userdata})
+				 }}
+			/>
+		</div>
+	</div>
+	<br />
+</Modal>
