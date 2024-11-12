@@ -120,6 +120,9 @@
 									selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
 									$TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
 									$peers.send({ type: 'lock', uuid: item.uuid, peerId: $peers.peer.id });
+								} else {
+									$TControls.detach();
+									selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
 								}
 							}}
 						>

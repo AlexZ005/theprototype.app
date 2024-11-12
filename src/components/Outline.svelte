@@ -35,8 +35,9 @@
 		xRay: true,
 		blur: true
 	});
-	composer.addPass(new EffectPass(camera.current, outlineEffectSelected));
+  // The order is important as the last added pass will be on top
 	composer.addPass(new EffectPass(camera.current, outlineEffectLocked));
+	composer.addPass(new EffectPass(camera.current, outlineEffectSelected));
 	$effect(() => {
 		composer.setSize($size.width, $size.height);
 	});
@@ -54,7 +55,6 @@
 		{ stage: renderStage, autoInvalidate: false }
 	);
 	$effect(() => {
-		console.log($lockedObjects);
 		if ($selectedObject.type) {
 			outlineEffectSelected.selection.clear();
 			outlineEffectSelected.selection.add($selectedObject);
@@ -62,7 +62,6 @@
 		if ($lockedObjects) {
 			outlineEffectLocked.selection.clear();
 			for (let i = 0; i < $lockedObjects.length; i++) {
-				console.log($lockedObjects[i][1]);
 				let mesh = $objectsGroup.getObjectByProperty('uuid', $lockedObjects[i][1]);
 				outlineEffectLocked.selection.add(mesh);
 			}
