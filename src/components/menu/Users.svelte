@@ -16,6 +16,8 @@
 		propertiesClose,
 		lightPropertiesClose,
 		scenePropertiesClose,
+		username,
+		userdata,
 		peers
 	} from '../../stores/appStore.js';
 
@@ -34,7 +36,6 @@
 	 focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600\
 	 dark:focus:ring-gray-700';
 
-	 let username = $state(null);
 	 let avatarImage = $state('');
 	 function avatar_load(event) {
 		let avatarFile = event.target.files[0];
@@ -42,6 +43,17 @@
 			const reader = new FileReader();
 			reader.onload = function(fileLoadedEvent) {			
 			avatarImage = fileLoadedEvent.target.result;
+			localStorage.setItem('avatar', avatarImage);
+
+			//find and update, same for image
+			$userdata.forEach(element => {
+				console.log("for "  + element[0])
+				if (element[0] === $peers.peer.id)
+					element[2] = avatarImage
+			})
+
+			$peers.send({type: 'userdata', userdata: $userdata})
+			
 			};
 			reader.readAsDataURL(avatarFile);
 		}
@@ -52,25 +64,46 @@
 	<div class="flex" style=" position: absolute; top: 15px; right: 100px; z-index: 997;">
 		{#if $peers}
 			{#if Object.keys($peers.connections).length > 2}
-				<Avatar href="/" stacked />
+
+				{#each $userdata as user}
+				{#if Object.keys($peers.connections)[0] == user[0]}				
+				<Avatar href="/" stacked src={user[2]} />
 				<Tooltip placement="top" arrow={false}>
-					{Object.keys($peers.connections)[0]}
+					<div style="display: flex; align-items: center;">
+					Peer: {Object.keys($peers.connections)[0]}
 					{#if $peers.peer.connections[Object.keys($peers.connections)[0]].length >= 1}
 						<span style="font-size: 8px;">🟢</span>
 					{:else}
 						<span style="font-size: 8px;">🟡</span>
 					{/if}
+					</div>
+					<div style="display: flex; overflow: hidden;">
+						<p style="">User:&nbsp;</p>
+						<p style="">{user[1]}</p>
+					</div>
 				</Tooltip>
+				{/if}
+				{/each}
 
-				<Avatar href="/" stacked />
+				{#each $userdata as user}
+				{#if Object.keys($peers.connections)[1] == user[0]}				
+				<Avatar href="/" stacked src={user[2]} />
 				<Tooltip placement="top" arrow={false}>
-					{Object.keys($peers.connections)[1]}
+					<div style="display: flex; align-items: center;">
+					Peer: {Object.keys($peers.connections)[1]}
 					{#if $peers.peer.connections[Object.keys($peers.connections)[1]].length >= 1}
 						<span style="font-size: 8px;">🟢</span>
 					{:else}
 						<span style="font-size: 8px;">🟡</span>
 					{/if}
+					</div>
+					<div style="display: flex; overflow: hidden;">
+						<p style="">User:&nbsp;</p>
+						<p style="">{user[1]}</p>
+					</div>
 				</Tooltip>
+				{/if}
+				{/each}
 
 				<Avatar
 					id="b2"
@@ -87,19 +120,32 @@
 					<div class="p-3">
 						{#each Object.keys($peers.connections) as peer, i}
 							{#if i > 1}
-								<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
-									<li class="w-full">
-										<Avatar href="/" alt="Jese Leos" />
-									</li>
-									<li class="w-full">{peer}</li>
-									<li class="w-full">
-										{#if $peers.peer.connections[peer].length >= 1}
-											<span style="font-size: 8px;">🟢</span>
-										{:else}
-											<span style="font-size: 8px;">🟡</span>
-										{/if}
-									</li>
-								</ul>
+
+							{#each $userdata as user}
+							{#if peer == user[0]}
+							<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
+								<li class="w-1/3 p-4">
+									<Avatar href="/" stacked src={user[2]} />
+								</li>
+								<li class="w-2/3">
+									
+									<span class="flex">Peer: {peer}
+									{#if $peers.peer.connections[peer].length >= 1}
+										<span style="font-size: 8px;">🟢</span>
+									{:else}
+										<span style="font-size: 8px;">🟡</span>
+									{/if}
+									</span>
+									
+									<div style="display: flex; overflow: hidden;">
+									<p style="">User:&nbsp;</p>
+									<p style="">{user[1]}</p>
+									</div>
+								</li>
+							</ul>
+							{/if}
+							{/each}
+
 							{/if}
 						{/each}
 					</div>
@@ -108,18 +154,27 @@
 				<div style=" position: absolute; right: 0px;">
 					<div class="flex items-center space-x-3">
 						{#each Object.keys($peers.connections) as peer}
-							<Avatar href="/" stacked />
 
-							<Tooltip placement="top" arrow={false} class="w-20">
+
+						{#each $userdata as user}
+						{#if peer == user[0]}
+							<Avatar href="/" stacked src={user[2]} />
+							<Tooltip placement="top" arrow={false} class="w-40">
 								<div style="display: flex; align-items: center;">
-									{peer}&nbsp;
+									Peer: {peer}&nbsp;
 									{#if $peers.peer.connections[peer].length >= 1}
 										<span style="font-size: 8px;">🟢</span>
 									{:else}
 										<span style="font-size: 8px;">🟡</span>
 									{/if}
 								</div>
+								<div style="display: flex; overflow: hidden;">
+									<p style="">User:&nbsp;</p>
+									<p style="">{user[1]}</p>
+								</div>
 							</Tooltip>
+						{/if}
+						{/each}
 						{/each}
 					</div>
 				</div>
@@ -128,12 +183,28 @@
 	</div>
 	<div id="avatar-menu" class="mr-5 flex w-52 items-center md:order-2; z-index: 999;">
 		<div class="flex items-center space-x-3" style="z-index: 999;">
+			{#if avatarImage != ''}
 			<Avatar
 				href="/"
 				src={avatarImage}
 				style="position: absolute; top: 8px; right: 20px;"
 				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
 			/>
+			{:else if typeof localStorage !== 'undefined' && localStorage.getItem('avatar')}
+			<Avatar
+				href="/"
+				src={localStorage.getItem('avatar')}
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
+			/>
+			{:else}
+			<Avatar
+				href="/"
+				style="position: absolute; top: 8px; right: 20px;"
+				class="h-12 w-12 rounded-full border-2 border-gray-600 dark:border-gray-600;"
+			/>
+			{/if}
+			
 		</div>
 	</div>
 	<Dropdown
@@ -144,7 +215,7 @@
     style="border-top-right-radius: 1.5rem; padding-right: 0px; z-index: 998;"
 	>
 	<DropdownHeader>
-		<span class="block text-lg">{username ? username : 'Anonymous'}</span>
+		<span class="block text-lg">{localStorage.getItem('username') ? localStorage.getItem('username') : 'Anonymous'}</span>
 		<DropdownDivider />
 	</DropdownHeader>
 	<DropdownItem>
@@ -174,6 +245,10 @@
 			<input type="file" id="avatar-file" style="display: none" on:change={e => avatar_load(e)}/>
 			{#if avatarImage != ''}
 			<img id="avatar-preview" src={avatarImage} class="h-14 w-14 dark:border-gray-800" 
+			on:click={() => document.getElementById('avatar-file').click()}
+			/>
+			{:else if localStorage.getItem('avatar') != null}
+			<img id="avatar-preview" src={localStorage.getItem('avatar')} class="h-14 w-14 dark:border-gray-800" 
 			on:click={() => document.getElementById('avatar-file').click()}
 			/>
 			{:else}
@@ -216,7 +291,17 @@
 				class="!rounded-s-none rounded-tr-none"
 				placeholder="&#xf007; Username"
 				style="font-family:Arial, FontAwesome"
-				bind:value={username}
+				bind:value={$username}
+				onchange={() => { localStorage.setItem('username', $username);
+
+					//find and update, same for image
+					$userdata.forEach(element => {
+						console.log("for "  + element[0])
+						if (element[0] === $peers.peer.id)
+							element[1] = $username
+					})
+					$peers.send({type: 'userdata', userdata: $userdata})
+				 }}
 			/>
 		</div>
 	</div>

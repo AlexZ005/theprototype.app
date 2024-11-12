@@ -4,7 +4,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight } from '$lib/geometries.svelte'
 import { addMessage, loading, loadingcount } from '../stores/appStore';
-import { peers } from '../stores/appStore';
+import { peers, userdata } from '../stores/appStore';
 
 //Access scene Store
 let scene = $state();
@@ -30,7 +30,30 @@ lockedObjects.subscribe(value => { locked = value });
 let selected = $state();
 selectedObject.subscribe(value => { selected = value });
 
+//Access userdata
+let users = $state();
+userdata.subscribe(value => { users = value });
+
 const loader = new THREE.ObjectLoader();
+
+export function userData(data) {
+
+    data.forEach(element => {
+        if (!users.some(u => u[0] === element[0]))
+            users.push(element)
+        else
+        {
+            let index = users.findIndex(u => u[0] === element[0]);
+            users[index][1] = element[1];
+            users[index][2] = element[2];
+        }
+
+    })
+    userdata.set(users);
+
+    //Trigger reactivity for UI list of objects
+    userdata.update((value) => value);
+}
 
 export function sceneCommand(command) {
     if (command.startsWith('/')) {
