@@ -1,7 +1,7 @@
 import Peer from 'peerjs';
 import { sceneCommand, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
-import { addMessage } from '../stores/appStore';
+import { addMessage, peers } from '../stores/appStore';
 
 export function createPeer() {
 	return 'xxxxx'.replace(/[xy]/g, function (c) {
@@ -90,6 +90,8 @@ export class PeerConnection {
 	
             conn.on('open', () => {
 				 console.log('Connection to ' + peerId + ' established')});
+				//Trigger reactivity for UI list of objects
+				peers.update((value) => value);
 				 let hosts = [id];
 				 Object.keys(this.connections).forEach(element => {
 					if(element != peerId)
