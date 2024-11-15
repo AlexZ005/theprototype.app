@@ -2,7 +2,8 @@ import Peer from 'peerjs';
 import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
-import { addMessage, peers, userdata } from '../stores/appStore';
+import { addMessage, peers, userdata, pendingApprovals } from '../stores/appStore';
+import { get } from 'svelte/store';
 
 export function createPeer() {
 	return 'xxxxx'.replace(/[xy]/g, function (c) {
@@ -52,6 +53,21 @@ export class PeerConnection {
 		this.peer.on('connection', handleConnection.bind(this));
 
 		function handleConnection(conn) {
+
+			// This block prevents unauthorized peers from accessing data
+			const users = get(userdata);
+			let found = users.some(element => element[0] === conn.peer);
+
+			if (!found) {
+				// If peer is not found, add it to the pending approvals
+				var approvals = get(pendingApprovals);
+				if (!approvals.some(toast => toast.peerId === conn.peer)) {
+					approvals.push({ peerId: conn.peer });
+					pendingApprovals.set(approvals);
+				}
+				conn.close();
+			}
+
 			conn.on('data', (data) => {
 				// console.log(data);
 				if(data.type == 'hosts') {
@@ -126,7 +142,7 @@ export class PeerConnection {
 				}, 500);
         } else {
 			if (this.connections[peerId].peer == peerId) {
-				console.log('already connected to ' + peerId + '. Status: ' + this.connections[peerId].open)
+				console.log(`Peer ${peerId} is already connected or has a pending request. Connection status: ${this.connections[peerId].open}`)
 				if(!this.connections[peerId].open) {
 					console.log('Restoring connection: ' + peerId);
 					const conn = this.peer.connect(peerId);
@@ -140,7 +156,11 @@ export class PeerConnection {
 					});
 				 	console.log("sending to " + peerId + "  remote " + hosts)
 				 	setTimeout(() => {
+						let locks = [...locked];
+						if(selected.uuid) locks.push([id, selected.uuid]);
+						this.connections[peerId].send({type: 'locked', lockeditems: locks})
 				 		this.connections[peerId].send({type: 'hosts', hosts: hosts})
+						 this.connections[peerId].send({type: 'userdata', userdata: users})
 						if (getobjects) this.connections[peerId].send({type: 'getobjects', sender: this.peer.id})
 				 	}, 500);
 				}

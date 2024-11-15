@@ -37,15 +37,15 @@ userdata.subscribe(value => { users = value });
 const loader = new THREE.ObjectLoader();
 
 export function userData(data) {
-
     data.forEach(element => {
+        console.log('received new approved host : ' + element[0])
         if (!users.some(u => u[0] === element[0]))
             users.push(element)
         else
         {
             let index = users.findIndex(u => u[0] === element[0]);
-            users[index][1] = element[1];
-            users[index][2] = element[2];
+            if (element[1] != '') users[index][1] = element[1];
+            if (element[2] != '') users[index][2] = element[2];
         }
 
     })
