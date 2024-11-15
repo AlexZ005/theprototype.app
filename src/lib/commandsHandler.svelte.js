@@ -209,6 +209,7 @@ export async function createObject(object, uuid, override) {
           let mesh = object.clone()
           mesh.uuid = uuid[index]
           object.uuid = uuid[index]
+          if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
           sceneObjects.add(mesh)
         });
     }
