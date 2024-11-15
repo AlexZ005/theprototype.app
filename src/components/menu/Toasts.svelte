@@ -41,7 +41,7 @@ timeout();
 }
 
 function timeout() {
-if (--counter > 0) return setTimeout(timeout, 1000);
+if (--counter > 0) return setTimeout(timeout, 4000);
 toastStatus = false;
 }
 </script>
@@ -99,8 +99,8 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
 </div>
 {/each}
 
-{#each $waitingForApproval as approved}
-{#if approved[1] === 'pending'}
+{#each $waitingForApproval as status}
+{#if status[1] === 'pending'}
 <div class="my-1">
 <Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
     <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
@@ -109,8 +109,8 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
     <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
         
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 pr-4 overflow-hidden max-w-80">
-            Connection request to peer:&nbsp;{approved[0]} <br />
-            Status: {approved[1]}
+            Connection request to peer:&nbsp;{status[0]} <br />
+            Status: {status[1]}
         </p>
     </div>
 
@@ -125,7 +125,7 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
         <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
             
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 pr-4 overflow-hidden max-w-80">
-                Connection request {approved[0]} has been {approved[1]}
+                Connection request {status[0]} has been {status[1]}
             </p>
         </div>
     

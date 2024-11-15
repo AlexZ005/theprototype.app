@@ -58,7 +58,13 @@ export class PeerConnection {
 			let waiting = get(waitingForApproval);
 			waiting.forEach(element => {
 				if(element[0] === conn.peer) {
+					// Clear waiting list for approved peers
+					waiting = waiting.filter(e => e[1] !== 'approved');
 					element[1] = 'approved';
+
+					// Show approved toast message
+					waitingForApproval.set(waiting);
+					waitingForApproval.update((value) => value);
 				}
 			})
    
