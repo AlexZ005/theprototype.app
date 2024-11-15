@@ -45,21 +45,19 @@ if (--counter > 0) return setTimeout(timeout, 4000);
 toastStatus = false;
 }
 </script>
-
-{#if showToast}
 <div class="my-4"
-style="position: absolute; top: 105px; left: 50%; width: 300px; transform: translate(-50%, -50%); z-index: 300;"
+style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: translate(-50%, 0%); z-index: 40;"
 >
+{#if showToast}
+{#if $loadingcount > 0}
 <Toast  dismissable={false} transition={fly} bind:toastStatus>
 	<div class="mb-1 text-base font-medium text-green-700 dark:text-green-500">Receiving objects: {($loadingcount-$loading.length)}/{$loadingcount}</div>
 	<Progressbar progress="{100 * (($loadingcount-$loading.length) - 0) / ($loadingcount - 0)}" color="green" />
 </Toast>
-  </div>
+{/if}
 {/if}
 
-<div class="my-4"
-style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: translate(-50%, 0%); z-index: 40;"
->
+
 {#each $pendingApprovals as approval}
 <div class="my-1">
 {#if approval.status != 'retry'}
