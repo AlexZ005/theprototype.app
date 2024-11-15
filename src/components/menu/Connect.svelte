@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { peers, userdata, waitingForApproval } from '../../stores/appStore'
+	import { peers, userdata, waitingForApproval, pendingApprovals } from '../../stores/appStore'
 	import { Navbar, NavHamburger, Input, Button } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { createPeer, PeerConnection } from '$lib/peerHandler.svelte';
@@ -41,6 +41,12 @@ const connectToPeer = (peerIdToConnect) => {
 		if(!$waitingForApproval.some((peer) => peer[0] === peerIdToConnect.toLowerCase()))
 		$waitingForApproval.push([peerIdToConnect.toLowerCase(), 'pending']);
 		$waitingForApproval = $waitingForApproval
+	}
+	else 
+	{
+		// already connected
+		$pendingApprovals.push({peerId: peerIdToConnect.toLowerCase(), status: 'retry'});
+		$pendingApprovals = $pendingApprovals;
 	}
 
     }

@@ -62,6 +62,7 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
 >
 {#each $pendingApprovals as approval}
 <div class="my-1">
+{#if approval.status != 'retry'}
 <Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
     <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
 
@@ -94,8 +95,45 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
         >
 
     </div>
-
 </Toast>
+{:else}
+<Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+    <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+
+    </div>
+    <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+        
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-200 pr-4 overflow-hidden max-w-80">
+            Connection &nbsp;{approval.peerId} already exists
+        </p>
+
+
+        <Button
+            color="primary"
+            class="nob rounded bg-blue-500 text-white dark:bg-green-600 dark:text-gray-200 dark:hover:bg-green-700"
+            onclick={() => {
+                console.log($peers.connections[approval.peerId])
+                $peers.connections[approval.peerId].close();
+                // $peers.peers[approval.peerId].close()
+                // Remove approved peer from pending approvals
+                $pendingApprovals = $pendingApprovals.filter(peer => peer.peerId !== approval.peerId);
+
+                // Add peer to user data (whitelist)
+                // let data = [approval.peerId, '', '']
+                // $userdata.push(data);
+
+                // Broadcast updated whitelist to all connected peers
+                $peers.send({type: 'userdata', userdata: $userdata})
+
+                // Simply connect as requester whitelisted us
+                $peers.connectToPeer(approval.peerId, true);
+            }}
+            >Retry</Button
+        >
+
+    </div>
+</Toast>
+{/if}
 </div>
 {/each}
 
