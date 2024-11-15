@@ -11,6 +11,7 @@ export const username = writable(null);
 export const peers = writable(null);
 
 export const pendingApprovals = writable([]);
+export const waitingForApproval = writable([]);
 
 export const loading = writable([]);
 export const loadingcount = writable([]);

@@ -2,7 +2,7 @@ import Peer from 'peerjs';
 import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
-import { addMessage, peers, userdata, pendingApprovals } from '../stores/appStore';
+import { addMessage, peers, userdata, pendingApprovals, waitingForApproval } from '../stores/appStore';
 import { get } from 'svelte/store';
 
 export function createPeer() {
@@ -53,6 +53,15 @@ export class PeerConnection {
 		this.peer.on('connection', handleConnection.bind(this));
 
 		function handleConnection(conn) {
+
+			// Update approval status on expected connections
+			let waiting = get(waitingForApproval);
+			waiting.forEach(element => {
+				if(element[0] === conn.peer) {
+					element[1] = 'approved';
+				}
+			})
+   
 
 			// This block prevents unauthorized peers from accessing data
 			const users = get(userdata);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { peers, loading, loadingcount, pendingApprovals, userdata } from '../../stores/appStore'
+	import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata } from '../../stores/appStore'
 	import { objectsGroup } from '../../stores/sceneStore.js';
 	import { Progressbar, Toast, Button } from 'flowbite-svelte';
     import { fly } from 'svelte/transition';
@@ -98,4 +98,41 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
 </Toast>
 </div>
 {/each}
+
+{#each $waitingForApproval as approved}
+{#if approved[1] === 'pending'}
+<div class="my-1">
+<Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+    <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+
+    </div>
+    <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+        
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 pr-4 overflow-hidden max-w-80">
+            Connection request to peer:&nbsp;{approved[0]} <br />
+            Status: {approved[1]}
+        </p>
+    </div>
+
+</Toast>
+</div>
+{:else}
+<div class="my-1">
+    <Toast dismissable={false} bind:toastStatus transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+        <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+    
+        </div>
+        <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+            
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400 pr-4 overflow-hidden max-w-80">
+                Connection request {approved[0]} has been {approved[1]}
+            </p>
+        </div>
+    
+    </Toast>
+    </div>
+
+{/if}
+{/each}
+
 </div>
