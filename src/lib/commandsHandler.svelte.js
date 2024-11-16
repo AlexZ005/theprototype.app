@@ -3,7 +3,7 @@ import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selected
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight } from '$lib/geometries.svelte'
-import { addMessage, loading, loadingcount } from '../stores/appStore';
+import { addMessage, loading, loadingcount, showToast } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
 //Access scene Store
@@ -37,15 +37,15 @@ userdata.subscribe(value => { users = value });
 const loader = new THREE.ObjectLoader();
 
 export function userData(data) {
-
     data.forEach(element => {
+        console.log('received new approved host : ' + element[0])
         if (!users.some(u => u[0] === element[0]))
             users.push(element)
         else
         {
             let index = users.findIndex(u => u[0] === element[0]);
-            users[index][1] = element[1];
-            users[index][2] = element[2];
+            if (element[1] != '') users[index][1] = element[1];
+            if (element[2] != '') users[index][2] = element[2];
         }
 
     })
@@ -140,7 +140,38 @@ export function lockRestore(lockeditems) {
     lockedObjects.set(locked);
 }
 
+export function handleDisconnected(peerId) {
+    console.log(peerId + ' disconnected');
+    showToast(peerId + ' disconnected');
+    users = users.filter(u => u[0] !== peerId);
+    userdata.set(users);
+    userdata.update((value) => value);
+
+}
+
 export function checkLocks(data) {
+
+
+    console.log(users);
+    console.log("this.connections")
+    console.log(peer.peer.connections)
+
+    setTimeout(() => {
+
+    users.forEach(user => {
+        const connection = peer.peer.connections[user[0]];
+        if (user[0] === peer.peer.id) return true; // ignore current peerId
+        if (!connection || connection.length < 1) {
+            peer.send({type: 'disconnected', peerId: user[0]});
+            console.log("send disconnect of " + user[0])
+            users = users.filter(u => u[0] !== user[0]);
+            userdata.set(users);
+            userdata.update((value) => value);
+        }
+    });
+        
+        }, 500)
+
 
     console.log(peer.peer.connections);
     
@@ -209,6 +240,7 @@ export async function createObject(object, uuid, override) {
           let mesh = object.clone()
           mesh.uuid = uuid[index]
           object.uuid = uuid[index]
+          if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
           sceneObjects.add(mesh)
         });
     }

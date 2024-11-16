@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { peers, loading, loadingcount } from '../../stores/appStore'
+	import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata, toastStore } from '../../stores/appStore'
 	import { objectsGroup } from '../../stores/sceneStore.js';
-	import { Progressbar, Toast } from 'flowbite-svelte';
+	import { Progressbar, Toast, Button } from 'flowbite-svelte';
     import { fly } from 'svelte/transition';
 
 let showToast = $state(false);
@@ -41,18 +41,138 @@ timeout();
 }
 
 function timeout() {
-if (--counter > 0) return setTimeout(timeout, 1000);
+if (--counter > 0) return setTimeout(timeout, 4000);
 toastStatus = false;
 }
 </script>
-
-{#if showToast}
 <div class="my-4"
-style="position: absolute; top: 105px; left: 50%; width: 300px; transform: translate(-50%, -50%); z-index: 300;"
+style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: translate(-50%, 0%); z-index: 40;"
 >
+{#if showToast}
+{#if $loadingcount > 0}
 <Toast  dismissable={false} transition={fly} bind:toastStatus>
 	<div class="mb-1 text-base font-medium text-green-700 dark:text-green-500">Receiving objects: {($loadingcount-$loading.length)}/{$loadingcount}</div>
 	<Progressbar progress="{100 * (($loadingcount-$loading.length) - 0) / ($loadingcount - 0)}" color="green" />
 </Toast>
-  </div>
 {/if}
+{/if}
+
+
+{#each $pendingApprovals as approval}
+<div class="my-1">
+{#if approval.status != 'retry'}
+<Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+    <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+
+    </div>
+    <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+        
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-200 pr-4 overflow-hidden max-w-80">
+            Connection request from peer:&nbsp;{approval.peerId}
+        </p>
+
+
+        <Button
+            color="primary"
+            class="nob rounded bg-blue-500 text-white dark:bg-green-600 dark:text-gray-200 dark:hover:bg-green-700"
+            onclick={() => {
+                // Remove approved peer from pending approvals
+                $pendingApprovals = $pendingApprovals.filter(peer => peer.peerId !== approval.peerId);
+
+                // Add peer to user data (whitelist)
+                let data = [approval.peerId, '', '']
+                $userdata.push(data);
+
+                // Broadcast updated whitelist to all connected peers
+                $peers.send({type: 'userdata', userdata: $userdata})
+
+                // Simply connect as requester whitelisted us
+                $peers.connectToPeer(approval.peerId, true);
+            }}
+            >Approve</Button
+        >
+
+    </div>
+</Toast>
+{:else}
+<Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+    <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+
+    </div>
+    <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+        
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-200 pr-4 overflow-hidden max-w-80">
+            Connection &nbsp;{approval.peerId} already exists
+        </p>
+
+
+        <Button
+            color="primary"
+            class="nob rounded bg-blue-500 text-white dark:bg-green-600 dark:text-gray-200 dark:hover:bg-green-700"
+            onclick={() => {
+                console.log($peers.connections[approval.peerId])
+                $peers.connections[approval.peerId].close();
+                // $peers.peers[approval.peerId].close()
+                // Remove approved peer from pending approvals
+                $pendingApprovals = $pendingApprovals.filter(peer => peer.peerId !== approval.peerId);
+
+                // Add peer to user data (whitelist)
+                // let data = [approval.peerId, '', '']
+                // $userdata.push(data);
+
+                // Broadcast updated whitelist to all connected peers
+                $peers.send({type: 'userdata', userdata: $userdata})
+
+                // Simply connect as requester whitelisted us
+                $peers.connectToPeer(approval.peerId, true);
+            }}
+            >Retry</Button
+        >
+
+    </div>
+</Toast>
+{/if}
+</div>
+{/each}
+
+{#each $waitingForApproval as status}
+{#if status[1] === 'pending'}
+<div class="my-1">
+<Toast  transition={fly} class="p-2 rounded-lg dark:bg-green-800 dark:border-dark-700 border-2 border-green-500" divClass="flex items-center gap-3">
+    <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+
+    </div>
+    <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500 inline-flex items-center">
+        
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 pr-4 overflow-hidden max-w-80">
+            Connection request to peer:&nbsp;{status[0]} <br />
+            Status: {status[1]}
+        </p>
+    </div>
+
+</Toast>
+</div>
+{/if}
+{/each}
+
+{#each $toastStore as toast}
+<div class="my-1">
+    <Toast
+        dismissable={false}
+        oncreate={setTimeout(() => {
+            $toastStore = $toastStore.filter((t) => t !== toast);
+        }, 3000)}
+        transition={fly}
+        class="dark:border-dark-700 rounded-lg border-2 border-green-500 p-2 dark:bg-green-800"
+        divClass="flex items-center gap-3">
+        <div style="position: relative; left: 50%; transform: translate(-25%, -50%);"></div>
+        <div class="mb-1 inline-flex items-center text-base font-medium text-green-700 dark:text-green-500">
+            <p class="max-w-80 overflow-hidden pr-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                {toast}
+            </p>
+        </div>
+    </Toast>
+</div>
+{/each}
+
+</div>
