@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../../app.css';
 	import '../../styles/menu.css';
-	import { save, load } from '$lib/fileHandler.svelte';
+	import { save, load, importFile } from '$lib/fileHandler.svelte';
 	import {
 		settingsOpen,
 		propertiesClose,
@@ -196,12 +196,21 @@
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
 
-			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} />
+			<input type="file" id="import-file" style="display: none" on:change={e => importFile(e.target.files[0])} accept=".gltf, .glb" />
+			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} accept=".json, .gltf, .scene" />
 		</SidebarGroup>
 		<SidebarGroup border>
 
+			<div class="" role="group">
+				<div class="inline-flex shadow-sm " role="group">
+				<button type="button" class={saveClass + " border rounded-tr-lg rounded-tl-lg"}
+				on:click={() => document.getElementById('import-file').click()}>
+				  📩 Import&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</button>
+				</div>
+			<div class="inline-flex rounded-md shadow-sm">
         <div class="inline-flex rounded-md shadow-sm" role="group">
-			<button type="button" class={saveClass + " border rounded-s-lg"}
+			<button type="button" class={saveClass + " border "}
 			on:click={() => document.getElementById('load-file').click()}>
 			  📁<br />Load
 			</button>
@@ -229,7 +238,8 @@
 			  </li>
 			</Dropdown>
 		</div>
-
+	</div>
+	</div>
 			<SidebarItem
 				label="Configure Scene"
 				{spanClass}

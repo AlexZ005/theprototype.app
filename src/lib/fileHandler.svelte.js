@@ -35,6 +35,29 @@ export function save(format) {
 	);
 }
 
+export async function importFile(file) {
+	try {
+		const reader = new FileReader();
+		reader.readAsArrayBuffer(file);
+		await new Promise((resolve, reject) => {
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+		});
+
+		// const json = JSON.parse(reader.result);
+		const loader = new GLTFLoader();
+
+		loader.parse(reader.result, '', function (result) {
+			const scene = result.scene;
+			sceneObjects.add(scene);
+		});
+		//Trigger reactivity for UI list of objects
+		objectsGroup.update((value) => value);
+	} catch (error) {
+		console.error('Error importing file:', error);
+	}
+}
+
 export async function load(file) {
 try {
 	const reader = new FileReader();
@@ -65,7 +88,7 @@ try {
     //Trigger reactivity for UI list of objects
     objectsGroup.update((value) => value);
     //Send object to peers
-    peer.send({type: 'object', object: json, uuids: uuids})
+    peer.send({type: 'object', element: json, uuids: uuids})
     } else if (file.name.split('.').pop() == 'json') {
 	//AuxScene is default name for GLTFExporter
 	const childs = result.scene.getObjectByName('AuxScene').children[0].children;
