@@ -140,7 +140,37 @@ export function lockRestore(lockeditems) {
     lockedObjects.set(locked);
 }
 
+export function handleDisconnected(peerId) {
+    console.log(peerId + ' disconnected');
+    users = users.filter(u => u[0] !== peerId);
+    userdata.set(users);
+    userdata.update((value) => value);
+
+}
+
 export function checkLocks(data) {
+
+
+    console.log(users);
+    console.log("this.connections")
+    console.log(peer.peer.connections)
+
+    setTimeout(() => {
+
+    users.forEach(user => {
+        const connection = peer.peer.connections[user[0]];
+        if (user[0] === peer.peer.id) return true; // ignore current peerId
+        if (!connection || connection.length < 1) {
+            peer.send({type: 'disconnected', peerId: user[0]});
+            console.log("send disconnect of " + user[0])
+            users = users.filter(u => u[0] !== user[0]);
+            userdata.set(users);
+            userdata.update((value) => value);
+        }
+    });
+        
+        }, 500)
+
 
     console.log(peer.peer.connections);
     

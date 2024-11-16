@@ -62,79 +62,77 @@
 
 <div style="position: fixed; right: 0px; z-index: 997;">
 	<div class="flex" style=" position: absolute; top: 15px; right: 100px; z-index: 997;">
-		{#if $peers}
-			{#if Object.keys($peers.connections).length > 2}
+{#if $userdata}
+{console.log($userdata)}
+{#if $userdata.length < 4}
+<div style=" position: absolute; right: 0px;">
+	<div class="flex items-center space-x-3">
+{#each $userdata as user, i}
+{#if i > 0}
+		<Avatar href="/" stacked src={user[2]} />
+		<Tooltip placement="top" arrow={false}>
+			<div style="display: flex; align-items: center;">
+			Peer: {user[0]}
+			</div>
+			<div style="display: flex; overflow: hidden;">
+				<p style="">User:&nbsp;</p>
+				<p style="">{user[1]}</p>
+			</div>
+		</Tooltip>
 
-				{#each $userdata as user}
-				{#if Object.keys($peers.connections)[0] == user[0]}				
-				<Avatar href="/" stacked src={user[2]} />
-				<Tooltip placement="top" arrow={false}>
-					<div style="display: flex; align-items: center;">
-					Peer: {Object.keys($peers.connections)[0]}
-					{#if $peers.peer.connections[Object.keys($peers.connections)[0]].length >= 1}
-						<span style="font-size: 8px;">🟢</span>
-					{:else}
-						<span style="font-size: 8px;">🟡</span>
-					{/if}
-					</div>
-					<div style="display: flex; overflow: hidden;">
-						<p style="">User:&nbsp;</p>
-						<p style="">{user[1]}</p>
-					</div>
-				</Tooltip>
-				{/if}
-				{/each}
+		{/if}
+		{/each}
+	</div>
+</div>
+{:else}
 
-				{#each $userdata as user}
-				{#if Object.keys($peers.connections)[1] == user[0]}				
-				<Avatar href="/" stacked src={user[2]} />
-				<Tooltip placement="top" arrow={false}>
-					<div style="display: flex; align-items: center;">
-					Peer: {Object.keys($peers.connections)[1]}
-					{#if $peers.peer.connections[Object.keys($peers.connections)[1]].length >= 1}
-						<span style="font-size: 8px;">🟢</span>
-					{:else}
-						<span style="font-size: 8px;">🟡</span>
-					{/if}
-					</div>
-					<div style="display: flex; overflow: hidden;">
-						<p style="">User:&nbsp;</p>
-						<p style="">{user[1]}</p>
-					</div>
-				</Tooltip>
-				{/if}
-				{/each}
+		<Avatar href="/" stacked src={$userdata[1][2]} />
+		<Tooltip placement="top" arrow={false}>
+			<div style="display: flex; align-items: center;">
+			Peer: {$userdata[1][0]}
+			</div>
+			<div style="display: flex; overflow: hidden;">
+				<p style="">User:&nbsp;</p>
+				<p style="">{$userdata[1][1]}</p>
+			</div>
+		</Tooltip>
 
-				<Avatar
-					id="b2"
-					stacked
-					class="bg-gray-700 text-sm text-white hover:bg-gray-600"
-					onclick={() => console.log($peers.connections)}
-					><button>+{Object.keys($peers.connections).length - 2}</button></Avatar
-				>
+		<Avatar href="/" stacked src={$userdata[2][2]} />
+		<Tooltip placement="top" arrow={false}>
+			<div style="display: flex; align-items: center;">
+			Peer: {$userdata[2][0]}
+			</div>
+			<div style="display: flex; overflow: hidden;">
+				<p style="">User:&nbsp;</p>
+				<p style="">{$userdata[2][1]}</p>
+			</div>
+		</Tooltip>
+
+
+		<Avatar
+			id="b2"
+			stacked
+			class="bg-gray-700 text-sm text-white hover:bg-gray-600"
+			onclick={() => console.log($peers.connections)}
+			><button>+{$userdata.length - 3}</button></Avatar
+		>
 
 				<Popover
 					triggeredBy="#b2"
 					class="w-64 bg-white text-sm font-light text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
 				>
 					<div class="p-3">
-						{#each Object.keys($peers.connections) as peer, i}
-							{#if i > 1}
+						{#each $userdata as user, i}
+							{#if i > 2}
 
-							{#each $userdata as user}
-							{#if peer == user[0]}
+
 							<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
 								<li class="w-1/3 p-4">
 									<Avatar href="/" stacked src={user[2]} />
 								</li>
 								<li class="w-2/3">
 									
-									<span class="flex">Peer: {peer}
-									{#if $peers.peer.connections[peer].length >= 1}
-										<span style="font-size: 8px;">🟢</span>
-									{:else}
-										<span style="font-size: 8px;">🟡</span>
-									{/if}
+									<span class="flex">Peer: {user[0]}
 									</span>
 									
 									<div style="display: flex; overflow: hidden;">
@@ -143,43 +141,15 @@
 									</div>
 								</li>
 							</ul>
-							{/if}
-							{/each}
+
 
 							{/if}
 						{/each}
 					</div>
 				</Popover>
-			{:else}
-				<div style=" position: absolute; right: 0px;">
-					<div class="flex items-center space-x-3">
-						{#each Object.keys($peers.connections) as peer}
+				{/if}
 
-
-						{#each $userdata as user}
-						{#if peer == user[0]}
-							<Avatar href="/" stacked src={user[2]} />
-							<Tooltip placement="top" arrow={false} class="w-40">
-								<div style="display: flex; align-items: center;">
-									Peer: {peer}&nbsp;
-									{#if $peers.peer.connections[peer].length >= 1}
-										<span style="font-size: 8px;">🟢</span>
-									{:else}
-										<span style="font-size: 8px;">🟡</span>
-									{/if}
-								</div>
-								<div style="display: flex; overflow: hidden;">
-									<p style="">User:&nbsp;</p>
-									<p style="">{user[1]}</p>
-								</div>
-							</Tooltip>
-						{/if}
-						{/each}
-						{/each}
-					</div>
-				</div>
-			{/if}
-		{/if}
+{/if}
 	</div>
 	<div id="avatar-menu" class="mr-5 flex w-52 items-center md:order-2; z-index: 999;">
 		<div class="flex items-center space-x-3" style="z-index: 999;">

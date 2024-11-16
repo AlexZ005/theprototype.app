@@ -1,5 +1,5 @@
 import Peer from 'peerjs';
-import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData } from './commandsHandler.svelte';
+import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
 import { addMessage, peers, userdata, pendingApprovals, waitingForApproval } from '../stores/appStore';
@@ -120,6 +120,8 @@ export class PeerConnection {
 					colorObject(data.uuid, data.color, data.near, data.far);
 				} else if(data.type == 'loading') {
 					createLoader(data.count, data.uuids);
+				} else if(data.type == 'disconnected') {
+					handleDisconnected(data.peerId);
 				} else if(data.startsWith('/')) {
 					sceneCommand(data);
 				}
@@ -134,8 +136,17 @@ export class PeerConnection {
             const conn = this.peer.connect(peerId);
             this.connections[peerId] = conn;
 
-			conn.on('close', function(data) { checkLocks(data) });
-			conn.on('disconnected', function(data) { checkLocks(data) });
+			conn.on('close', () => { 
+				console.log("close");	
+				// console.log(data);	
+
+				checkLocks()
+			});
+			conn.on('disconnected', () => { 
+				console.log("disconnected");
+				// console.log(data);
+				checkLocks()
+			});
 	
             conn.on('open', () => {
 				 console.log('Connection to ' + peerId + ' established')});
