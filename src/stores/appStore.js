@@ -12,6 +12,15 @@ export const peers = writable(null);
 
 export const pendingApprovals = writable([]);
 export const waitingForApproval = writable([]);
+export const toastStore = writable([]);
+
+export function showToast(message) {
+  toastStore.update((toast) => [...toast, message]);
+}
+
+export function clearToast(toast) {
+  toastStore.update((toast) => []);
+}
 
 export const loading = writable([]);
 export const loadingcount = writable([]);

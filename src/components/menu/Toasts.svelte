@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata } from '../../stores/appStore'
+	import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata, toastStore } from '../../stores/appStore'
 	import { objectsGroup } from '../../stores/sceneStore.js';
 	import { Progressbar, Toast, Button } from 'flowbite-svelte';
     import { fly } from 'svelte/transition';
@@ -205,6 +205,27 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
     </div>
 
 {/if}
+{/each}
+
+
+{#each $toastStore as toast}
+<div class="my-1">
+    <Toast
+        dismissable={false}
+        oncreate={setTimeout(() => {
+            $toastStore = $toastStore.filter((t) => t !== toast);
+        }, 3000)}
+        transition={fly}
+        class="dark:border-dark-700 rounded-lg border-2 border-green-500 p-2 dark:bg-green-800"
+        divClass="flex items-center gap-3">
+        <div style="position: relative; left: 50%; transform: translate(-25%, -50%);"></div>
+        <div class="mb-1 inline-flex items-center text-base font-medium text-green-700 dark:text-green-500">
+            <p class="max-w-80 overflow-hidden pr-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                {toast}
+            </p>
+        </div>
+    </Toast>
+</div>
 {/each}
 
 </div>

@@ -3,7 +3,7 @@ import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selected
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight } from '$lib/geometries.svelte'
-import { addMessage, loading, loadingcount } from '../stores/appStore';
+import { addMessage, loading, loadingcount, showToast } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
 //Access scene Store
@@ -142,6 +142,7 @@ export function lockRestore(lockeditems) {
 
 export function handleDisconnected(peerId) {
     console.log(peerId + ' disconnected');
+    showToast(peerId + ' disconnected');
     users = users.filter(u => u[0] !== peerId);
     userdata.set(users);
     userdata.update((value) => value);
