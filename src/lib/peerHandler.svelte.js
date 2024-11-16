@@ -2,7 +2,7 @@ import Peer from 'peerjs';
 import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected } from './commandsHandler.svelte';
 import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
-import { addMessage, peers, userdata, pendingApprovals, waitingForApproval } from '../stores/appStore';
+import { addMessage, peers, userdata, pendingApprovals, waitingForApproval, showToast } from '../stores/appStore';
 import { get } from 'svelte/store';
 
 export function createPeer() {
@@ -63,8 +63,9 @@ export class PeerConnection {
 					element[1] = 'approved';
 
 					// Show approved toast message
-					waitingForApproval.set(waiting);
-					waitingForApproval.update((value) => value);
+					showToast(element[0] + ' has approved your connection request.');
+					// waitingForApproval.set(waiting);
+					// waitingForApproval.update((value) => value);
 				}
 			})
    
