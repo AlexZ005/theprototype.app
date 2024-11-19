@@ -45,6 +45,21 @@ export class PeerConnection {
 		this.peer.on('open', (id) => {
 			console.log(id);
 			if (this.updateIdFn) this.updateIdFn(id);
+			if (!window.location.hash.slice(1)) return;
+			let connect = window.location.hash.slice(1).toLocaleLowerCase()
+			// Whitelist connection by adding to userdata
+			let data = [connect, '', '']
+			users.push(data);
+			userdata.set(users);
+			userdata.update((value) => value);
+			// // Add peer to pending approvals
+			let waiting = get(waitingForApproval);
+			waiting.push([connect, 'pending']);
+			waitingForApproval.set(waiting);
+			waitingForApproval.update((value) => value);
+			// // Initiate connection request to peer and await approval
+			this.connectToPeer(connect, true);
+			window.location.hash = '';	
 		});
 
 		this.peer.on('close', function() { console.log('server closed') });

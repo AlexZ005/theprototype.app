@@ -57,7 +57,7 @@ const connectToPeer = (peerIdToConnect) => {
 			// use old commandExec() way
 		} else {
 			navigator.clipboard
-				.writeText(myidcap)
+				.writeText(window.location.origin+'#'+myidcap)
 				.then(function () {
 					// alert("yeah!"); // success
 				})
