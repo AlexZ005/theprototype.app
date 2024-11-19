@@ -6,3 +6,4 @@ export const showGrid = writable(null);
 export const TControls = writable(null);
 export const lockedObjects = writable([]);
 export const selectedObject = writable([]);
+export const backgroundColor = writable('#ffffff');

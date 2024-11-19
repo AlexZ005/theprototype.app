@@ -1,14 +1,13 @@
 <script>
 	import * as THREE from 'three';
 	import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
-	import { globalScene, objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
+	import { globalScene, objectsGroup, TControls, selectedObject, backgroundColor } from '../../stores/sceneStore';
 	import { peers, chatHidden, scenePropertiesClose } from '../../stores/appStore.js';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
 	import { sineIn } from 'svelte/easing';
 
     const hexColor = /^#[0-9A-F]{6}$/i;
-	let backgroundColor = $state();
 	let fogColor = $state();
 	let near = $state(0);
 	let far = $state(50);
@@ -36,7 +35,7 @@
         $peers.send({
 				type: 'color',
 				uuid: 'background',
-				color: backgroundColor
+				color: $backgroundColor
 			});
     }
     function sendFogColor() {
@@ -98,18 +97,18 @@
 		--picker-height="70px"
 		--picker-width="50px"
 		--slider-width="10px"
-		bind:value={backgroundColor}
+		bind:value={$backgroundColor}
 		on:input={(event) => {
-			$globalScene.background = new THREE.Color(backgroundColor);
-			backgroundColor = event.detail.hex;
+			$globalScene.background = new THREE.Color($backgroundColor);
+			$backgroundColor = event.detail.hex;
             sendBackgroundColor();
 		}}
 	/>
     <Input
     type="text"
-    bind:value={backgroundColor}
+    bind:value={$backgroundColor}
     onchange={() => {
-        $globalScene.fog = new THREE.Fog(backgroundColor, near, far);
+        $globalScene.fog = new THREE.Fog($backgroundColor, near, far);
         sendBackgroundColor();
     }}
     />

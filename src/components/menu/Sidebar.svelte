@@ -8,6 +8,7 @@
 		scenePropertiesClose,
 		lightPropertiesClose
 	} from '../../stores/appStore.js';
+	import { backgroundColor } from '../../stores/sceneStore';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';
 	import { sineIn } from 'svelte/easing';
 
@@ -22,6 +23,8 @@
 		Dropdown,
 		Drawer
 	} from 'flowbite-svelte';
+	import { Hamburger } from 'svelte-hamburgers';
+	import invert from 'invert-color';
 
 	let saveFormat = 'json';
 	let spanClass = 'flex-1 ms-3 whitespace-nowrap';
@@ -31,7 +34,7 @@
 	dark:text-gray-400 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700\
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
-	let { open } = $props();
+	let  open  = $state(true);
 
 	let transitionParamsRight = {
 		x: -320,
@@ -39,6 +42,18 @@
 		easing: sineIn
 	};
 </script>
+
+<div
+	class="burger inline-flex rounded-md bg-primary-700 shadow-sm"
+	style="height: 55px; background-color: rgba(100, 123, 155, 1); top: 5px; left: 5px;"
+>
+	<Hamburger
+		bind:open
+		--color={invert($backgroundColor)}
+		--layer-width="40px"
+		type="arrow"
+	/>
+</div>
 
 {#if true}
 

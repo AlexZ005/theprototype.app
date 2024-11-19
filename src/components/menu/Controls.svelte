@@ -70,7 +70,7 @@
 		class={classActive}
 		on:click={() => document.getElementById('object-list').classList.toggle('hidden')}
 	>
-		<i class="fas fa-bars text-black dark:text-slate-200"></i>
+		<i class="fas fa-list-ul text-black dark:text-slate-200"></i>
 	</p>
 	<p
 		class={classActive}

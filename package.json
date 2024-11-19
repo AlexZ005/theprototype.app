@@ -36,6 +36,7 @@
 		"@threlte/core": "^8.0.0-next.21",
 		"@threlte/extras": "^9.0.0-next.28",
 		"@xyflow/svelte": "^0.1.23",
+		"invert-color": "^2.0.0",
 		"peerjs": "^1.5.4",
 		"postprocessing": "^6.36.4",
 		"svelte-hamburgers": "^5.0.0",
