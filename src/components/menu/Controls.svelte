@@ -130,7 +130,16 @@
 
 								<div class="container">
 									<div class="grid grid-cols-2">
-										<div class="text-overflow-ellipsis w-full overflow-hidden">
+										<div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center">
+											
+											{#if item.type === 'Group'}
+											<i class="fa-regular fa-plus pr-2" title="Expand group"></i>
+											{:else if item.type.endsWith('Light')}
+											<i class="fa-regular fa-sun pr-2" title="Light"></i>
+											{:else}
+											<i class="fa-solid fa-cube pr-2" title="Object"></i>
+											{/if}
+
 											<p class="">{item.name}</p>
 										</div>
 										<div class="">
@@ -150,7 +159,16 @@
 							{:else}
 								<div class="container">
 									<div class="grid grid-cols-2">
-										<div class="text-overflow-ellipsis w-full overflow-hidden">
+										<div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center">
+											
+											{#if item.type === 'Group'}
+											<i class="fa-regular fa-plus pr-2" title="Expand group"></i>
+											{:else if item.type.endsWith('Light')}
+											<i class="fa-regular fa-sun pr-2" title="Light"></i>
+											{:else}
+											<i class="fa-solid fa-cube pr-2" title="Object"></i>
+											{/if}
+
 											{#if $selectedObject.uuid === item.uuid}
 												<p class="text-blue-200">{item.name}</p>
 												{:else}

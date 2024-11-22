@@ -73,9 +73,11 @@ function event(node) {
     });
 
     window.addEventListener('mousemove', (e) => {
-        if (!$selectedObject.type.endsWith('Light')) {
+        if (!$selectedObject.type != 'Group')    
+        if (!$selectedObject.type.endsWith('Light'))
         if ($selectedObject.material.type !== "MeshNormalMaterial")
         color = $selectedObject.material.color.getHexString()
+    
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -85,7 +87,7 @@ function event(node) {
 						scale: $selectedObject.scale.toArray()
 					});
         }
-        }
+        
     });
 
     window.addEventListener('mouseup', () => {
@@ -152,7 +154,7 @@ function sendUpdate() {
   >
     <div class="flex items-center">
       <h5 id="drawer-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
-        Properties
+        {$selectedObject.type} Properties
       </h5>
       <CloseButton on:click={() => {(propertiesClose.set(true)); st=0}} class="mb-4 dark:text-white" />
     </div>
@@ -176,6 +178,7 @@ function sendUpdate() {
     <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
     <div use:event>
     <Accordion class="text-white dark:text-slate-200 w-full" flush>
+  {#if $selectedObject.type !== "Group"}
   <AccordionItem>
     <svelte:fragment slot="header">Color</svelte:fragment>
     
@@ -208,6 +211,7 @@ function sendUpdate() {
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
     </AccordionItem>
+    {/if}
     <AccordionItem>
     <svelte:fragment slot="header">Transform</svelte:fragment>
     <br /><p class="text-white dark:text-slate-200">Position:</p>
@@ -300,6 +304,7 @@ function sendUpdate() {
         </span>
     </div>
     </AccordionItem>
+    {#if $selectedObject.type !== "Group"}
     <AccordionItem open>
         <svelte:fragment slot="header">Material</svelte:fragment>
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">
@@ -331,6 +336,7 @@ function sendUpdate() {
             </li>
         </ul>
     </AccordionItem>
+    {/if}
     </Accordion>
     </div>
     {:else}
