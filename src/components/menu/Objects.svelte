@@ -112,15 +112,16 @@
         {:else}
             <p id={item.uuid} onclick={() => { select(item); }}>
             <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
-            {#if item.type.endsWith('Light')}
-                <i class="fa-regular fa-sun pr-2" title="Light"></i>
-                <p class={`overflow-hidden ${$selectedObject && $selectedObject.uuid === item.uuid ? 'text-blue-200' : ''}`}>{item.name}</p>
-            {:else}
                 <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-2">
                     <div class="flex inline-flex justify-start items-center">
+                    {#if item.type.endsWith('Light')}
+                        <i class="fa-regular fa-sun pr-2" title="Light"></i>
+                    {:else}
                         <i class="fa-solid fa-cube pr-2" title="Object"></i>
-                        <p class={`overflow-hidden ${$selectedObject && $selectedObject.uuid === item.uuid ? 'text-blue-200' : ''}`}>{item.name}</p>
+                    {/if}
+                    <p class={`overflow-hidden ${$selectedObject && $selectedObject.uuid === item.uuid ? 'text-blue-200' : ''}`}>{item.name}</p>
                     </div>
+
                     {#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)}
                         <div class="flex inline-flex justify-end">
                             <li class="configure inline-flex">🔒</li>
@@ -136,21 +137,46 @@
                         </div>
                     {/if}
                 </div>
-            {/if}
             </ListgroupItem>
             </p>
         {/if}
         </p>
     {/each}
     {/if}
-{:else if element.type.endsWith('Light')}
-    <p onclick={() => { select(element); }}>
-    <i class="fa-regular fa-sun pr-2" title="Light"></i>
-    {element.name} <br />
-    </p>
+
 {:else}
-    <p class="pl-8" onclick={() => { select(element); }}>
-    <i class="fa-solid fa-cube pr-2" title="Object"></i>
-    {element.name} <br />
+    
+
+    <p class="pl-8">
+        <p id={element.uuid} onclick={() => { select(element); }}>
+        <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
+        <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-2">
+            <div class="flex inline-flex justify-start items-center">
+                {#if element.type.endsWith('Light')}
+                    <i class="fa-regular fa-sun pr-2" title="Light"></i>
+                {:else}
+                    <i class="fa-solid fa-cube pr-2" title="Object"></i>                    
+                {/if}
+                <p class={`overflow-hidden ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
+            </div>
+
+            {#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === element.uuid)}
+                <div class="flex inline-flex justify-end">
+                    <li class="configure inline-flex">🔒</li>
+                    <p class="configure grayscale">⚙️</p>
+                    <p class="delete grayscale">✖️</p>
+                </div>
+                <Tooltip placement='left' arrow={false}>Locked by {$lockedObjects.find((lockedUuid) => lockedUuid[1] === element.uuid)[0]}</Tooltip>
+            {:else}
+                <div class="flex inline-flex justify-end">
+                    <!-- <li class="configure inline-flex">🔓</li> -->
+                    <p class="configure" onclick={() => configure(element)}>⚙️</p>
+                    <p class="delete" onclick={() => deleteItem(element)}>✖️</p>
+                </div>
+            {/if}
+            </div>
+        </ListgroupItem>
     </p>
+        
+        
 {/if}
