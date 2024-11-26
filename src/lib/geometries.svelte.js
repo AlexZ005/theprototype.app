@@ -89,6 +89,19 @@ export function createLight(command, uuid) {
     }
 }
 
+export function createGroup(command, uuid) {
+    let group = new THREE.Group();
+    group.name = command.split(' ')[1] + ' Group';
+    if (uuid) group.uuid = uuid
+    sceneObjects.add(group);
+    //Trigger reactivity for UI list of objects
+    objectsGroup.update((value) => value);
+    console.log('createGroup: ' + group);
+    if (!uuid) controls.attach(group);
+    if (!uuid) selectedObject.set(group);
+    return group.uuid
+}
+
 export function changeName(uuid, name) {
     if(sceneObjects.getObjectByProperty('uuid', uuid)) {
         sceneObjects.getObjectByProperty('uuid', uuid).name = name;

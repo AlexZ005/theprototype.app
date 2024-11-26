@@ -210,10 +210,20 @@
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
-
+		</SidebarGroup>
+		<SidebarGroup>
+			<SidebarItem
+				label="Create Group"
+				
+				on:click={() => {
+					console.log('create group');
+					sceneCommand('/group New');
+				}}>
+				
+				</SidebarItem>
+		</SidebarGroup>
 			<input type="file" id="import-file" style="display: none" on:change={e => importFile(e.target.files[0])} accept=".gltf, .glb" />
 			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} accept=".json, .gltf, .scene" />
-		</SidebarGroup>
 		<SidebarGroup border>
 
 			<div class="" role="group">

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { createGeometry, createLight } from '$lib/geometries.svelte'
+import { createGeometry, createLight, createGroup } from '$lib/geometries.svelte'
 import { addMessage, loading, loadingcount, showToast } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
@@ -92,6 +92,13 @@ export function sceneCommand(command) {
                 console.log(uuid + ' created');
                 if(uuid != null)
                 peer.send({type: 'light', command: command, uuid: uuid});
+                peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
+        }
+        else if (command.startsWith('/group')) {
+                let uuid = createGroup(command);
+                console.log(uuid + ' created');
+                if(uuid != null)
+                peer.send({type: 'group', command: command, uuid: uuid});
                 peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
         }
         else if (command.startsWith('/transform')) {

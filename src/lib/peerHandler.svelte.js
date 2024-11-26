@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected } from './commandsHandler.svelte';
-import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
+import { createGeometry, createLight, createGroup, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
 import { addMessage, peers, userdata, pendingApprovals, waitingForApproval, showToast } from '../stores/appStore';
 import { get } from 'svelte/store';
@@ -116,6 +116,8 @@ export class PeerConnection {
 					createGeometry(data.command, data.uuid);
 				} else if(data.type == 'light') {
 					createLight(data.command, data.uuid);
+				} else if(data.type == 'group') {
+					createGroup(data.command, data.uuid);
 				} else if(data.type == 'name') {
 					changeName(data.uuid, data.name);
 				} else if(data.type == 'move') {
