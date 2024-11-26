@@ -4,6 +4,7 @@
 	import { chatHidden } from '../../stores/appStore.js';
 	import Objects from './Objects.svelte';
 
+	let resizing = $state(false);
 	let classActive =
 		'group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300';
 
@@ -12,14 +13,28 @@
 		let left = 300;
 		let top = 100;
 
+		let startX = 0;
+		let startY = 0;
+		let startWidth = -300;
+		let startHeight = -130;
+
 		node.style.position = 'absolute';
 		node.style.top = `${top}px`;
 		node.style.left = `${left}px`;
-		node.style.cursor = 'move';
+		// node.style.cursor = 'move';
 		node.style.userSelect = 'none';
+		node.style.width = '500px';
+		node.style.height = '250px';
 
-		node.addEventListener('mousedown', () => {
-			moving = true;
+		node.addEventListener('mousedown', (e) => {
+			if (e.target.classList.contains('resize-handle')) {
+				resizing = true;
+				startX = 0;
+				startY = 0;
+			}
+			if (e.target.classList.contains('move-handle')) {
+				moving = true;
+			}
 		});
 
 		window.addEventListener('mousemove', (e) => {
@@ -28,11 +43,22 @@
 				top += e.movementY;
 				node.style.top = `${top}px`;
 				node.style.left = `${left}px`;
+				if (left < 0) left = 0;
+				if (top < 0) top = 0;
+				if (left > window.innerWidth - node.offsetWidth) left = window.innerWidth - node.offsetWidth;
+				if (top > window.innerHeight - node.offsetHeight) top = window.innerHeight - node.offsetHeight;
+			}
+			if (resizing) {
+			const width = startWidth + (e.clientX - startX);
+			const height = startHeight + (e.clientY - startY);
+			node.style.width = `${width}px`;
+			node.style.height = `${height}px`;
 			}
 		});
 
 		window.addEventListener('mouseup', () => {
 			moving = false;
+			resizing = false;
 		});
 	}
 </script>
@@ -93,12 +119,13 @@
 	></i>
 </p>
 
-<div id="object-list" class="hidden" use:dragMe style="z-index: 1">
-	<Listgroup active class="w-48">
-		<h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400">
-			List of objects
-		</h3>
-		<div class="container overflow-y-scroll" style="max-height: 300px;">
+<div id="object-list" class="" use:dragMe style="z-index: 1; max-height: 70%; max-width: 50%; min-width: 250px;">
+	<Listgroup class="move-handle p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400 -rounded rounded-tr rounded-tl cursor-move">
+		List of objects
+	</Listgroup>
+	<Listgroup active class="h-full overflow-y-scroll -rounded rounded-br rounded-bl">
+		<div class="container">
+			<!-- style="max-height: 300px;" -->
 		  {#if $objectsGroup}
 			{#if $objectsGroup.children.length > 0}
 				{#each $objectsGroup.children as element}
@@ -108,4 +135,5 @@
 		  {/if}
 		</div>
 	</Listgroup>
+	<div class="resize-handle" style="position: absolute; bottom: -38px; right: 0; width: 10px; height: 10px; background-color: #ccc; cursor: se-resize;"></div>
 </div>
