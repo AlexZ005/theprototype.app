@@ -1,7 +1,7 @@
 <script>
-	import { Accordion, AccordionItem, Tooltip, Drawer, Checkbox, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+	import { Accordion, AccordionItem, Tooltip, Drawer, Checkbox, CloseButton, NumberInput, Input, Range, Select } from 'flowbite-svelte';
 	import { globalScene, objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-	import { peers, chatHidden, lightPropertiesClose } from '../../stores/appStore.js';
+	import { peers, chatHidden, lightPropertiesClose, toggleExpand } from '../../stores/appStore.js';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
 	import { sineIn } from 'svelte/easing';
@@ -29,6 +29,11 @@
 	};
 
 	let st = $state(0);
+
+	let groups = $state([{
+        value: 'none',
+	    name: 'None'
+	}]);
 
 	function event(node) {
 		//Center slide
@@ -137,8 +142,35 @@
     
     <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
     <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
+    
+    <p
+    on:click={() => { 
+        groups = $selectedObject.parent.children
+					.map((item) => (item.type === 'Group' ? { name: item.name, value: item.uuid } : null))
+					.filter(Boolean);
+        if($selectedObject.parent.parent.parent !== null)
+        groups.push({ name: 'Level Up', value: $selectedObject.parent.parent.uuid })
+        groups = groups.filter(item => item.value !== $selectedObject.uuid)
+     }}>
+    <Select id="select-underline" underline class="mt-2" items={groups} placeholder="Move to group"
+    on:change={(event) => {
+        let selectedGroup = $objectsGroup.getObjectByProperty('uuid', event.srcElement.value);
+        
+        let selected = groups.find(item => item.value === event.srcElement.value)
 
-    <br />
+        if (selected.name === "Level Up") {
+            $toggleExpand = $selectedObject.parent.uuid;
+        } else {
+            $toggleExpand = selectedGroup.uuid;
+        }
+        selectedGroup.attach($selectedObject);
+        $objectsGroup = $objectsGroup;
+        
+    }}
+    />
+    </p>
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">Move to group</Tooltip>
+
     <Accordion multiple class="text-white dark:text-slate-200 w-full" flush>
         <AccordionItem>
         <svelte:fragment slot="header">Color</svelte:fragment>

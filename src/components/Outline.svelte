@@ -55,6 +55,7 @@
 		{ stage: renderStage, autoInvalidate: false }
 	);
 	$effect(() => {
+		if (typeof $selectedObject !== 'undefined')
 		if ($selectedObject.type) {
 			outlineEffectSelected.selection.clear();
 			outlineEffectSelected.selection.add($selectedObject);
