@@ -10,7 +10,7 @@
 
 	function dragMe(node) {
 		let moving = false;
-		let left = 300;
+		let left = 350;
 		let top = 100;
 
 		let startX = 0;
@@ -23,7 +23,7 @@
 		node.style.left = `${left}px`;
 		// node.style.cursor = 'move';
 		node.style.userSelect = 'none';
-		node.style.width = '500px';
+		node.style.width = '300px';
 		node.style.height = '250px';
 
 		node.addEventListener('mousedown', (e) => {
@@ -119,7 +119,7 @@
 	></i>
 </p>
 
-<div id="object-list" class="" use:dragMe style="z-index: 1; max-height: 70%; max-width: 50%; min-width: 250px;">
+<div id="object-list" class="hidden" use:dragMe style="z-index: 1; max-height: 70%; max-width: 50%; min-width: 250px;">
 	<Listgroup class="move-handle p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400 -rounded rounded-tr rounded-tl cursor-move">
 		List of objects
 	</Listgroup>

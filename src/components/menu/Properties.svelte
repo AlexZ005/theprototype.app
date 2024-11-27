@@ -33,6 +33,7 @@ let transitionParamsRight = {
 };
 
 let st = $state(0)
+let rerenderSelectGroup = $state(0)
 
 let materials = [
     { value: 'MeshBasicMaterial', name: 'Basic' },
@@ -196,10 +197,11 @@ function sendUpdate() {
         groups.push({ name: 'Level Up', value: $selectedObject.parent.parent.uuid })
         groups = groups.filter(item => item.value !== $selectedObject.uuid)
      }}>
-    <Select id="select-underline" underline class="mt-2" items={groups} placeholder="Move to group"
+    {#key rerenderSelectGroup}
+    <Select id="select-group" underline class="mt-2" items={groups} placeholder="Move to group"
     on:change={(event) => {
         let selectedGroup = $objectsGroup.getObjectByProperty('uuid', event.srcElement.value);
-        
+
         let selected = groups.find(item => item.value === event.srcElement.value)
 
         if (selected.name === "Level Up") {
@@ -210,8 +212,12 @@ function sendUpdate() {
         selectedGroup.attach($selectedObject);
         $objectsGroup = $objectsGroup;
         
+        // Trigger to refresh the select group as it have only on change
+		// and we want to run event even if the same value is selected
+        rerenderSelectGroup = rerenderSelectGroup ? false : true
     }}
     />
+    {/key}
     </p>
     <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">Move to group</Tooltip>
 
