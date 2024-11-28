@@ -117,7 +117,7 @@ export class PeerConnection {
 				} else if(data.type == 'light') {
 					createLight(data.command, data.uuid);
 				} else if(data.type == 'group') {
-					createGroup(data.command, data.uuid, data.group);
+					createGroup(data.command, data.uuid, data.group, data.name, data.groupparent);
 				} else if(data.type == 'name') {
 					changeName(data.uuid, data.name);
 				} else if(data.type == 'move') {
@@ -131,7 +131,7 @@ export class PeerConnection {
 				} else if(data.type == 'getobjects') {
 					sendObjects(data.sender)
 				} else if(data.type == 'object') {
-					createObject(data, data.uuids, data.override);
+					createObject(data, data.uuids, data.override, data.groupuuid);
 				} else if(data.type == 'delete') {
 					deleteObject(data.uuid);
 				} else if(data.type == 'color') {

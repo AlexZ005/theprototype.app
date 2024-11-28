@@ -90,15 +90,15 @@ export function createLight(command, uuid) {
     }
 }
 
-export function createGroup(command, uuid, groupuuid) {
+export function createGroup(command, uuid, groupuuid, name, groupparent) {
     let group;
     if (groupuuid) {
         let group = sceneObjects.getObjectByProperty('uuid', groupuuid);
         let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
         if (groupuuid == 'up')
         group = mesh.parent.parent;
-        console.log(group.uuid);
-        console.log(group.uuid + 'add to group: ' + mesh.uuid);
+        // console.log(group.uuid);
+        // console.log(group.uuid + 'add to group: ' + mesh.uuid);
         toggleExpand.set(group.uuid);
         group.attach(mesh);
         //Trigger reactivity for UI list of objects
@@ -106,14 +106,21 @@ export function createGroup(command, uuid, groupuuid) {
         return group.uuid
     } else {
         let group = new THREE.Group();
+        if (name) group.name = name
+        else
         group.name = command.split(' ')[1] + ' Group';
         if (uuid) group.uuid = uuid
         sceneObjects.add(group);
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
-        console.log('createGroup: ' + group);
+        // console.log('createGroup: ' + group);
         if (!uuid) controls.attach(group);
         if (!uuid) selectedObject.set(group);
+        // Attach the group to its parent, if specified
+        if (groupparent) {
+            let groupParent = sceneObjects.getObjectByProperty('uuid', groupparent)
+            groupParent.attach(group);
+        }
         return group.uuid
     }
 
