@@ -1,32 +1,40 @@
 <script lang="ts">
-	import { Tooltip, BottomNav, Listgroup, ListgroupItem } from 'flowbite-svelte';
-	import { objectsGroup, TControls, selectedObject, lockedObjects } from '../../stores/sceneStore';
-	import {
-		chatHidden,
-		propertiesClose,
-		lightPropertiesClose,
-		scenePropertiesClose,
-		peers
-	} from '../../stores/appStore.js';
-	import { sceneCommand } from '$lib/commandsHandler.svelte';
+	import { BottomNav, Listgroup } from 'flowbite-svelte';
+	import { objectsGroup, TControls } from '../../stores/sceneStore';
+	import { chatHidden } from '../../stores/appStore.js';
+	import Objects from './Objects.svelte';
 
-	let previoslySelectedObject;
+	let resizing = $state(false);
 	let classActive =
 		'group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300';
 
 	function dragMe(node) {
 		let moving = false;
-		let left = 300;
+		let left = 350;
 		let top = 100;
+
+		let startX = 0;
+		let startY = 0;
+		let startWidth = -300;
+		let startHeight = -130;
 
 		node.style.position = 'absolute';
 		node.style.top = `${top}px`;
 		node.style.left = `${left}px`;
-		node.style.cursor = 'move';
+		// node.style.cursor = 'move';
 		node.style.userSelect = 'none';
+		node.style.width = '300px';
+		node.style.height = '250px';
 
-		node.addEventListener('mousedown', () => {
-			moving = true;
+		node.addEventListener('mousedown', (e) => {
+			if (e.target.classList.contains('resize-handle')) {
+				resizing = true;
+				startX = 0;
+				startY = 0;
+			}
+			if (e.target.classList.contains('move-handle')) {
+				moving = true;
+			}
 		});
 
 		window.addEventListener('mousemove', (e) => {
@@ -35,11 +43,22 @@
 				top += e.movementY;
 				node.style.top = `${top}px`;
 				node.style.left = `${left}px`;
+				if (left < 0) left = 0;
+				if (top < 0) top = 0;
+				if (left > window.innerWidth - node.offsetWidth) left = window.innerWidth - node.offsetWidth;
+				if (top > window.innerHeight - node.offsetHeight) top = window.innerHeight - node.offsetHeight;
+			}
+			if (resizing) {
+			const width = startWidth + (e.clientX - startX);
+			const height = startHeight + (e.clientY - startY);
+			node.style.width = `${width}px`;
+			node.style.height = `${height}px`;
 			}
 		});
 
 		window.addEventListener('mouseup', () => {
 			moving = false;
+			resizing = false;
 		});
 	}
 </script>
@@ -100,138 +119,21 @@
 	></i>
 </p>
 
-<div id="object-list" class="hidden" use:dragMe style="z-index: 1">
-	<Listgroup active class="w-48">
-		<h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400">
-			List of objects
-		</h3>
-		{#if $objectsGroup}
-			{#if $objectsGroup.children.length > 0}
-				<div>
-					<div></div>
-					{#each $objectsGroup.children as item (item.id)}
-						<ListgroupItem
-							class="items-center justify-between gap-2  text-base font-semibold"
-							on:click={() => {
-								if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)) {
-									propertiesClose.set(true);
-									lightPropertiesClose.set(true);
-									previoslySelectedObject = $selectedObject;
-									selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
-									$TControls.attach($objectsGroup.getObjectByProperty('uuid', item.uuid));
-									$peers.send({ type: 'lock', uuid: item.uuid, peerId: $peers.peer.id });
-								} else {
-									$TControls.detach();
-									selectedObject.set($objectsGroup.getObjectByProperty('uuid', item.uuid));
-								}
-							}}
-						>
-							{#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)}
-
-								<div class="container">
-									<div class="grid grid-cols-2">
-										<div class="text-overflow-ellipsis w-full overflow-hidden">
-											<p class="">{item.name}</p>
-										</div>
-										<div class="">
-											<div class="flex flex-row justify-end">
-												<li class="configure inline-flex">🔒</li>
-												
-												<p class="configure grayscale">⚙️</p>
-												
-												<p class="delete grayscale">✖️</p>
-											</div>
-											<Tooltip placement='left' arrow={false}>Locked by {$lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)[0]}</Tooltip>
-										</div>
-									</div>
-								</div>
-
-								
-							{:else}
-								<div class="container">
-									<div class="grid grid-cols-2">
-										<div class="text-overflow-ellipsis w-full overflow-hidden">
-											{#if $selectedObject.uuid === item.uuid}
-												<p class="text-blue-200">{item.name}</p>
-												{:else}
-											<p class="">{item.name}</p>
-											{/if}
-										</div>
-										<div class="">
-											<div class="flex flex-row justify-end">
-												
-												<p
-													class="configure"
-													on:click={(event) => {
-														// When press on ListgroupItem even on configure button, it activates
-														// The delay adds cool effect and protects from error on click
-														setTimeout(() => {
-															if (item.type.endsWith('Light')) {
-																console.log(item.type);
-																lightPropertiesClose.set(false);
-																scenePropertiesClose.set(true);
-																propertiesClose.set(true);
-															} else {
-																lightPropertiesClose.set(true);
-																scenePropertiesClose.set(true);
-																propertiesClose.set(false);
-															}
-														}, 100);
-													}}
-												>
-													⚙️
-												</p>
-
-												<p
-													class="delete"
-													on:click={(event) => {
-														// When press on ListgroupItem even on delete button, it activates
-														// Select previous one as we about to delete tje current one
-														setTimeout(() => {
-															console.log(previoslySelectedObject.name);
-															if (
-																previoslySelectedObject &&
-																previoslySelectedObject.uuid !== item.uuid &&
-																$objectsGroup.getObjectByProperty(
-																	'uuid',
-																	previoslySelectedObject.uuid
-																)
-															) {
-																selectedObject.set(previoslySelectedObject);
-																$TControls.attach(previoslySelectedObject);
-																previoslySelectedObject = null;
-															} else {
-																propertiesClose.set(true);
-																$TControls.detach();
-															}
-															sceneCommand('/clear ' + item.uuid);
-														}, 100);
-													}}
-												>
-													✖️
-												</p>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								{/if}
-								
-						</ListgroupItem>
-					{/each}
-				</div>
-			{:else}
-				<ListgroupItem class="w-48 items-center justify-center">
-					<p
-						class=""
-						on:click={(event) => {
-							console.log(myItems);
-						}}
-					>
-						Empty Scene
-					</p>
-				</ListgroupItem>
-			{/if}
-		{/if}
+<div id="object-list" class="hidden" use:dragMe style="z-index: 1; max-height: 70%; max-width: 50%; min-width: 250px;">
+	<Listgroup class="move-handle p-1 text-center text-xl font-medium text-gray-900 dark:text-gray-400 -rounded rounded-tr rounded-tl cursor-move">
+		List of objects
 	</Listgroup>
+	<Listgroup active class="h-full overflow-y-scroll -rounded rounded-br rounded-bl">
+		<div class="container">
+			<!-- style="max-height: 300px;" -->
+		  {#if $objectsGroup}
+			{#if $objectsGroup.children.length > 0}
+				{#each $objectsGroup.children as element}
+				<Objects {element} />
+				{/each}
+			{/if}
+		  {/if}
+		</div>
+	</Listgroup>
+	<div class="resize-handle" style="position: absolute; bottom: -38px; right: 0; width: 10px; height: 10px; background-color: #ccc; cursor: se-resize;"></div>
 </div>

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { createGeometry, createLight } from '$lib/geometries.svelte'
+import { createGeometry, createLight, createGroup } from '$lib/geometries.svelte'
 import { addMessage, loading, loadingcount, showToast } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
@@ -36,6 +36,8 @@ userdata.subscribe(value => { users = value });
 
 const loader = new THREE.ObjectLoader();
 
+let uuids = [];
+
 export function userData(data) {
     data.forEach(element => {
         console.log('received new approved host : ' + element[0])
@@ -64,7 +66,8 @@ export function sceneCommand(command) {
                 controls.detach();
                 sceneObjects.clear();
             } else {
-                sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', command.split(' ')[1]));
+                let object = sceneObjects.getObjectByProperty('uuid', command.split(' ')[1])
+                if (object != null) sceneObjects.remove(object);
                 peer.send({type: 'delete', uuid: command.split(' ')[1], peerId: peer.peer.id});
             }
         }
@@ -92,6 +95,13 @@ export function sceneCommand(command) {
                 console.log(uuid + ' created');
                 if(uuid != null)
                 peer.send({type: 'light', command: command, uuid: uuid});
+                peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
+        }
+        else if (command.startsWith('/group')) {
+                let uuid = createGroup(command);
+                console.log(uuid + ' created');
+                if(uuid != null)
+                peer.send({type: 'group', command: command, uuid: uuid});
                 peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
         }
         else if (command.startsWith('/transform')) {
@@ -191,7 +201,7 @@ export function checkLocks(data) {
 }
 
 export async function createLoader(count, uuids) {
-    console.log("create loader for " + count + " objects: " + uuids);
+    // console.log("create loader for " + count + " objects: " + uuids);
     loading.set(uuids);
     loadingcount.set(count);
     //Trigger reactivity for UI list of objects on remote
@@ -215,6 +225,8 @@ export async function colorObject(uuid, color, near, far) {
 }
 
 export async function deleteObject(uuid) {
+    let object = sceneObjects.getObjectByProperty('uuid', uuid)
+    object.parent?.remove(object);
     if(selected.uuid == uuid) controls.detach();
     sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', uuid));
     //Trigger reactivity for UI list of objects on remote
@@ -222,7 +234,7 @@ export async function deleteObject(uuid) {
 }
 
 
-export async function createObject(object, uuid, override) {
+export async function createObject(object, uuid, override, groupuuid) {
     if (uuid == null) {
     let mesh = loader.parse(object.element);
     if (override)
@@ -230,7 +242,7 @@ export async function createObject(object, uuid, override) {
     if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
     sceneObjects.add(mesh);
     } else {
-        console.log("Adding GLTF object " + uuid)
+        // console.log("Adding GLTF object " + uuid)
         const loader = new GLTFLoader();
         const result = await new Promise((resolve, reject) => {
           loader.parse(object.element, '', (gltf) => resolve(gltf), (error) => reject(error));
@@ -241,7 +253,11 @@ export async function createObject(object, uuid, override) {
           mesh.uuid = uuid[index]
           object.uuid = uuid[index]
           if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
-          sceneObjects.add(mesh)
+            sceneObjects.add(mesh)
+            if (groupuuid){
+                let group = sceneObjects.getObjectByProperty('uuid', groupuuid)
+                group.attach(mesh)
+            }
         });
     }
     //Trigger reactivity for UI list of objects
@@ -252,39 +268,73 @@ export async function createObject(object, uuid, override) {
  * Sends all objects in the scene to the given peer.
  * @param {string} peerId - The ID of the peer to send the objects to.
  */
-export function sendObjects(peerId) {
+export function sendObjects(peerId, element) {
     const conn = peer.connections[peerId];
-    console.log("Sending objects to " + conn.peer);
+
+    let objects = [];
+
+    // Iterate over all objects in the scene
+    let count = countObjects()
+    console.log("Sending " + count + " objects to " + peerId);
+
     // Wait 500ms to ensure the connection is established before sending the objects
     setTimeout(() => {
-        let uuids = [];
-        sceneObjects.children.forEach(element => {
-            uuids.push(element.uuid)
-        })
-  
         // Send amount of objects to be sent and their uuids
-        conn.send({type: 'loading', count: sceneObjects.children.length, uuids: uuids});
-
-        // Iterate over all objects in the scene
-        sceneObjects.children.forEach(element => {
-            if (element.type.endsWith('Light')) {
-                // Send each object as a JSON object
-                conn.send({type: 'object', element: element.toJSON()})
-            } else {
-                const exporter = new GLTFExporter({outputEncoding: 'json'});
-                exporter.parse(
-                    element,
-                    function (result) {
-                        console.log('packing gltf');
-                        conn.send({type: 'object', element: result, uuids: [element.uuid]})
-                    },
-                    function (error) {
-                        console.log(error);
-                    }
-                );                
-            }
-        })
+        conn.send({type: 'loading', count: count, uuids: uuids});
+        sendObject(conn);
     }, 500);
+
+    uuids = [];
 }
 
+function sendObject(conn, element, groupuuid) {
+    let objects = [];
+    if (typeof element !== 'undefined') {
+        objects = element.children;
+    } else {
+        objects = sceneObjects.children;
+    }
+    // Iterate over all objects in the scene
+    objects.forEach(element => {
+        if (element.type == "Group") {
+            if (element.parent.parent.parent !== null) {
+                groupuuid = element.parent.uuid
+            }
+            conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: groupuuid});
+            sendObject(conn, element, element.uuid, groupuuid);
+        } else if (element.type.endsWith('Light')) {
+            // Send each object as a JSON object
+            conn.send({type: 'object', element: element.toJSON()})
+        } else {
+            const exporter = new GLTFExporter({outputEncoding: 'json'});
+            exporter.parse(
+                element,
+                function (result) {
+                    // console.log('packing gltf');
+                    conn.send({type: 'object', element: result, uuids: [element.uuid], groupuuid: groupuuid})
+                },
+                function (error) {
+                    console.log(error);
+                }
+            );                
+        }
+    })
 
+}
+
+function countObjects(element) {
+    let objects = [];
+    if (typeof element !== 'undefined') {
+        objects = element.children;
+    } else {
+        objects = sceneObjects.children;
+    }
+    objects.forEach(element => {
+        if (element.type == "Group") {
+            countObjects(element);
+        }
+        uuids.push(element.uuid)
+    })
+    // console.log(uuids.length)
+    return uuids.length;
+}

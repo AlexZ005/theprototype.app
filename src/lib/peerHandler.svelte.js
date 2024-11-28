@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected } from './commandsHandler.svelte';
-import { createGeometry, createLight, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
+import { createGeometry, createLight, createGroup, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
 import { addMessage, peers, userdata, pendingApprovals, waitingForApproval, showToast } from '../stores/appStore';
 import { get } from 'svelte/store';
@@ -116,6 +116,8 @@ export class PeerConnection {
 					createGeometry(data.command, data.uuid);
 				} else if(data.type == 'light') {
 					createLight(data.command, data.uuid);
+				} else if(data.type == 'group') {
+					createGroup(data.command, data.uuid, data.group, data.name, data.groupparent);
 				} else if(data.type == 'name') {
 					changeName(data.uuid, data.name);
 				} else if(data.type == 'move') {
@@ -129,7 +131,7 @@ export class PeerConnection {
 				} else if(data.type == 'getobjects') {
 					sendObjects(data.sender)
 				} else if(data.type == 'object') {
-					createObject(data, data.uuids, data.override);
+					createObject(data, data.uuids, data.override, data.groupuuid);
 				} else if(data.type == 'delete') {
 					deleteObject(data.uuid);
 				} else if(data.type == 'color') {
@@ -176,7 +178,7 @@ export class PeerConnection {
 				console.log("sending to " + peerId + "  remote " + hosts)
 				setTimeout(() => {
 				let locks = [...locked];
-				if(selected.uuid) locks.push([id, selected.uuid]);
+				if(typeof selected.uuid != 'undefined' && selected.uuid) locks.push([id, selected.uuid]);
 				this.connections[peerId].send({type: 'locked', lockeditems: locks})
 				this.connections[peerId].send({type: 'hosts', hosts: hosts})
 				this.connections[peerId].send({type: 'userdata', userdata: users})

@@ -1,7 +1,7 @@
 <script>
-	import { Accordion, AccordionItem, Tooltip, Drawer, Checkbox, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
+	import { Accordion, AccordionItem, Tooltip, Drawer, Checkbox, CloseButton, NumberInput, Input, Range, Select } from 'flowbite-svelte';
 	import { globalScene, objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-	import { peers, chatHidden, lightPropertiesClose } from '../../stores/appStore.js';
+	import { peers, chatHidden, lightPropertiesClose, toggleExpand } from '../../stores/appStore.js';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
 	import { sineIn } from 'svelte/easing';
@@ -29,6 +29,12 @@
 	};
 
 	let st = $state(0);
+	let rerenderSelectGroup = $state(0)
+
+	let groups = $state([{
+        value: 'none',
+	    name: 'None'
+	}]);
 
 	function event(node) {
 		//Center slide
@@ -46,7 +52,8 @@
 		});
 
         window.addEventListener('mousemove', (e) => {
-        if ($selectedObject.type.endsWith('Light')) {
+		if (typeof $selectedObject !== 'undefined')
+		if ($selectedObject.type.endsWith('Light')) {
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -61,12 +68,15 @@
 
 		window.addEventListener('mouseup', () => {
 			moving = false;
+			if (typeof $selectedObject !== 'undefined')
+			{
 			min_position_x = $selectedObject.position.x - 5;
 			max_position_x = $selectedObject.position.x + 5;
 			min_position_y = $selectedObject.position.y - 5;
 			max_position_y = $selectedObject.position.y + 5;
 			min_position_z = $selectedObject.position.z - 5;
 			max_position_z = $selectedObject.position.z + 5;
+			}
 		});
 	}
 
@@ -137,8 +147,42 @@
     
     <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
     <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
+    
+    <p
+    on:click={() => { 
+        groups = $selectedObject.parent.children
+					.map((item) => (item.type === 'Group' ? { name: item.name, value: item.uuid } : null))
+					.filter(Boolean);
+        if($selectedObject.parent.parent.parent !== null)
+        groups.push({ name: 'Level Up', value: $selectedObject.parent.parent.uuid })
+        groups = groups.filter(item => item.value !== $selectedObject.uuid)
+     }}>
+    {#key rerenderSelectGroup}
+    <Select id="select-group" underline class="mt-2" items={groups} placeholder="Move to group"
+    on:change={(event) => {
+        let selectedGroup = $objectsGroup.getObjectByProperty('uuid', event.srcElement.value);
+        
+        let selected = groups.find(item => item.value === event.srcElement.value)
 
-    <br />
+        if (selected.name === "Level Up") {
+            $toggleExpand = $selectedObject.parent.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: 'up' });
+        } else {
+            $toggleExpand = selectedGroup.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: selectedGroup.uuid });
+        }
+        selectedGroup.attach($selectedObject);
+        $objectsGroup = $objectsGroup;
+        
+        // Trigger to refresh the select group as it have only on change
+		// and we want to run event even if the same value is selected
+        rerenderSelectGroup = rerenderSelectGroup ? false : true
+    }}
+    />
+    {/key}
+    </p>
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">Move to group</Tooltip>
+
     <Accordion multiple class="text-white dark:text-slate-200 w-full" flush>
         <AccordionItem>
         <svelte:fragment slot="header">Color</svelte:fragment>

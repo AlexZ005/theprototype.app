@@ -9,6 +9,7 @@ export const chatHidden = writable('hidden');
 export const userdata = writable([]);
 export const username = writable(null);
 export const peers = writable(null);
+export const toggleExpand = writable(null);
 
 export const pendingApprovals = writable([]);
 export const waitingForApproval = writable([]);

@@ -55,6 +55,7 @@
 		{ stage: renderStage, autoInvalidate: false }
 	);
 	$effect(() => {
+		if (typeof $selectedObject !== 'undefined')
 		if ($selectedObject.type) {
 			outlineEffectSelected.selection.clear();
 			outlineEffectSelected.selection.add($selectedObject);
@@ -63,7 +64,7 @@
 			outlineEffectLocked.selection.clear();
 			for (let i = 0; i < $lockedObjects.length; i++) {
 				let mesh = $objectsGroup.getObjectByProperty('uuid', $lockedObjects[i][1]);
-				outlineEffectLocked.selection.add(mesh);
+				if (mesh) outlineEffectLocked.selection.add(mesh);
 			}
 		}
 	});

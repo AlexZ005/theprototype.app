@@ -10,18 +10,13 @@ $effect(() => {
     if($loading.length > 0) showToast = true;
     if($loading.length > 0)
     if($objectsGroup)
-    $objectsGroup.children.forEach((object) => {
-        if ($loading.includes(object.uuid)) {
-            // count++;
-            console.log(object.uuid)
-            // $loading.pop(object.uuid)
-            const index = $loading.indexOf(object.uuid, 0);
-            if (index > -1) {
-                $loading.splice(index, 1);
-                console.log($loading)
-                $loading = $loading // Trigger reactivity
-            }
-
+    // Remove loaded UUIDs from the loading array
+    // once their corresponding objects are available
+    $loading.forEach((uuid) => {
+        $objectsGroup.getObjectByProperty('uuid', uuid)
+        if ($objectsGroup.getObjectByProperty('uuid', uuid)) {
+            $loading.splice($loading.indexOf(uuid, 0), 1);
+            $loading = $loading // Trigger reactivity
         }
     })
     

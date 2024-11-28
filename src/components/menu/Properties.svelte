@@ -13,7 +13,7 @@ import {
 	Range
 } from 'flowbite-svelte';
 import { objectsGroup, TControls, selectedObject } from '../../stores/sceneStore';
-import { peers, chatHidden, propertiesClose  } from '../../stores/appStore.js';
+import { peers, chatHidden, propertiesClose, toggleExpand } from '../../stores/appStore.js';
 import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
 import CustomWrapper from '$lib/ColorWrapper.svelte';
 import { sineIn } from 'svelte/easing';
@@ -33,6 +33,7 @@ let transitionParamsRight = {
 };
 
 let st = $state(0)
+let rerenderSelectGroup = $state(0)
 
 let materials = [
     { value: 'MeshBasicMaterial', name: 'Basic' },
@@ -42,6 +43,11 @@ let materials = [
     { value: 'MeshToonMaterial', name: 'Toon' },
     { value: 'ShadowMaterial', name: 'Shadow' }
   ];
+
+  let groups = $state([{
+    value: 'none',
+    name: 'None'
+  }]);
 
 function event(node) {
       //Center slide
@@ -73,9 +79,14 @@ function event(node) {
     });
 
     window.addEventListener('mousemove', (e) => {
-        if (!$selectedObject.type.endsWith('Light')) {
+        if (typeof $selectedObject !== 'undefined')
+        if (!$selectedObject.type != 'Group')    
+        if (!$selectedObject.type.endsWith('Light'))
+        if (typeof $selectedObject.material !== "undefined")
         if ($selectedObject.material.type !== "MeshNormalMaterial")
         color = $selectedObject.material.color.getHexString()
+
+        if (typeof $selectedObject !== 'undefined')
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -85,11 +96,13 @@ function event(node) {
 						scale: $selectedObject.scale.toArray()
 					});
         }
-        }
+        
     });
 
     window.addEventListener('mouseup', () => {
         moving = false;
+        if (typeof $selectedObject !== 'undefined')
+        {
         min_position_x = $selectedObject.position.x-5
         max_position_x = $selectedObject.position.x+5
         min_position_y = $selectedObject.position.y-5
@@ -110,8 +123,8 @@ function event(node) {
         max_scale_y = $selectedObject.scale.y+5
         min_scale_z = $selectedObject.scale.z-5
         max_scale_z = $selectedObject.scale.z+5
+        }
     });
-
 }
 
 // Drawer show full screen
@@ -152,7 +165,7 @@ function sendUpdate() {
   >
     <div class="flex items-center">
       <h5 id="drawer-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
-        Properties
+        {$selectedObject.type} Properties
       </h5>
       <CloseButton on:click={() => {(propertiesClose.set(true)); st=0}} class="mb-4 dark:text-white" />
     </div>
@@ -174,8 +187,45 @@ function sendUpdate() {
     
     <Input id="uuid" class="text-white dark:text-slate-200 -rounded rounded-bl-lg rounded-br-lg" disabled value={$selectedObject.uuid} />
     <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">UUID</Tooltip>
+    
+    <p
+    on:click={() => { 
+        groups = $selectedObject.parent.children
+					.map((item) => (item.type === 'Group' ? { name: item.name, value: item.uuid } : null))
+					.filter(Boolean);
+        if($selectedObject.parent.parent.parent !== null)
+        groups.push({ name: 'Level Up', value: $selectedObject.parent.parent.uuid })
+        groups = groups.filter(item => item.value !== $selectedObject.uuid)
+     }}>
+    {#key rerenderSelectGroup}
+    <Select id="select-group" underline class="mt-2" items={groups} placeholder="Move to group"
+    on:change={(event) => {
+        let selectedGroup = $objectsGroup.getObjectByProperty('uuid', event.srcElement.value);
+
+        let selected = groups.find(item => item.value === event.srcElement.value)
+
+        if (selected.name === "Level Up") {
+            $toggleExpand = $selectedObject.parent.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: 'up' });
+        } else {
+            $toggleExpand = selectedGroup.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: selectedGroup.uuid });
+        }
+        selectedGroup.attach($selectedObject);
+        $objectsGroup = $objectsGroup;
+        
+        // Trigger to refresh the select group as it have only on change
+		// and we want to run event even if the same value is selected
+        rerenderSelectGroup = rerenderSelectGroup ? false : true
+    }}
+    />
+    {/key}
+    </p>
+    <Tooltip placement='bottom' arrow={false} triggeredBy="#uuid">Move to group</Tooltip>
+
     <div use:event>
     <Accordion class="text-white dark:text-slate-200 w-full" flush>
+  {#if $selectedObject.type !== "Group"}
   <AccordionItem>
     <svelte:fragment slot="header">Color</svelte:fragment>
     
@@ -208,6 +258,7 @@ function sendUpdate() {
     />
     <Input type="text" bind:value={color} onchange={ () => { $selectedObject.material.color.set('#'+color); }} />
     </AccordionItem>
+    {/if}
     <AccordionItem>
     <svelte:fragment slot="header">Transform</svelte:fragment>
     <br /><p class="text-white dark:text-slate-200">Position:</p>
@@ -300,6 +351,7 @@ function sendUpdate() {
         </span>
     </div>
     </AccordionItem>
+    {#if $selectedObject.type !== "Group"}
     <AccordionItem open>
         <svelte:fragment slot="header">Material</svelte:fragment>
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">
@@ -331,6 +383,7 @@ function sendUpdate() {
             </li>
         </ul>
     </AccordionItem>
+    {/if}
     </Accordion>
     </div>
     {:else}
