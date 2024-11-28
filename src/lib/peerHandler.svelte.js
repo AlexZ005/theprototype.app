@@ -117,7 +117,7 @@ export class PeerConnection {
 				} else if(data.type == 'light') {
 					createLight(data.command, data.uuid);
 				} else if(data.type == 'group') {
-					createGroup(data.command, data.uuid);
+					createGroup(data.command, data.uuid, data.group);
 				} else if(data.type == 'name') {
 					changeName(data.uuid, data.name);
 				} else if(data.type == 'move') {
@@ -178,7 +178,7 @@ export class PeerConnection {
 				console.log("sending to " + peerId + "  remote " + hosts)
 				setTimeout(() => {
 				let locks = [...locked];
-				if(selected.uuid) locks.push([id, selected.uuid]);
+				if(typeof selected.uuid != 'undefined' && selected.uuid) locks.push([id, selected.uuid]);
 				this.connections[peerId].send({type: 'locked', lockeditems: locks})
 				this.connections[peerId].send({type: 'hosts', hosts: hosts})
 				this.connections[peerId].send({type: 'userdata', userdata: users})

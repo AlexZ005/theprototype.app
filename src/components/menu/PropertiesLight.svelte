@@ -52,7 +52,8 @@
 		});
 
         window.addEventListener('mousemove', (e) => {
-        if ($selectedObject.type.endsWith('Light')) {
+		if (typeof $selectedObject !== 'undefined')
+		if ($selectedObject.type.endsWith('Light')) {
         if (moving) {
             $peers.send({
 						type: 'move',
@@ -67,12 +68,15 @@
 
 		window.addEventListener('mouseup', () => {
 			moving = false;
+			if (typeof $selectedObject !== 'undefined')
+			{
 			min_position_x = $selectedObject.position.x - 5;
 			max_position_x = $selectedObject.position.x + 5;
 			min_position_y = $selectedObject.position.y - 5;
 			max_position_y = $selectedObject.position.y + 5;
 			min_position_z = $selectedObject.position.z - 5;
 			max_position_z = $selectedObject.position.z + 5;
+			}
 		});
 	}
 
@@ -162,8 +166,10 @@
 
         if (selected.name === "Level Up") {
             $toggleExpand = $selectedObject.parent.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: 'up' });
         } else {
             $toggleExpand = selectedGroup.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: selectedGroup.uuid });
         }
         selectedGroup.attach($selectedObject);
         $objectsGroup = $objectsGroup;

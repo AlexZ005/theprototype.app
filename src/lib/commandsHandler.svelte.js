@@ -64,7 +64,8 @@ export function sceneCommand(command) {
                 controls.detach();
                 sceneObjects.clear();
             } else {
-                sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', command.split(' ')[1]));
+                let object = sceneObjects.getObjectByProperty('uuid', command.split(' ')[1])
+                if (object != null) sceneObjects.remove(object);
                 peer.send({type: 'delete', uuid: command.split(' ')[1], peerId: peer.peer.id});
             }
         }
@@ -222,6 +223,8 @@ export async function colorObject(uuid, color, near, far) {
 }
 
 export async function deleteObject(uuid) {
+    let object = sceneObjects.getObjectByProperty('uuid', uuid)
+    object.parent?.remove(object);
     if(selected.uuid == uuid) controls.detach();
     sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', uuid));
     //Trigger reactivity for UI list of objects on remote

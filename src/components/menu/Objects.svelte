@@ -40,8 +40,10 @@
             // wait another 100ms and select the previously selected object
             setTimeout(() => {
                 let saved = document.getElementById(save);
-                // need to add a comment about why we need to do this
-                saved.querySelector("p > button > div > div").click();
+                // keep UI state for previously selected object
+                if (saved)
+                saved.querySelector("p > button > div > div")?.click();
+                if (saved.querySelector("p > button > div > div") !== null)
                 configure($objectsGroup.getObjectByProperty('uuid', save), 1);
             }, 100);
 
@@ -96,15 +98,19 @@
 			}
 			var el = $objectsGroup.getObjectByProperty('uuid', item.uuid);
 
-			if(typeof el.parent !== 'undefined') {
+			if(el.parent.parent.parent !== null) {
+                console.log("muchas")
+                console.log(el.parent.parent.parent)
                 el.parent?.remove(el);
+                sceneCommand('/clear ' + el.uuid);
+
+                // Toggle the 'hidden' class to immediately hide the item
+                // The list will update automatically after collapse/expand
+                document.getElementById(el.uuid)?.classList.toggle('hidden');
             } else {
-                sceneCommand('/clear ' + item[0].uuid);
+                sceneCommand('/clear ' + el.uuid);
             }
 
-			// Toggle the 'hidden' class to immediately hide the item
-			// The list will update automatically after collapse/expand
-			document.getElementById(item.uuid)?.classList.toggle('hidden');
 	}
   </script>
 

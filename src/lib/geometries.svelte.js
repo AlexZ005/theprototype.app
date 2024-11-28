@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { toggleExpand } from '../stores/appStore.js';
 import { globalScene, objectsGroup, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 
 //Access scene Store
@@ -89,17 +90,33 @@ export function createLight(command, uuid) {
     }
 }
 
-export function createGroup(command, uuid) {
-    let group = new THREE.Group();
-    group.name = command.split(' ')[1] + ' Group';
-    if (uuid) group.uuid = uuid
-    sceneObjects.add(group);
-    //Trigger reactivity for UI list of objects
-    objectsGroup.update((value) => value);
-    console.log('createGroup: ' + group);
-    if (!uuid) controls.attach(group);
-    if (!uuid) selectedObject.set(group);
-    return group.uuid
+export function createGroup(command, uuid, groupuuid) {
+    let group;
+    if (groupuuid) {
+        let group = sceneObjects.getObjectByProperty('uuid', groupuuid);
+        let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
+        if (groupuuid == 'up')
+        group = mesh.parent.parent;
+        console.log(group.uuid);
+        console.log(group.uuid + 'add to group: ' + mesh.uuid);
+        toggleExpand.set(group.uuid);
+        group.attach(mesh);
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        return group.uuid
+    } else {
+        let group = new THREE.Group();
+        group.name = command.split(' ')[1] + ' Group';
+        if (uuid) group.uuid = uuid
+        sceneObjects.add(group);
+        //Trigger reactivity for UI list of objects
+        objectsGroup.update((value) => value);
+        console.log('createGroup: ' + group);
+        if (!uuid) controls.attach(group);
+        if (!uuid) selectedObject.set(group);
+        return group.uuid
+    }
+
 }
 
 export function changeName(uuid, name) {

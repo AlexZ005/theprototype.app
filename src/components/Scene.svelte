@@ -30,7 +30,7 @@
 		$selectedObject = $selectedObject // Trigger reactivity
 		if (typeof $TControls.object !== 'undefined')
 			if (typeof $TControls.object.parent !== 'undefined')
-				if ($TControls.object.parent.name === 'sceneObjects') {
+				if (typeof $TControls.object.uuid !== 'undefined') {
 					$TControls.visible = true;
 					$peers.send({
 						type: 'move',

@@ -64,7 +64,7 @@
 			outlineEffectLocked.selection.clear();
 			for (let i = 0; i < $lockedObjects.length; i++) {
 				let mesh = $objectsGroup.getObjectByProperty('uuid', $lockedObjects[i][1]);
-				outlineEffectLocked.selection.add(mesh);
+				if (mesh) outlineEffectLocked.selection.add(mesh);
 			}
 		}
 	});

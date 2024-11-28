@@ -206,8 +206,10 @@ function sendUpdate() {
 
         if (selected.name === "Level Up") {
             $toggleExpand = $selectedObject.parent.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: 'up' });
         } else {
             $toggleExpand = selectedGroup.uuid;
+            $peers.send({ type: 'group', uuid: $selectedObject.uuid, group: selectedGroup.uuid });
         }
         selectedGroup.attach($selectedObject);
         $objectsGroup = $objectsGroup;
