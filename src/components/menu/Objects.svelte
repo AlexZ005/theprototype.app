@@ -54,8 +54,7 @@
 
     function select(uuid) {
         if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === uuid)) {
-            propertiesClose.set(true);
-            lightPropertiesClose.set(true);
+            showSidebar(null);
             previoslySelectedObject = $selectedObject;
             selectedObject.set($objectsGroup.getObjectByProperty('uuid', uuid));
             $TControls.attach($objectsGroup.getObjectByProperty('uuid', uuid));
@@ -71,13 +70,9 @@
         setTimeout(() => {
             select(item.uuid)
 			if (item.type.endsWith('Light')) {
-				lightPropertiesClose.set(false);
-				scenePropertiesClose.set(true);
-				propertiesClose.set(true);
+                showSidebar('lightProperties');
 			} else {
-				lightPropertiesClose.set(true);
-				scenePropertiesClose.set(true);
-				propertiesClose.set(false);
+                showSidebar('properties');
 			}
         }, delay)
 	}
