@@ -6,7 +6,8 @@
 		settingsOpen,
 		propertiesClose,
 		scenePropertiesClose,
-		lightPropertiesClose
+		lightPropertiesClose,
+		libraryClose
 	} from '../../stores/appStore.js';
 	import { backgroundColor } from '../../stores/sceneStore';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';
@@ -210,14 +211,20 @@
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
-		</SidebarGroup>
-		<SidebarGroup>
+		
 			<SidebarItem
 				label="Create Group"
 				
 				on:click={() => {
-					console.log('create group');
 					sceneCommand('/group New');
+				}}>
+				
+			</SidebarItem>
+			<SidebarItem
+				label="Library"
+				
+				on:click={() => {
+					libraryClose.set(false);
 				}}>
 				
 				</SidebarItem>
