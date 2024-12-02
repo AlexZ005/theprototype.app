@@ -14,42 +14,19 @@ export const toggleExpand = writable(null);
 
 // update the sidebar visibility
 export function showSidebar(store) {
+	if (store != 'library') libraryClose.set(true);
+	if (store != 'scene') scenePropertiesClose.set(true);
+	if (store != 'lightProperties') lightPropertiesClose.set(true);
+	if (store != 'properties') propertiesClose.set(true);
 
-	if (store === 'library') {
-		console.log(store)
-		libraryClose.set(false);
-		scenePropertiesClose.set(true);
-		lightPropertiesClose.set(true);
-		propertiesClose.set(true);
-	}
-
-	if (store === 'scene') {
-		scenePropertiesClose.set(false);
-		lightPropertiesClose.set(true);
-		propertiesClose.set(true);
-		libraryClose.set(true);
-	}
-
-	if (store === 'lightProperties') {
-		lightPropertiesClose.set(false);
-		propertiesClose.set(true);
-		libraryClose.set(true);
-		scenePropertiesClose.set(true);
-	}
-
-	if (store === 'properties') {
-		propertiesClose.set(false);
-		scenePropertiesClose.set(true);
-		lightPropertiesClose.set(true);
-		libraryClose.set(true);
-	}
-  
-	if (store === null) {
-		propertiesClose.set(true);
-		scenePropertiesClose.set(true);
-		lightPropertiesClose.set(true);
-		libraryClose.set(true);
-	}
+	// The delay adds cool effect
+	setTimeout(() => {	
+		if (store === 'library') libraryClose.set(false);
+		if (store === 'scene') scenePropertiesClose.set(false);
+		if (store === 'lightProperties') lightPropertiesClose.set(false);
+		if (store === 'properties') propertiesClose.set(false);
+		// if (store === null) {}
+	}, 50);
   }
 
 export const pendingApprovals = writable([]);

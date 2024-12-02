@@ -203,6 +203,7 @@
 				label="Create Group"
 				
 				on:click={() => {
+					showSidebar('properties');
 					sceneCommand('/group New');
 				}}>
 				

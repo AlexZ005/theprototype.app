@@ -7,9 +7,8 @@
     import { objectsGroup, TControls, selectedObject, lockedObjects } from '../../stores/sceneStore';
     import { sceneCommand } from '$lib/commandsHandler.svelte';
     import {
+        showSidebar,
 		propertiesClose,
-		lightPropertiesClose,
-		scenePropertiesClose,
 		peers
 	} from '../../stores/appStore.js';
 
@@ -54,7 +53,7 @@
 
     function select(uuid) {
         if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === uuid)) {
-            showSidebar(null);
+            // showSidebar(null);
             previoslySelectedObject = $selectedObject;
             selectedObject.set($objectsGroup.getObjectByProperty('uuid', uuid));
             $TControls.attach($objectsGroup.getObjectByProperty('uuid', uuid));
@@ -67,14 +66,15 @@
 
 	function configure(item, delay = 100) {
         // The delay adds cool effect
-        setTimeout(() => {
+        // setTimeout(() => {
             select(item.uuid)
 			if (item.type.endsWith('Light')) {
                 showSidebar('lightProperties');
 			} else {
                 showSidebar('properties');
 			}
-        }, delay)
+        // }, delay)
+        // propertiesClose.set(false);
 	}
 
 	function deleteItem(item) {
