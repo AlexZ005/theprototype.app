@@ -269,22 +269,29 @@ export async function createObject(object, uuid, override, groupuuid) {
  * @param {string} peerId - The ID of the peer to send the objects to.
  */
 export function sendObjects(peerId, element) {
-    const conn = peer.connections[peerId];
+    let conn; let groupid;
+    if (peerId === null) {
+        groupid = element.uuid;
+        conn = peer;
+        conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: null});
+    }
+    else
+    conn = peer.connections[peerId];
 
     let objects = [];
 
     // Iterate over all objects in the scene
-    let count = countObjects()
+    let count = countObjects(element);
     console.log("Sending " + count + " objects to " + peerId);
 
     // Wait 500ms to ensure the connection is established before sending the objects
     setTimeout(() => {
         // Send amount of objects to be sent and their uuids
         conn.send({type: 'loading', count: count, uuids: uuids});
-        sendObject(conn);
+        sendObject(conn, element, groupid);
+        uuids = [];
     }, 500);
 
-    uuids = [];
 }
 
 function sendObject(conn, element, groupuuid) {
@@ -299,7 +306,9 @@ function sendObject(conn, element, groupuuid) {
         if (element.type == "Group") {
             if (element.parent.parent.parent !== null) {
                 groupuuid = element.parent.uuid
+                console.log("group uuid: " + groupuuid);
             }
+            
             conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: groupuuid});
             sendObject(conn, element, element.uuid, groupuuid);
         } else if (element.type.endsWith('Light')) {

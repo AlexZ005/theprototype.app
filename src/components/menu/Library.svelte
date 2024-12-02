@@ -67,7 +67,7 @@
 		<CloseButton
 			on:click={() => {
 				libraryClose.set(true);
-				st = 0;
+				
 			}}
 			class="mb-4 dark:text-white"
 		/>

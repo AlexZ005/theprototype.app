@@ -106,9 +106,8 @@ export function createGroup(command, uuid, groupuuid, name, groupparent) {
         return group.uuid
     } else {
         let group = new THREE.Group();
-        if (name) group.name = name
-        else
-        group.name = command.split(' ')[1] + ' Group';
+        if (command?.split(' ')[1]) group.name = command.split(' ')[1] + ' Group';
+        else group.name = name
         if (uuid) group.uuid = uuid
         sceneObjects.add(group);
         //Trigger reactivity for UI list of objects

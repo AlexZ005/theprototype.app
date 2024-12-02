@@ -1,6 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { objectsGroup, TControls } from '../stores/sceneStore.js';
+import { sendObjects } from './commandsHandler.svelte';
 import { peers } from '../stores/appStore';
 
 //Access objects Store
@@ -82,6 +83,7 @@ export async function importFile(file) {
 			//Trigger reactivity for UI list of objects
 			objectsGroup.update((value) => value);
 			controls.attach(scene);
+			sendObjects(null, scene);
 		});
 	} catch (error) {
 		console.error('Error importing file:', error);
