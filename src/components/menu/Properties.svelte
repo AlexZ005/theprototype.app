@@ -358,7 +358,7 @@ function sendUpdate() {
             <Checkbox bind:checked={$selectedObject.visible}
             onchange={() => { sendUpdate(); }}>Visible</Checkbox>
         </p>
-
+        {#if typeof $selectedObject?.material?.type !== "undefined"}
         <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type}
             on:change={(event) => {
                 console.log(event.srcElement.value);
@@ -366,7 +366,7 @@ function sendUpdate() {
                 sendUpdate();
             }}
         />
-
+        {/if}
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">Shadow</p>
         <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
             <li class="w-full">

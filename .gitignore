@@ -23,3 +23,6 @@ vite.config.ts.timestamp-*
 # Self-Signed certs
 certs/localhost.crt
 certs/localhost.key
+
+# Libraries
+static/library

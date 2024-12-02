@@ -5,8 +5,8 @@
 	import {
 		settingsOpen,
 		propertiesClose,
-		scenePropertiesClose,
-		lightPropertiesClose
+		lightPropertiesClose,
+		showSidebar
 	} from '../../stores/appStore.js';
 	import { backgroundColor } from '../../stores/sceneStore';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';
@@ -111,9 +111,7 @@
 				<SidebarDropdownItem
 				label="🧊Cube"
 				on:click={() => {
-					lightPropertiesClose.set(true);
-					scenePropertiesClose.set(true);
-					propertiesClose.set(false);
+					showSidebar('properties');
 					sceneCommand('/create Box 2 2 2');
 				}}
 			>
@@ -122,9 +120,7 @@
 				<SidebarDropdownItem
 					label="🔼Cone"
 					on:click={() => {
-						lightPropertiesClose.set(true);
-						scenePropertiesClose.set(true);
-						propertiesClose.set(false);
+						showSidebar('properties');
 						sceneCommand('/create Cone 1');
 					}}
 				>
@@ -133,9 +129,7 @@
 				<SidebarDropdownItem
 					label="🟠Sphere"
 					on:click={() => {
-						lightPropertiesClose.set(true);
-						scenePropertiesClose.set(true);
-						propertiesClose.set(false);
+						showSidebar('properties');
 						sceneCommand('/create Sphere 1');
 					}}
 				>
@@ -179,9 +173,7 @@
 					<SidebarDropdownItem
 					label="Ambient"
 					on:click={() => {
-						scenePropertiesClose.set(true);
-						propertiesClose.set(true);
-						lightPropertiesClose.set(false);
+						showSidebar('lightProperties');
 						sceneCommand('/light ambient');
 					}}
 				>
@@ -190,9 +182,7 @@
 				<SidebarDropdownItem
 					label="Directional"
 					on:click={() => {
-						scenePropertiesClose.set(true);
-						propertiesClose.set(true);
-						lightPropertiesClose.set(false);
+						showSidebar('lightProperties');
 						sceneCommand('/light directional');
 					}}
 				>
@@ -201,23 +191,28 @@
 				<SidebarDropdownItem
 					label="Hemisphere"
 					on:click={() => {
-						scenePropertiesClose.set(true);
-						propertiesClose.set(true);
-						lightPropertiesClose.set(false);
+						showSidebar('lightProperties');
 						sceneCommand('/light hemisphere');
 					}}
 				>
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 			</SidebarDropdownWrapper>
-		</SidebarGroup>
-		<SidebarGroup>
+		
 			<SidebarItem
 				label="Create Group"
 				
 				on:click={() => {
-					console.log('create group');
+					showSidebar('properties');
 					sceneCommand('/group New');
+				}}>
+				
+			</SidebarItem>
+			<SidebarItem
+				label="Library"
+				
+				on:click={() => {
+					showSidebar('library');
 				}}>
 				
 				</SidebarItem>
@@ -269,9 +264,7 @@
 				label="Configure Scene"
 				{spanClass}
 				on:click={() => {
-					lightPropertiesClose.set(true);
-					propertiesClose.set(true);
-					scenePropertiesClose.set(false);
+					showSidebar('scene');
 				}}
 			></SidebarItem>
 			<SidebarItem

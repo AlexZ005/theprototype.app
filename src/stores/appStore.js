@@ -6,10 +6,28 @@ export const scenePropertiesClose = writable(true);
 export const lightPropertiesClose = writable(true);
 export const flowGraphClose = writable(false);
 export const chatHidden = writable('hidden');
+export const libraryClose = writable(true);
 export const userdata = writable([]);
 export const username = writable(null);
 export const peers = writable(null);
 export const toggleExpand = writable(null);
+
+// update the sidebar visibility
+export function showSidebar(store) {
+	if (store != 'library') libraryClose.set(true);
+	if (store != 'scene') scenePropertiesClose.set(true);
+	if (store != 'lightProperties') lightPropertiesClose.set(true);
+	if (store != 'properties') propertiesClose.set(true);
+
+	// The delay adds cool effect
+	setTimeout(() => {	
+		if (store === 'library') libraryClose.set(false);
+		if (store === 'scene') scenePropertiesClose.set(false);
+		if (store === 'lightProperties') lightPropertiesClose.set(false);
+		if (store === 'properties') propertiesClose.set(false);
+		// if (store === null) {}
+	}, 50);
+  }
 
 export const pendingApprovals = writable([]);
 export const waitingForApproval = writable([]);

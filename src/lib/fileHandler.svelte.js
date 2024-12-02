@@ -1,11 +1,16 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import { objectsGroup } from '../stores/sceneStore.js';
+import { objectsGroup, TControls } from '../stores/sceneStore.js';
+import { sendObjects } from './commandsHandler.svelte';
 import { peers } from '../stores/appStore';
 
 //Access objects Store
 let sceneObjects = $state();
 objectsGroup.subscribe(value => { sceneObjects = value });
+
+//Access object controls
+let controls = $state();
+TControls.subscribe(value => { controls = value });
 
 //Access peers Store
 let peer = $state();
@@ -35,6 +40,31 @@ export function save(format) {
 	);
 }
 
+export async function loadFile(url) {
+	const reader = new FileReader();
+	let blob = await fetch(url).then((r) => r.blob());
+	return new Promise((resolve, reject) => {
+	reader.readAsText(blob);
+	reader.onload = function (event) {
+		try {
+			console.log(`Loaded file: ${url}`);
+			if (url.endsWith('.json')) {
+				resolve(JSON.parse(event.target.result));
+			} else if (url.endsWith('.html')) {
+				resolve(event.target.result);
+			} else if (url.endsWith('.glb')) {
+				importFile(blob);
+			} else {
+				console.error(`Unsupported file type: ${url}`);
+				reject(new Error(`Unsupported file type: ${url}`));
+			}
+		} catch (error) {
+			console.error(`Error loading file: ${url}`, error);
+			reject(error);
+		}}});
+		
+}
+
 export async function importFile(file) {
 	try {
 		const reader = new FileReader();
@@ -50,9 +80,11 @@ export async function importFile(file) {
 		loader.parse(reader.result, '', function (result) {
 			const scene = result.scene;
 			sceneObjects.add(scene);
+			//Trigger reactivity for UI list of objects
+			objectsGroup.update((value) => value);
+			controls.attach(scene);
+			sendObjects(null, scene);
 		});
-		//Trigger reactivity for UI list of objects
-		objectsGroup.update((value) => value);
 	} catch (error) {
 		console.error('Error importing file:', error);
 	}
