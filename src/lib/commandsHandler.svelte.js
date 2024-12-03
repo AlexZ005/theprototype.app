@@ -213,7 +213,7 @@ export async function createLoader(count, uuids) {
 export async function colorObject(uuid, color, near, far) {
     if (uuid == 'background') {
         scene.background = new THREE.Color(color);
-    } else if (uuid = 'fog') {
+    } else if (uuid == 'fog') {
         if (near != null && far != null)
         scene.fog = new THREE.Fog(color, near, far);
         else
