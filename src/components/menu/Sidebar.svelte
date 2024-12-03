@@ -35,6 +35,7 @@
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
 	let  open  = $state(false);
+	let rerenderInput = $state(false);
 
 	let transitionParamsRight = {
 		x: -320,
@@ -217,14 +218,22 @@
 				
 				</SidebarItem>
 		</SidebarGroup>
-			<input type="file" id="import-file" style="display: none" on:change={e => importFile(e.target.files[0])} accept=".gltf, .glb" />
-			<input type="file" id="load-file" style="display: none" on:change={e => load(e.target.files[0])} accept=".json, .gltf, .scene" />
+		{#key rerenderInput}
+			<input type="file" id="import-file" style="display: none" on:input={e => { console.log('test') ; importFile(e.target.files[0])}} accept=".gltf, .glb" />
+			<input type="file" id="load-file" style="display: none" on:input={e => load(e.target.files[0])} accept=".json, .gltf, .scene" />
+		{/key}
 		<SidebarGroup border>
 
 			<div class="" role="group">
 				<div class="inline-flex shadow-sm " role="group">
 				<button type="button" class={saveClass + " border rounded-tr-lg rounded-tl-lg"}
-				on:click={() => document.getElementById('import-file').click()}>
+				on:click={() => { 
+					document.getElementById('import-file').click()
+					// Toggle rerenderInput to refresh the input type file HTML elements
+					// and we want to load same object even if it is selected twice
+        			rerenderInput = rerenderInput ? false : true
+				}
+			}>
 				  📩 Import&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				</button>
 				</div>
