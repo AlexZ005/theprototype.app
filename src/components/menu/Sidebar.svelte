@@ -6,7 +6,8 @@
 		settingsOpen,
 		propertiesClose,
 		lightPropertiesClose,
-		showSidebar
+		showSidebar,
+		closeMenu
 	} from '../../stores/appStore.js';
 	import { backgroundColor } from '../../stores/sceneStore';
 	import { sceneCommand } from '$lib/commandsHandler.svelte';
@@ -34,7 +35,7 @@
 	dark:text-gray-400 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700\
 	dark:focus:ring-blue-500 dark:focus:text-white bg-white';
 
-	let  open  = $state(false);
+	// let  open  = $state(false);
 	let rerenderInput = $state(false);
 
 	let transitionParamsRight = {
@@ -49,7 +50,7 @@
 	style="height: 55px; background-color: rgba(100, 123, 155, 1); top: 5px; left: 5px;"
 >
 	<Hamburger
-		bind:open
+		bind:open={$closeMenu}
 		--color={invert($backgroundColor)}
 		--layer-width="40px"
 		type="arrow"
@@ -61,7 +62,7 @@
 <div class="hamburger" style="z-index: 49;">
 <div>
 <Drawer
-	hidden={!open}
+	hidden={$closeMenu}
 	activateClickOutside={false}
 	backdrop={false}
 	placement="left"
@@ -110,7 +111,7 @@
 					</svg>
 				</svelte:fragment>
 				<SidebarDropdownItem
-				label="🧊Cube"
+				label="Cube"
 				on:click={() => {
 					showSidebar('properties');
 					sceneCommand('/create Box 2 2 2');
@@ -119,7 +120,7 @@
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 				<SidebarDropdownItem
-					label="🔼Cone"
+					label="Cone"
 					on:click={() => {
 						showSidebar('properties');
 						sceneCommand('/create Cone 1');
@@ -128,7 +129,7 @@
 					<svelte:fragment slot="icon"></svelte:fragment>
 				</SidebarDropdownItem>
 				<SidebarDropdownItem
-					label="🟠Sphere"
+					label="Sphere"
 					on:click={() => {
 						showSidebar('properties');
 						sceneCommand('/create Sphere 1');
