@@ -3,10 +3,14 @@
 	import { interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 	import { peers, username,userdata } from '../stores/appStore';
+	import { isLocked, editorCam } from '../stores/sceneStore';
 	import Grid from '../extensions/Grid.svelte';
 	import Outline from './Outline.svelte'
+	import Player from './play/Player.svelte'
+	import { Mesh, Vector3 } from 'three'
 
-	let { scene } = useThrelte();
+
+	let { scene, camera } = useThrelte();
 	// Store for global scene variables
 	import { globalScene, objectsGroup, showGrid, TControls, selectedObject } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
@@ -41,9 +45,27 @@
 					});
 				}
 	}
+
+	let playerMesh: Mesh
+	let positionHasBeenSet = false
+	const smoothPlayerPosX = spring(0)
+	const smoothPlayerPosZ = spring(0)
+	const t3 = new Vector3()
+	useTask(() => {
+		if (!playerMesh) return
+		console.log('test')
+		playerMesh.getWorldPosition(t3)
+		smoothPlayerPosX.set(t3.x, {
+		hard: !positionHasBeenSet
+		})
+		smoothPlayerPosZ.set(t3.z, {
+		hard: !positionHasBeenSet
+		})
+		if (!positionHasBeenSet) positionHasBeenSet = true
+	})
 </script>
 
-<T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15}>
+<T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15} bind:ref={$editorCam}>
 	<OrbitControls enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
 </T.PerspectiveCamera>
 
@@ -70,6 +92,13 @@
 
 <Grid showGrid={$showGrid} />
 
+{#if !$isLocked}
 <TransformControls bind:controls={$TControls} {onchange} {oncreate} />
 
 <Outline />
+{/if}
+
+<Player
+bind:playerMesh
+position={[0, 2, 3]}
+/>

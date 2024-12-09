@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { BottomNav, Listgroup } from 'flowbite-svelte';
-	import { objectsGroup, TControls } from '../../stores/sceneStore';
+	import { objectsGroup, TControls, isLocked } from '../../stores/sceneStore';
 	import { chatHidden } from '../../stores/appStore.js';
 	import Objects from './Objects.svelte';
 
@@ -60,6 +60,21 @@
 			moving = false;
 			resizing = false;
 		});
+	}
+
+	function checkPlay() {
+		// console.log('locking')
+		if ($isLocked === null || allowPlay === true)
+		$isLocked	= true
+	}
+
+	//Timeout for pointer lock
+	//on ESC release have delay
+	let allowPlay;
+	if ($isLocked === false) {	
+		setTimeout(() => {
+			allowPlay = true;
+		}, 2000)
 	}
 </script>
 

@@ -7,3 +7,6 @@ export const TControls = writable(null);
 export const lockedObjects = writable([]);
 export const selectedObject = writable([]);
 export const backgroundColor = writable('#ffffff');
+export const isLocked = writable(null);
+export const playerCam = writable(false);
+export const editorCam = writable(false);
