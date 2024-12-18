@@ -47,7 +47,7 @@ export async function loadFile(url) {
 	reader.readAsText(blob);
 	reader.onload = function (event) {
 		try {
-			console.log(`Loaded file: ${url}`);
+			// console.log(`Loaded file: ${url}`);
 			if (url.endsWith('.json')) {
 				resolve(JSON.parse(event.target.result));
 			} else if (url.endsWith('.html')) {
@@ -80,6 +80,7 @@ export async function importFile(file) {
 		loader.parse(reader.result, '', function (result) {
 			const scene = result.scene;
 			sceneObjects.add(scene);
+			// scene.position.set(1, 1, 1);
 			//Trigger reactivity for UI list of objects
 			objectsGroup.update((value) => value);
 			controls.attach(scene);

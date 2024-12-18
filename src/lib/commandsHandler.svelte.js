@@ -234,7 +234,7 @@ export async function deleteObject(uuid) {
 }
 
 
-export async function createObject(object, uuid, override, groupuuid) {
+export async function createObject(object, uuid, override, groupuuid, pos, rot, scale) {
     if (uuid == null) {
     let mesh = loader.parse(object.element);
     if (override)
@@ -257,6 +257,16 @@ export async function createObject(object, uuid, override, groupuuid) {
             if (groupuuid){
                 let group = sceneObjects.getObjectByProperty('uuid', groupuuid)
                 group.attach(mesh)
+                // if (group.parent.parent.parent !== null) {
+                // mesh.position.set(0, 0, 0);
+                // mesh.rotation.set(0, 0, 0);
+                // mesh.scale.set(1, 1, 1);
+                // } else {
+                if(pos && rot && scale) {
+                    mesh.position.set(pos[0], pos[1], pos[2]);
+                    mesh.rotation.set(rot[0], rot[1], rot[2]);
+                    mesh.scale.set(scale[0], scale[1], scale[2]);
+                }
             }
         });
     }
@@ -273,7 +283,11 @@ export function sendObjects(peerId, element) {
     if (peerId === null) {
         groupid = element.uuid;
         conn = peer;
-        conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: null});
+        conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: null,
+            pos: element.position.toArray(),
+            rot: element.rotation.toArray(),
+            scale: element.scale.toArray()
+        });
     }
     else
     conn = peer.connections[peerId];
@@ -296,6 +310,7 @@ export function sendObjects(peerId, element) {
 
 function sendObject(conn, element, groupuuid) {
     let objects = [];
+    let test = new THREE.Vector3();
     if (typeof element !== 'undefined') {
         objects = element.children;
     } else {
@@ -308,19 +323,46 @@ function sendObject(conn, element, groupuuid) {
                 groupuuid = element.parent.uuid
                 console.log("group uuid: " + groupuuid);
             }
-            
-            conn.send({type: 'group', name: element.name, uuid: element.uuid, groupparent: groupuuid});
+            element.getWorldPosition(test);
+            conn.send({
+                type: 'group',
+                name: element.name,
+                uuid: element.uuid,
+                groupparent: groupuuid,
+                pos: test.toArray(),
+                rot: element.rotation.toArray(),
+                scale: element.scale.toArray()
+            });
             sendObject(conn, element, element.uuid, groupuuid);
         } else if (element.type.endsWith('Light')) {
+            element.getWorldPosition(test);
             // Send each object as a JSON object
-            conn.send({type: 'object', element: element.toJSON()})
+            conn.send({
+                type: 'object',
+                element: element.toJSON(),
+                pos: test.toArray(),
+                rot: element.rotation.toArray(),
+                scale: element.scale.toArray()
+            });
         } else {
             const exporter = new GLTFExporter({outputEncoding: 'json'});
             exporter.parse(
                 element,
                 function (result) {
-                    // console.log('packing gltf');
-                    conn.send({type: 'object', element: result, uuids: [element.uuid], groupuuid: groupuuid})
+                    console.log('packing gltf');
+                    element.getWorldPosition(test);
+                    // if (element.name === "Rug001")
+                        // console.log("Rug001 pos: " + element.position.x + " " + element.position.y + " " + element.position.z)
+                    // if (groupuuid) console.log("group uuid " + groupuuid + ' ' + ' ' + element.name);
+                    conn.send({
+                        type: 'object',
+                        element: result,
+                        uuids: [element.uuid],
+                        groupuuid: groupuuid,
+                        pos: element.position.toArray(),
+                        rot: element.rotation.toArray(),
+                        scale: element.scale.toArray()
+                    });
                 },
                 function (error) {
                     console.log(error);

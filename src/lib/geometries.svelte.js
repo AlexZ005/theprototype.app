@@ -90,17 +90,20 @@ export function createLight(command, uuid) {
     }
 }
 
-export function createGroup(command, uuid, groupuuid, name, groupparent) {
+export function createGroup(command, uuid, groupuuid, name, groupparent, pos, rot, scale) {
     let group;
     if (groupuuid) {
         let group = sceneObjects.getObjectByProperty('uuid', groupuuid);
         let mesh = sceneObjects.getObjectByProperty('uuid', uuid);
         if (groupuuid == 'up')
         group = mesh.parent.parent;
-        // console.log(group.uuid);
-        // console.log(group.uuid + 'add to group: ' + mesh.uuid);
         toggleExpand.set(group.uuid);
         group.attach(mesh);
+        if(pos && rot && scale) {
+            group.position.set(pos[0], pos[1], pos[2]);
+            group.rotation.set(rot[0], rot[1], rot[2]);
+            group.scale.set(scale[0], scale[1], scale[2]);
+        }
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
         return group.uuid
@@ -110,6 +113,12 @@ export function createGroup(command, uuid, groupuuid, name, groupparent) {
         else group.name = name
         if (uuid) group.uuid = uuid
         sceneObjects.add(group);
+        if(pos && rot && scale) {
+            group.position.set(pos[0], pos[1], pos[2]);
+            group.rotation.set(rot[0], rot[1], rot[2]);
+            group.scale.set(scale[0], scale[1], scale[2]);
+        }
+        
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
         // console.log('createGroup: ' + group);
