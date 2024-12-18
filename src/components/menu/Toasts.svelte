@@ -130,6 +130,26 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
 </div>
 {/each}
 
+{#if (typeof localStorage !== 'undefined' && !localStorage.getItem('hasSeenDisclaimer'))}
+<div class="my-1">
+    <Toast  transition={fly} class="p-2 rounded-lg dark:bg-red-300 dark:border-dark-700 border-2 border-red-500" divClass="flex items-center gap-3" on:close={() => 
+        { localStorage.setItem('hasSeenDisclaimer', 'true'); }
+        }>
+        <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+    
+        </div>
+        <div class="mb-1 text-base font-medium text-black-700 dark:text-brack-500 inline-flex items-center">
+            
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-800 pr-4 overflow-hidden max-w-80">
+                This is a pre-alpha version of the application.<br />
+                Some features may be incomplete or buggy.
+            </p>
+        </div>
+    
+    </Toast>
+    </div>
+{/if}
+
 {#each $waitingForApproval as status}
 {#if status[1] === 'pending'}
 <div class="my-1">
