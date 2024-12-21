@@ -22,7 +22,8 @@
 		SidebarDropdownItem,
 		Radio,
 		Dropdown,
-		Drawer
+		Drawer,
+		Navbar
 	} from 'flowbite-svelte';
 	import { Hamburger } from 'svelte-hamburgers';
 	import invert from 'invert-color';
@@ -46,17 +47,23 @@
 </script>
 
 <div
-	class="burger inline-flex rounded-md bg-primary-700 shadow-sm"
-	style="height: 55px; background-color: rgba(100, 123, 155, 1); top: 5px; left: 5px;"
+class="burger inline-flex rounded-md bg-primary-700 shadow-sm"
+style="width: 120px; height: 55px; background-color: rgba(100, 123, 155, 1); top: 5px; left: 5px;"
 >
+<Navbar rounded color="form">
+
+	<img src="logo.svg" alt="logo" class="h-10 w-10" />
+		<div class="" style="position: absolute; top: 0; left: 50px;">
 	<Hamburger
 		bind:open={$closeMenu}
 		--color={invert($backgroundColor)}
-		--layer-width="40px"
-		type="arrow"
+		
+		type="none"
 	/>
 </div>
 
+</Navbar>
+</div>
 {#if true}
 
 <div class="hamburger" style="z-index: 49;">
@@ -309,5 +316,8 @@
 <style>
 	:global(.switchMenu) {
 		display: flex;
+	}
+	.burger {
+		background-color: var(--color-form);
 	}
 </style>
