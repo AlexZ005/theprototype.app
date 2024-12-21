@@ -3,7 +3,7 @@ import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selected
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight, createGroup } from '$lib/geometries.svelte'
-import { addMessage, loading, loadingcount, showToast } from '../stores/appStore';
+import { addMessage, loading, loadingcount, showToast, fixLight } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
 //Access scene Store
@@ -89,6 +89,19 @@ export function sceneCommand(command) {
                 if(uuid != null)
                 peer.send({type: 'create', command: command, uuid: uuid});
                 peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
+
+                let checklight = sceneObjects.getObjectByProperty('type', 'HemisphereLight')
+                console.log(checklight);
+                if (typeof checklight === 'undefined') {
+                    checklight = sceneObjects.getObjectByProperty('type', 'AmbientLight')
+                    if (typeof checklight === 'undefined') checklight = sceneObjects.getObjectByProperty('type', 'DirectionalLight')
+                        if (typeof checklight === 'undefined') {
+                            console.log('No light found, adding default light');
+                            // showToast('No light found, adding default light');
+                            fixLight.set(true);
+                        }
+                }
+    
         }
         else if (command.startsWith('/light')) {
                 let uuid = createLight(command);

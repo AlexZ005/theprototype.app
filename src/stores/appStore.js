@@ -30,6 +30,7 @@ export function showSidebar(store) {
 	}, 50);
   }
 
+export const fixLight = writable(false);
 export const pendingApprovals = writable([]);
 export const waitingForApproval = writable([]);
 export const toastStore = writable([]);
