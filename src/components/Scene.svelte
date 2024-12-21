@@ -1,6 +1,7 @@
 <script lang="ts">
+	import * as THREE from 'three';
 	import { T, useTask, useThrelte } from '@threlte/core';
-	import { interactivity, OrbitControls, TransformControls } from '@threlte/extras';
+	import { Environment, interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 	import { peers, username,userdata } from '../stores/appStore';
 	import { isLocked, editorCam } from '../stores/sceneStore';
@@ -15,17 +16,42 @@
 	import { globalScene, objectsGroup, showGrid, TControls, selectedObject } from '../stores/sceneStore.js';
 	$globalScene = scene; // console.log($globalScene)
 
+	$globalScene.background = new THREE.Color(0x101010);
+
 	$username = localStorage.getItem('username');
 	$userdata.push([$peers.peer.id, localStorage.getItem('username'), localStorage.getItem('avatar')]);
 	$userdata = $userdata;
 
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
+	camera.current.position.set(10.5, 7.57, 11.4);
+	
+	let resetSettings = false;
+	setTimeout(() => {
+		// $peers.send({ type: 'userdata', userdata: $userdata });
+		if(localStorage.getItem("camx"))
+		camera.current.position.x = localStorage.getItem("camx");
+		if(localStorage.getItem("camy"))
+		camera.current.position.y = localStorage.getItem("camy");
+		if(localStorage.getItem("camz"))
+		camera.current.position.z = localStorage.getItem("camz");
+	
+		// console.log(camera.current.position)
+		resetSettings = true;
+	}, 1000);
 
 	interactivity();
 	const scale = spring(0.5);
 	let rotation = 0;
 	useTask((delta) => {
 		rotation += 0.25 * delta;
+		// console.log(camera.current.lookAt.)
+		
+		if (resetSettings == true) {
+			// localStorage.setItem("camx",camera.current.position.x);
+			// localStorage.setItem("camy",camera.current.position.y);
+			// localStorage.setItem("camz",camera.current.position.z);
+		}
+		
 	});
 
 	function oncreate() { $TControls.visible = false; }
@@ -66,10 +92,10 @@
 </script>
 
 <T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15} bind:ref={$editorCam}>
-	<OrbitControls enableZoom={false} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
+	<OrbitControls enableZoom={true} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
 </T.PerspectiveCamera>
 
-<T.DirectionalLight position={[0, 10, 10]} castShadow />
+<!-- <T.DirectionalLight position={[0, 10, 10]} castShadow />
 
 <T.Mesh
 	rotation.y={rotation}
@@ -81,12 +107,12 @@
 >
 	<T.BoxGeometry args={[1, 2, 1]} />
 	<T.MeshStandardMaterial color="lightblue" />
-</T.Mesh>
+</T.Mesh> -->
 
-<T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
+<!-- <T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
 	<T.CircleGeometry args={[4, 40]} />
 	<T.MeshStandardMaterial color="white" />
-</T.Mesh>
+</T.Mesh> -->
 
 <T.Group bind:ref={$objectsGroup} name="sceneObjects" />
 

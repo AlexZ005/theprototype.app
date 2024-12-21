@@ -13,13 +13,16 @@
 	let item = $state();
 	let attributionModal = $state(false);
 	let select = $state();
-	let selected = $state();
+	let selected = $state([]);
 	let libraries = $state();
 	let attribution = $state();
 
 	onMount(async () => {
 		// load library list on mount
 		libraries = await loadFile('/library/libraryList.json');
+		item = await loadFile('/library/cube_diorama/default.json');
+		attribution = await loadFile('/library/cube_diorama/attribution.html');
+		selected.name = 'cube_diorama';
 		select = libraries[0].value;
 	});
 
@@ -95,13 +98,13 @@
 			onchange={(e) => loadFile(e.target.files[0])}
 			accept=".json, .gltf"
 		/>
-		<button
+		<!-- <button
 			type="button"
 			class="inline-flex rounded-md shadow-sm"
 			onclick={() => document.getElementById('load-library').click()}
 		>
 			📁
-		</button>
+		</button> -->
 	</div>
 
 	<p class="items-center pb-4 italic text-white dark:text-slate-200">
@@ -118,7 +121,7 @@
 			<button
 				onclick={() => {
 					let url = `/library/${selected.name}/${object.name}/glTF-Binary/${object.variants['glTF-Binary']}`;
-					loadFile(url);
+					loadFile(url, object.name);
 				}}
 			>
 				<img
