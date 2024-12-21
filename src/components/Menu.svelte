@@ -11,8 +11,10 @@
 	import Library from './menu/Library.svelte';
 	import { DarkMode } from 'flowbite-svelte';
 	import Users from './menu/Users.svelte';
+	import News from './menu/News.svelte';
 </script>
 
+<News />
 <Connect />
 <Controls />
 <Properties />

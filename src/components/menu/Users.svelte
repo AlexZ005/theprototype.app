@@ -63,7 +63,7 @@
 <div style="position: fixed; right: 0px; z-index: 997;">
 	<div class="flex" style=" position: absolute; top: 15px; right: 100px; z-index: 997;">
 {#if $userdata}
-{console.log($userdata)}
+<!-- {console.log($userdata)} -->
 {#if $userdata.length < 4}
 <div style=" position: absolute; right: 0px;">
 	<div class="flex items-center space-x-3">

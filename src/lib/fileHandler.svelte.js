@@ -2,7 +2,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { objectsGroup, TControls } from '../stores/sceneStore.js';
 import { sendObjects } from './commandsHandler.svelte';
-import { peers } from '../stores/appStore';
+import { peers, fixLight } from '../stores/appStore';
 
 //Access objects Store
 let sceneObjects = $state();
@@ -40,7 +40,7 @@ export function save(format) {
 	);
 }
 
-export async function loadFile(url) {
+export async function loadFile(url, name) {
 	const reader = new FileReader();
 	let blob = await fetch(url).then((r) => r.blob());
 	return new Promise((resolve, reject) => {
@@ -53,7 +53,7 @@ export async function loadFile(url) {
 			} else if (url.endsWith('.html')) {
 				resolve(event.target.result);
 			} else if (url.endsWith('.glb')) {
-				importFile(blob);
+				importFile(blob, name);
 			} else {
 				console.error(`Unsupported file type: ${url}`);
 				reject(new Error(`Unsupported file type: ${url}`));
@@ -65,7 +65,7 @@ export async function loadFile(url) {
 		
 }
 
-export async function importFile(file) {
+export async function importFile(file, name) {
 	try {
 		const reader = new FileReader();
 		reader.readAsArrayBuffer(file);
@@ -79,12 +79,26 @@ export async function importFile(file) {
 
 		loader.parse(reader.result, '', function (result) {
 			const scene = result.scene;
+			if (name) scene.name = name;
 			sceneObjects.add(scene);
 			// scene.position.set(1, 1, 1);
 			//Trigger reactivity for UI list of objects
 			objectsGroup.update((value) => value);
 			controls.attach(scene);
 			sendObjects(null, scene);
+
+			let checklight = sceneObjects.getObjectByProperty('type', 'HemisphereLight')
+			console.log(checklight);
+			if (typeof checklight === 'undefined') {
+				checklight = sceneObjects.getObjectByProperty('type', 'AmbientLight')
+				if (typeof checklight === 'undefined') checklight = sceneObjects.getObjectByProperty('type', 'DirectionalLight')
+					if (typeof checklight === 'undefined') {
+						console.log('No light found, adding default light');
+						// showToast('No light found, adding default light');
+						fixLight.set(true);
+					}
+			}
+			
 		});
 	} catch (error) {
 		console.error('Error importing file:', error);
