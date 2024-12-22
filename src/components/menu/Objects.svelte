@@ -116,7 +116,9 @@
         {#if !isExpanded}
             <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-12">
                 <div class="flex inline-flex justify-start items-center col-span-9" onclick={() => { select(element.uuid); }}>
-                    <i class="pl-2 fa-regular fa-plus pr-2" title="Expand group" onclick={() => isExpanded = !isExpanded}></i>
+                    {#if element.children.length > 0}
+                        <i class="pl-2 fa-regular fa-plus pr-2" title="Expand group" onclick={() => isExpanded = !isExpanded}></i>
+                    {/if}
                     <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
                 </div>
                 {#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === element.uuid)}
@@ -136,8 +138,10 @@
             </div>
         {:else}
             <div class="pl-2 container flex inline-flex justify-start items-center" onclick={() => { select(element.uuid); }}>
-            <i class="fa-solid fa-minus pr-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
-            <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
+                {#if element.children.length > 0}
+                    <i class="fa-solid fa-minus pr-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
+                {/if}
+                <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
             </div>
         {/if}
     </ListgroupItem>
