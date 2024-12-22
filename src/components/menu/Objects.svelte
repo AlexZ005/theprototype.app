@@ -110,7 +110,7 @@
   </script>
 
 
-{#if element.type === 'Group'}
+{#if element.type === 'Group' || element.type === 'Object3D' || element.type === 'Mesh'}
     <p id={element.uuid}>
     <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
         {#if !isExpanded}
@@ -146,7 +146,7 @@
     {#if isExpanded}
     {#each element.children as item}
         <p class="pl-8">
-        {#if item.type === 'Group'}    
+        {#if item.type === 'Group' || item.type === 'Object3D' || item.type === 'Mesh'}    
             <svelte:self element={item} key={item.uuid} />
         {:else}
             <p id={item.uuid}>
