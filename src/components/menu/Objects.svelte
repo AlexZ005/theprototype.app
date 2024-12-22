@@ -110,14 +110,24 @@
   </script>
 
 
-{#if element.type === 'Group' || element.type === 'Object3D' || element.type === 'Mesh'}
+
     <p id={element.uuid}>
     <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
         {#if !isExpanded}
             <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-12">
                 <div class="flex inline-flex justify-start items-center col-span-9" onclick={() => { select(element.uuid); }}>
                     {#if element.children.length > 0}
-                        <i class="pl-2 fa-regular fa-plus pr-2" title="Expand group" onclick={() => isExpanded = !isExpanded}></i>
+                        <i class="fa-regular fa-plus pr-2 pl-2" title="Expand group" onclick={() => isExpanded = !isExpanded}></i>
+                    {:else}
+                        <i class="fa-regular fa-plus pr-2 pl-2" title="Expand group" style="opacity: 0;"></i>
+                    {/if}
+
+                    {#if element.type.endsWith('Group')}
+                        <i class="fa-solid fa-layer-group pr-2" title="Group"></i>
+                    {:else if element.type.endsWith('Light')}
+                        <i class="fa-regular fa-sun pr-2" title="Light"></i>
+                    {:else}
+                        <i class="fa-solid fa-cube pr-2" title="Object"></i>
                     {/if}
                     <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
                 </div>
@@ -137,11 +147,17 @@
                 {/if}
             </div>
         {:else}
-            <div class="pl-2 container flex inline-flex justify-start items-center" onclick={() => { select(element.uuid); }}>
-                {#if element.children.length > 0}
-                    <i class="fa-solid fa-minus pr-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
-                {/if}
-                <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
+            <div class="container flex inline-flex justify-start items-center">
+            <i class="fa-solid fa-minus pr-2 pl-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
+
+            {#if element.type.endsWith('Group')}
+                <i class="fa-solid fa-layer-group pr-2" title="Group"></i>
+            {:else if element.type.endsWith('Light')}
+                <i class="fa-regular fa-sun pr-2" title="Light"></i>
+            {:else}
+                <i class="fa-solid fa-cube pr-2" title="Object"></i>
+            {/if}
+            <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
             </div>
         {/if}
     </ListgroupItem>
@@ -149,78 +165,9 @@
 
     {#if isExpanded}
     {#each element.children as item}
-        <p class="pl-8">
-        {#if item.type === 'Group' || item.type === 'Object3D' || item.type === 'Mesh'}    
-            <svelte:self element={item} key={item.uuid} />
-        {:else}
-            <p id={item.uuid}>
-            <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
-                <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-12">
-                    <div class="flex inline-flex justify-start items-center col-span-9" onclick={() => { select(item.uuid); }}>
-                    {#if item.type.endsWith('Light')}
-                        <i class="pl-2 fa-regular fa-sun pr-2" title="Light"></i>
-                    {:else}
-                        <i class="pl-2 fa-solid fa-cube pr-2" title="Object"></i>
-                    {/if}
-                    <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === item.uuid ? 'text-blue-200' : ''}`}>{item.name}</p>
-                    </div>
-
-                    {#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)}
-                        <div class="flex inline-flex justify-end col-span-3">
-                            <li class="configure inline-flex">🔒</li>
-                            <p class="configure grayscale">⚙️</p>
-                            <p class="delete grayscale">✖️</p>
-                        </div>
-                        <Tooltip placement='left' arrow={false}>Locked by {$lockedObjects.find((lockedUuid) => lockedUuid[1] === item.uuid)[0]}</Tooltip>
-                    {:else}
-                        <div class="flex inline-flex justify-end col-span-3">
-                            <!-- <li class="configure inline-flex">🔓</li> -->
-                            <p class="configure hover:brightness-200" onclick={() => configure(item)}>⚙️</p>
-                            <p class="delete hover:brightness-200" onclick={() => deleteItem(item)}>✖️</p>
-                        </div>
-                    {/if}
-                </div>
-            </ListgroupItem>
-            </p>
-        {/if}
-        
+        <p class="pl-6">
+            <svelte:self element={item} key={item.uuid} />        
         </p>
     {/each}
     {/if}
 
-{:else}
-    
-
-    <p class="pl-8">
-        <p id={element.uuid} onclick={() => { select(element.uuid); }}>
-        <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
-        <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-12">
-            <div class="flex inline-flex justify-start items-center col-span-9">
-                {#if element.type.endsWith('Light')}
-                    <i class="pl-2 fa-regular fa-sun pr-2" title="Light"></i>
-                {:else}
-                    <i class="pl-2 fa-solid fa-cube pr-2" title="Object"></i>                    
-                {/if}
-                <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
-            </div>
-
-            {#if $lockedObjects.find((lockedUuid) => lockedUuid[1] === element.uuid)}
-                <div class="flex inline-flex justify-end col-span-3">
-                    <li class="configure inline-flex">🔒</li>
-                    <p class="configure grayscale">⚙️</p>
-                    <p class="delete grayscale">✖️</p>
-                </div>
-                <Tooltip placement='left' arrow={false}>Locked by {$lockedObjects.find((lockedUuid) => lockedUuid[1] === element.uuid)[0]}</Tooltip>
-            {:else}
-                <div class="flex inline-flex justify-end col-span-3">
-                    <!-- <li class="configure inline-flex">🔓</li> -->
-                    <p class="configure hover:brightness-200" onclick={() => configure(element)}>⚙️</p>
-                    <p class="delete hover:brightness-200" onclick={() => deleteItem(element)}>✖️</p>
-                </div>
-            {/if}
-            </div>
-        </ListgroupItem>
-    </p>
-        
-        
-{/if}
