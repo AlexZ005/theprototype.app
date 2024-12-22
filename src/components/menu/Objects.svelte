@@ -113,13 +113,14 @@
 
     <p id={element.uuid}>
     <ListgroupItem itemDefaultClass="flex items-center text-overflow-ellipsis w-full overflow-hidden inline-flex" >
-        {#if !isExpanded}
             <div class="inline-flex text-overflow-ellipsis w-full overflow-hidden items-center grid grid-cols-12">
                 <div class="flex inline-flex justify-start items-center col-span-9" onclick={() => { select(element.uuid); }}>
-                    {#if element.children.length > 0}
+                    {#if !isExpanded && element.children.length > 0}
                         <i class="fa-regular fa-plus pr-2 pl-2" title="Expand group" onclick={() => isExpanded = !isExpanded}></i>
+                    {:else if element.children.length > 0}
+                        <i class="fa-solid fa-minus pr-2 pl-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
                     {:else}
-                        <i class="fa-regular fa-plus pr-2 pl-2" title="Expand group" style="opacity: 0;"></i>
+                    <i class="fa-solid fa-minus pr-2 pl-2" style="opacity: 0"></i>
                     {/if}
 
                     {#if element.type.endsWith('Group')}
@@ -146,20 +147,6 @@
                     </div>
                 {/if}
             </div>
-        {:else}
-            <div class="container flex inline-flex justify-start items-center">
-            <i class="fa-solid fa-minus pr-2 pl-2" title="Collapse group" onclick={() => isExpanded = !isExpanded}></i>
-
-            {#if element.type.endsWith('Group')}
-                <i class="fa-solid fa-layer-group pr-2" title="Group"></i>
-            {:else if element.type.endsWith('Light')}
-                <i class="fa-regular fa-sun pr-2" title="Light"></i>
-            {:else}
-                <i class="fa-solid fa-cube pr-2" title="Object"></i>
-            {/if}
-            <p class={`overflow-hidden whitespace-nowrap ${$selectedObject && $selectedObject.uuid === element.uuid ? 'text-blue-200' : ''}`}>{element.name}</p>
-            </div>
-        {/if}
     </ListgroupItem>
     </p>
 
