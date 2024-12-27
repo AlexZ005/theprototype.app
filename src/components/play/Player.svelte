@@ -1,12 +1,14 @@
 <script lang="ts">
     import { T } from '@threlte/core'
     import { Vector3 } from 'three'
+    import VRControls from './VRControls.svelte'
     import PointerLockControls from './PointerLockControls.svelte'
     import { playerCam } from '../../stores/sceneStore'
   
     export let position: [x: number, y: number, z: number] = [0, 0, 0]
   </script>
     
+  <VRControls />
   <T.Group position.y={0.9}>
     <T.PerspectiveCamera
       fov={90}

@@ -2,9 +2,10 @@
 	import * as THREE from 'three';
 	import { T, useTask, useThrelte } from '@threlte/core';
 	import { Environment, interactivity, OrbitControls, TransformControls } from '@threlte/extras';
+	import { XR, Controller, Hand } from '@threlte/xr'
 	import { spring } from 'svelte/motion';
 	import { peers, username,userdata } from '../stores/appStore';
-	import { isLocked, editorCam } from '../stores/sceneStore';
+	import { isLocked, editorCam, isVRMode, globalScene, objectsGroup, showGrid, TControls, selectedObject, vrOverride } from '../stores/sceneStore';
 	import Grid from '../extensions/Grid.svelte';
 	import Outline from './Outline.svelte'
 	import Player from './play/Player.svelte'
@@ -12,8 +13,7 @@
 
 
 	let { scene, camera } = useThrelte();
-	// Store for global scene variables
-	import { globalScene, objectsGroup, showGrid, TControls, selectedObject } from '../stores/sceneStore.js';
+
 	$globalScene = scene; // console.log($globalScene)
 
 	$globalScene.background = new THREE.Color(0x101010);
@@ -23,6 +23,7 @@
 	$userdata = $userdata;
 
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
+	$vrOverride = localStorage.getItem('vrOverride');
 	camera.current.position.set(10.5, 7.57, 11.4);
 	
 	let resetSettings = false;
@@ -118,7 +119,7 @@
 
 <Grid showGrid={$showGrid} />
 
-{#if !$isLocked}
+{#if !$isLocked && !$isVRMode}
 <TransformControls bind:controls={$TControls} {onchange} {oncreate} />
 
 <Outline />
@@ -128,3 +129,10 @@
 bind:playerMesh
 position={[0, 2, 3]}
 />
+
+<XR>
+	<Controller left />
+	<Controller right />
+	<Hand left />
+	<Hand right />
+</XR>

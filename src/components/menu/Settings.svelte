@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Accordion, AccordionItem, Modal, Button, Checkbox } from 'flowbite-svelte';
-	import { showGrid } from '../../stores/sceneStore.js';
+	import { showGrid, vrOverride } from '../../stores/sceneStore.js';
 	import {
 		settingsOpen,
 		closeMenu,
@@ -9,6 +9,7 @@
 		propertiesClose,
 		libraryClose
 	} from '../../stores/appStore.js';
+	import { onMount } from 'svelte';
 
 	//Rounded corners for options
 	let coverClass =
@@ -80,7 +81,13 @@
 				<svelte:fragment slot="header">Scene</svelte:fragment>
 				<div class="flex">
 					<p class={topcoverName}>
-						<Checkbox disabled>&nbsp;VR override</Checkbox>
+						<Checkbox
+							bind:checked={$vrOverride}
+							on:click={() => {
+								if (localStorage.getItem('vrOverride')) localStorage.removeItem('vrOverride');
+								else localStorage.setItem('vrOverride', 'true');
+							}}>&nbsp;VR override</Checkbox
+						>
 					</p>
 					<p class={topcoverDescription}>Forces normal play even if immersive-vr is enabled</p>
 				</div>
