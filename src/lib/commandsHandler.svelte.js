@@ -57,6 +57,17 @@ export function userData(data) {
     userdata.update((value) => value);
 }
 
+export function specator(data, specator) {
+    if ( specator === 'false') {
+        let index = users.findIndex(u => u[0] === data.peerId);
+        users[index][3] = null;
+        return;
+    }
+    scene.getObjectByName(data.peerId).position.set(0, 1000, 0);
+    let index = users.findIndex(u => u[0] === data.peerId);
+    users[index][3] = specator;
+}
+
 export function sceneCommand(command) {
     if (command.startsWith('/')) {
         console.log('Executing command: ' + command);

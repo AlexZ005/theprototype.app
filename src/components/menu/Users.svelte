@@ -88,6 +88,9 @@
 			$globalCamera.rotation.set(playerToSpecate.rotation.x, playerToSpecate.rotation.y, playerToSpecate.rotation.z);
 			// $globalCamera.lookAt(playerToSpecate.position);
 			playerToSpecate.attach($globalCamera);
+			//send to peers that you are spectating
+			$peers.send({ type: 'specator', peerId: $peers.peer.id, watching: user });
+
 		}
 	 }
 </script>
@@ -102,7 +105,7 @@
 {#each $userdata as user, i}
 {#if i > 0}
 		<Avatar href="/" stacked src={user[2]}
-			onclick={() => specate(user[0])}
+			onclick={() => { if (!user[3]) specate(user[0]); } }
 		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
@@ -112,6 +115,12 @@
 				<p style="">User:&nbsp;</p>
 				<p style="">{user[1]}</p>
 			</div>
+			{#if (user[3])}
+			<div style="display: flex; overflow: hidden;">
+				<p style="">Watching:&nbsp;</p>
+				<p style="">{user[3]}</p>
+			</div>
+			{/if}
 		</Tooltip>
 
 		{/if}
@@ -121,7 +130,7 @@
 {:else}
 
 		<Avatar href="/" stacked src={$userdata[1][2]}
-			onclick={() => specate($userdata[1][0])}
+			onclick={() => { if (!$userdata[1][3]) specate($userdata[1][0]); } }
 		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
@@ -131,10 +140,16 @@
 				<p style="">User:&nbsp;</p>
 				<p style="">{$userdata[1][1]}</p>
 			</div>
+			{#if ($userdata[1][3])}
+			<div style="display: flex; overflow: hidden;">
+				<p style="">Watching:&nbsp;</p>
+				<p style="">{$userdata[1][3]}</p>
+			</div>
+			{/if}
 		</Tooltip>
 
 		<Avatar href="/" stacked src={$userdata[2][2]}
-			onclick={() => specate($userdata[2][0])}
+			onclick={() => { if (!$userdata[2][3]) specate($userdata[2][0]); } }
 		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
@@ -144,6 +159,12 @@
 				<p style="">User:&nbsp;</p>
 				<p style="">{$userdata[2][1]}</p>
 			</div>
+			{#if ($userdata[2][3])}
+			<div style="display: flex; overflow: hidden;">
+				<p style="">Watching:&nbsp;</p>
+				<p style="">{$userdata[2][3]}</p>
+			</div>
+			{/if}
 		</Tooltip>
 
 
@@ -167,7 +188,7 @@
 							<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
 								<li class="w-1/3 p-4">
 									<Avatar href="/" stacked src={user[2]}
-										onclick={() => specate(user[0])}
+										onclick={() => { if (!user[3]) specate(user[0]); } }
 									/>
 								</li>
 								<li class="w-2/3">
@@ -179,6 +200,12 @@
 									<p style="">User:&nbsp;</p>
 									<p style="">{user[1]}</p>
 									</div>
+									{#if (user[3])}
+									<div style="display: flex; overflow: hidden;">
+										<p style="">Watching:&nbsp;</p>
+										<p style="">{user[3]}</p>
+									</div>
+									{/if}
 								</li>
 							</ul>
 
