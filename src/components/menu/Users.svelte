@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as THREE from 'three';
 	import {
 		Avatar,
 		Tooltip,
@@ -16,10 +17,12 @@
 		propertiesClose,
 		lightPropertiesClose,
 		scenePropertiesClose,
+		specatorMode,
 		username,
 		userdata,
 		peers
 	} from '../../stores/appStore.js';
+	import { globalScene, globalCamera, camSave } from '../../stores/sceneStore.js';
 
     let openDropdown = $state(false);
   	let profileSettingsModal = $state(false);
@@ -58,6 +61,34 @@
 			reader.readAsDataURL(avatarFile);
 		}
 	 }
+
+	 function specate(user) {
+		// $peers.send({ type: 'specator', peerId: $peers.peer.id });
+		// console.log($peers.connections);
+		// const conn = $peers.connections[user];
+		// conn.send({ type: 'specator', peerId: $peers.peer.id });
+		// console.log('clicked ' + user);
+		if($specatorMode)
+			return;
+		$specatorMode = user;
+		$camSave = new THREE.PerspectiveCamera();
+		$camSave.position.copy($globalCamera.position)
+		$camSave.rotation.copy($globalCamera.rotation)
+		$camSave.zoom = $globalCamera.zoom
+		// console.log($orbitControls)
+		// console.log($globalCamera.parent)
+		let playerToSpecate = $globalScene.getObjectByName(user)
+		// console.log(playerToSpecate);
+		// console.log($globalCamera);
+		$globalCamera.position.set(0, 0, 0);
+		if (playerToSpecate) {
+			// $globalScene.add($globalCamera)
+			$globalCamera.position.set(playerToSpecate.position.x, playerToSpecate.position.y + 1, playerToSpecate.position.z);
+			$globalCamera.rotation.set(playerToSpecate.rotation.x, playerToSpecate.rotation.y, playerToSpecate.rotation.z);
+			// $globalCamera.lookAt(playerToSpecate.position);
+			playerToSpecate.attach($globalCamera);
+		}
+	 }
 </script>
 
 <div style="position: fixed; right: 0px; z-index: 997;">
@@ -69,7 +100,9 @@
 	<div class="flex items-center space-x-3">
 {#each $userdata as user, i}
 {#if i > 0}
-		<Avatar href="/" stacked src={user[2]} />
+		<Avatar href="/" stacked src={user[2]}
+			onclick={() => specate(user[0])}
+		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
 			Peer: {user[0]}
@@ -86,7 +119,9 @@
 </div>
 {:else}
 
-		<Avatar href="/" stacked src={$userdata[1][2]} />
+		<Avatar href="/" stacked src={$userdata[1][2]}
+			onclick={() => specate($userdata[1][0])}
+		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
 			Peer: {$userdata[1][0]}
@@ -97,7 +132,9 @@
 			</div>
 		</Tooltip>
 
-		<Avatar href="/" stacked src={$userdata[2][2]} />
+		<Avatar href="/" stacked src={$userdata[2][2]}
+			onclick={() => specate($userdata[2][0])}
+		/>
 		<Tooltip placement="top" arrow={false}>
 			<div style="display: flex; align-items: center;">
 			Peer: {$userdata[2][0]}
@@ -128,7 +165,9 @@
 
 							<ul class="w-full items-center divide-gray-200 text-sm font-medium dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-800 sm:flex">
 								<li class="w-1/3 p-4">
-									<Avatar href="/" stacked src={user[2]} />
+									<Avatar href="/" stacked src={user[2]}
+										onclick={() => specate(user[0])}
+									/>
 								</li>
 								<li class="w-2/3">
 									

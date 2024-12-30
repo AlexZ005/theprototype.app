@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata, toastStore, fixLight, showSidebar } from '../../stores/appStore'
+    import { peers, loading, loadingcount, pendingApprovals, waitingForApproval, userdata, toastStore, fixLight, showSidebar, specatorMode } from '../../stores/appStore'
     import { sceneCommand } from '$lib/commandsHandler.svelte';
-	import { objectsGroup } from '../../stores/sceneStore.js';
+	import { objectsGroup, camSave, globalCamera, globalScene } from '../../stores/sceneStore.js';
 	import { Progressbar, Toast, Button } from 'flowbite-svelte';
     import { fly } from 'svelte/transition';
 
@@ -145,6 +145,40 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
                 This is a pre-alpha version of the application.<br />
                 Some features may be incomplete or buggy.
             </p>
+        </div>
+    
+    </Toast>
+    </div>
+{/if}
+
+{#if $specatorMode}
+<div class="my-1">
+    <Toast dismissable={false} transition={fly} class="p-2 rounded-lg dark:bg-gray-700 dark:border-dark-700  border-2 border-red-500" divClass="flex items-center gap-3" on:close={() => 
+        { localStorage.setItem('hasSeenDisclaimer', 'true'); }
+        }>
+        <div style="position: relative; left: 50%; transform: translate(-25%, -50%);">
+    
+        </div>
+        <div class="mb-1 text-base font-medium text-black-700 dark:text-brack-500 inline-flex items-center">
+            
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-200 pr-4 overflow-hidden max-w-80">
+                
+                Watching: {$specatorMode}<br />
+                
+            </p>
+            <Button
+            color="primary"
+            class="nob rounded bg-blue-500 text-white dark:bg-green-600 dark:text-gray-200 dark:hover:bg-green-700"
+            onclick={() => {
+                let dolly = $globalScene.getObjectByName('dolly')
+                dolly.attach($globalCamera)
+                $specatorMode = false;
+                $globalCamera.position.copy($camSave.position)
+                $globalCamera.rotation.copy($camSave.rotation)
+                // $globalCamera.zoom = $camSave.zoom
+            }}
+            >Exit</Button
+        >
         </div>
     
     </Toast>
