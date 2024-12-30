@@ -80,10 +80,11 @@
 		let playerToSpecate = $globalScene.getObjectByName(user)
 		// console.log(playerToSpecate);
 		// console.log($globalCamera);
-		$globalCamera.position.set(0, 0, 0);
+		// $globalCamera.position.set(0, 0, 0);
 		if (playerToSpecate) {
 			// $globalScene.add($globalCamera)
-			$globalCamera.position.set(playerToSpecate.position.x, playerToSpecate.position.y + 1, playerToSpecate.position.z);
+			$globalScene.getObjectByName(user).visible = false
+			$globalCamera.position.set(playerToSpecate.position.x, playerToSpecate.position.y, playerToSpecate.position.z);
 			$globalCamera.rotation.set(playerToSpecate.rotation.x, playerToSpecate.rotation.y, playerToSpecate.rotation.z);
 			// $globalCamera.lookAt(playerToSpecate.position);
 			playerToSpecate.attach($globalCamera);

@@ -172,6 +172,7 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
             onclick={() => {
                 let dolly = $globalScene.getObjectByName('dolly')
                 dolly.attach($globalCamera)
+                $globalScene.getObjectByName($specatorMode).visible = true
                 $specatorMode = false;
                 $globalCamera.position.copy($camSave.position)
                 $globalCamera.rotation.copy($camSave.rotation)

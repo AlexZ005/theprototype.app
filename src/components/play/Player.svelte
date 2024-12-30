@@ -29,9 +29,9 @@
   {#each $userdata as user, i}
     {#if user[0] != $peers.peer.id}
     <!-- {console.log(user)} -->
-      <T.Group position={[0, 0, 0]}>
+      <T.Group>
         <T.Mesh
-          position={[0, 0, 0]}
+          position={[0, 1000, 0]}
           scale={[1, 1, 1]}
           castShadow
           name={user[0]}
