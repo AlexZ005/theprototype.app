@@ -1,7 +1,7 @@
 <script>
     let { element } = $props();
-    let isExpanded = $state(false);
-    let previoslySelectedObject;
+    let isExpanded = false;
+    let previouslySelectedObject;
     import { Tooltip, ListgroupItem } from 'flowbite-svelte';
     import { toggleExpand } from '../../stores/appStore';
     import { objectsGroup, TControls, selectedObject, lockedObjects } from '../../stores/sceneStore';
@@ -54,7 +54,7 @@
     function select(uuid) {
         if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === uuid)) {
             // showSidebar(null);
-            previoslySelectedObject = $selectedObject;
+            previouslySelectedObject = $selectedObject;
             selectedObject.set($objectsGroup.getObjectByProperty('uuid', uuid));
             $TControls.attach($objectsGroup.getObjectByProperty('uuid', uuid));
             $peers.send({ type: 'lock', uuid: uuid, peerId: $peers.peer.id });
@@ -78,15 +78,15 @@
 	}
 
 	function deleteItem(item) {
-			// console.log(previoslySelectedObject.name);
+			// console.log(previouslySelectedObject.name);
 			if (
-				previoslySelectedObject &&
-				previoslySelectedObject.uuid !== item.uuid &&
-				$objectsGroup.getObjectByProperty('uuid', previoslySelectedObject.uuid)
+				previouslySelectedObject &&
+				previouslySelectedObject.uuid !== item.uuid &&
+				$objectsGroup.getObjectByProperty('uuid', previouslySelectedObject.uuid)
 			) {
-				selectedObject.set(previoslySelectedObject);
-				$TControls.attach(previoslySelectedObject);
-				previoslySelectedObject = null;
+				selectedObject.set(previouslySelectedObject);
+				$TControls.attach(previouslySelectedObject);
+				previouslySelectedObject = null;
 			} else {
 				propertiesClose.set(true);
 				$TControls.detach();
@@ -99,6 +99,7 @@
                 el.parent?.remove(el);
                 sceneCommand('/clear ' + el.uuid);
 
+                isExpanded = false;
                 // Toggle the 'hidden' class to immediately hide the item
                 // The list will update automatically after collapse/expand
                 document.getElementById(el.uuid)?.classList.toggle('hidden');
