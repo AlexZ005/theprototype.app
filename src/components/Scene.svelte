@@ -4,8 +4,8 @@
 	import { Environment, interactivity, OrbitControls, TransformControls } from '@threlte/extras';
 	import { XR, Controller, Hand } from '@threlte/xr'
 	import { spring } from 'svelte/motion';
-	import { peers, username,userdata } from '../stores/appStore';
-	import { isLocked, editorCam, isVRMode, globalScene, objectsGroup, showGrid, TControls, selectedObject, vrOverride } from '../stores/sceneStore';
+	import { peers, username,userdata, specatorMode } from '../stores/appStore';
+	import { isLocked, editorCam, isVRMode, globalScene, objectsGroup, showGrid, TControls, selectedObject, vrOverride, specators, globalCamera, orbitControls } from '../stores/sceneStore';
 	import Grid from '../extensions/Grid.svelte';
 	import Outline from './Outline.svelte'
 	import Player from './play/Player.svelte'
@@ -25,7 +25,7 @@
 	$showGrid = localStorage.getItem('showGrid') === 'false' ? false : true;
 	$vrOverride = localStorage.getItem('vrOverride');
 	camera.current.position.set(10.5, 7.57, 11.4);
-	
+	let fov = camera.current.fov
 	let resetSettings = false;
 	setTimeout(() => {
 		// $peers.send({ type: 'userdata', userdata: $userdata });
@@ -43,16 +43,33 @@
 	interactivity();
 	const scale = spring(0.5);
 	let rotation = 0;
+	let lastCameraPosition = new THREE.Vector3();
+	let lastCameraQuaternion = new THREE.Quaternion();
 	useTask((delta) => {
 		rotation += 0.25 * delta;
 		// console.log(camera.current.lookAt.)
-		
+		if (camera.current.fov !== fov) {
+			// console.log('fov changed')
+			fov = camera.current.fov;
+			$peers.send({ type: 'cameraSettings', peerId: $peers.peer.id, fov: fov });
+			// console.log(camera.current.rotation)
+		}
 		if (resetSettings == true) {
 			// localStorage.setItem("camx",camera.current.position.x);
 			// localStorage.setItem("camy",camera.current.position.y);
 			// localStorage.setItem("camz",camera.current.position.z);
 		}
 		
+		if (!$specatorMode) {
+			$globalCamera = camera.current; // console.log($globalScene)
+			// console.log($specators)
+			if (camera.current.position.distanceTo(lastCameraPosition) > ($isVRMode ? 0.0001 : 0.01) ||
+				camera.current.quaternion.angleTo(lastCameraQuaternion) > THREE.MathUtils.degToRad(1)) {
+				$peers.send({ type: 'camera', peerId: $peers.peer.id, position: camera.current.position.toArray(), rotation: camera.current.rotation.toArray() });
+				lastCameraPosition.copy(camera.current.position);
+				lastCameraQuaternion.copy(camera.current.quaternion);
+			}
+		}
 	});
 
 	function oncreate() { $TControls.visible = false; }
@@ -93,7 +110,9 @@
 </script>
 
 <T.PerspectiveCamera makeDefault position={[-10, 10, 10]} fov={15} bind:ref={$editorCam}>
-	<OrbitControls enableZoom={true} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
+	{#if !$specatorMode}
+		<OrbitControls bind:ref={$orbitControls} enableZoom={true} enableDamping autoRotateSpeed={0.5} target.y={1.5} />
+	{/if}
 </T.PerspectiveCamera>
 
 <!-- <T.DirectionalLight position={[0, 10, 10]} castShadow />

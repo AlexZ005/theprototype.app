@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
-import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected } from './commandsHandler.svelte';
-import { createGeometry, createLight, createGroup, changeName, moveGeometry, lockGeometry } from '$lib/geometries.svelte';
+import { sceneCommand, lockRestore, checkLocks, createObject, sendObjects, deleteObject, colorObject, createLoader, userData, handleDisconnected, specator, cameraSettings } from './commandsHandler.svelte';
+import { createGeometry, createLight, createGroup, changeName, moveGeometry, lockGeometry, moveCamera } from '$lib/geometries.svelte';
 import { lockedObjects, selectedObject } from '../stores/sceneStore';
 import { addMessage, peers, userdata, pendingApprovals, waitingForApproval, showToast } from '../stores/appStore';
 import { get } from 'svelte/store';
@@ -36,8 +36,8 @@ export class PeerConnection {
 		if (!regex.test(location.hostname)) {
 		this.peer = new Peer(id, {
 			secure: true,
-			host: 'localhost',
-			port: 9000
+			host: '192.168.88.209',
+			port: 9001
 		});} else {
 			this.peer = new Peer(id)
 		}
@@ -128,6 +128,12 @@ export class PeerConnection {
 					lockRestore(data.lockeditems);
 				} else if(data.type == 'userdata') {
 					userData(data.userdata);
+				} else if(data.type == 'specator') {
+					specator(data, data.watching);
+				} else if(data.type == 'cameraSettings') {
+					cameraSettings(data, data.vrmode);
+				} else if(data.type == 'camera') {
+					moveCamera(data);
 				} else if(data.type == 'getobjects') {
 					sendObjects(data.sender)
 				} else if(data.type == 'object') {

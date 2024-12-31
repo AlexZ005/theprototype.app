@@ -1,7 +1,7 @@
 <script>
 	import * as THREE from 'three';
 	import { Drawer, Button, CloseButton, NumberInput, Input, Range } from 'flowbite-svelte';
-	import { globalScene, objectsGroup, TControls, selectedObject, backgroundColor } from '../../stores/sceneStore';
+	import { globalScene, objectsGroup, TControls, selectedObject, backgroundColor, globalCamera } from '../../stores/sceneStore';
 	import { peers, chatHidden, scenePropertiesClose } from '../../stores/appStore.js';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import CustomWrapper from '$lib/ColorWrapper.svelte';
@@ -81,6 +81,16 @@
 		/>
 	</div>
 
+	<p class="text-white dark:text-slate-200">Camera Field of View:</p>
+	<Range id="near" step="1" min="15" max="120" 
+		bind:value={$globalCamera.fov}
+		oninput={() => {
+			$globalCamera.fov = parseFloat($globalCamera.fov);
+			$globalCamera.updateProjectionMatrix();
+		}}
+	/>
+	<br />
+	<br />
 	<p class="text-white dark:text-slate-200">Background Color:</p>
 	<br />
 	<ColorPicker

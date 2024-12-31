@@ -12,6 +12,7 @@ export const username = writable(null);
 export const peers = writable(null);
 export const toggleExpand = writable(null);
 export const closeMenu = writable(true);
+export const specatorMode = writable(false);
 
 // update the sidebar visibility
 export function showSidebar(store) {

@@ -12,3 +12,7 @@ export const isVRMode = writable(false);
 export const vrOverride = writable(false);
 export const playerCam = writable(false);
 export const editorCam = writable(false);
+export const specators = writable([]);
+export const globalCamera = writable(null);
+export const camSave = writable(null);
+export const orbitControls = writable(null);

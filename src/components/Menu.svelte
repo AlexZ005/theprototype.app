@@ -12,8 +12,13 @@
 	import { DarkMode } from 'flowbite-svelte';
 	import Users from './menu/Users.svelte';
 	import News from './menu/News.svelte';
+
+	import { isLocked } from '../stores/sceneStore'
 </script>
 
+<Chat />
+
+<div class={$isLocked ? 'hidden' : ''}>
 <News />
 <Connect />
 <Controls />
@@ -25,6 +30,6 @@
 <Library />
 <Toasts />
 <Users />
-<Chat />
+</div>
 
 <div class="dark-mode hidden"><DarkMode /></div>

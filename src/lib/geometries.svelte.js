@@ -150,6 +150,14 @@ export function moveGeometry(uuid, pos, rot, scale) {
     }
 }
 
+export function moveCamera(data) {
+    // console.log('moveCamera: ' + data.position[1] + ' ' + data.rotation[1]);
+    let peerMesh = scene.getObjectByName(data.peerId)
+    if (!peerMesh) return;
+    peerMesh.position.set(data.position[0], data.position[1], data.position[2]);
+    peerMesh.rotation.set(data.rotation[0], data.rotation[1], data.rotation[2]);
+}
+
 /**
  * Locks an object by changing its material color and updating the locked list.
  * 

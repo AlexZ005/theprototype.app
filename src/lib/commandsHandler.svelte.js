@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
+import { globalScene, objectsGroup, showGrid, TControls, lockedObjects, selectedObject, globalCamera } from '../stores/sceneStore.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createGeometry, createLight, createGroup } from '$lib/geometries.svelte'
-import { addMessage, loading, loadingcount, showToast, fixLight } from '../stores/appStore';
+import { addMessage, loading, loadingcount, showToast, fixLight, specatorMode } from '../stores/appStore';
 import { peers, userdata } from '../stores/appStore';
 
 //Access scene Store
@@ -34,6 +34,14 @@ selectedObject.subscribe(value => { selected = value });
 let users = $state();
 userdata.subscribe(value => { users = value });
 
+//Access specatorMode
+let specating = $state();
+specatorMode.subscribe(value => { specating = value });
+
+//Access globalCamera
+let camera = $state();
+globalCamera.subscribe(value => { camera = value });
+
 const loader = new THREE.ObjectLoader();
 
 let uuids = [];
@@ -55,6 +63,32 @@ export function userData(data) {
 
     //Trigger reactivity for UI list of objects
     userdata.update((value) => value);
+}
+
+export function specator(data, specator) {
+    if ( specator === 'false') {
+        let index = users.findIndex(u => u[0] === data.peerId);
+        users[index][3] = null;
+        return;
+    }
+    scene.getObjectByName(data.peerId).position.set(0, 1000, 0);
+    let index = users.findIndex(u => u[0] === data.peerId);
+    users[index][3] = specator;
+}
+
+export function cameraSettings(data) {
+    // console.log('peer sent camera settings: ' + data.fov);
+    if ( data.fov ) {
+        let index = users.findIndex(u => u[0] === data.peerId);
+        users[index][4] = data.fov;
+        //update camera fov if watching peer camera
+        if (specating === data.peerId)
+        {
+            camera.fov = data.fov;
+            camera.updateProjectionMatrix();
+        }
+    }
+
 }
 
 export function sceneCommand(command) {
