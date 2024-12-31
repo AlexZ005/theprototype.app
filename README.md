@@ -1,6 +1,8 @@
-# theprototype.app
+# <img src="static/logo.svg"  width="30"/> theprototype.app
 
-ThePrototype is an online collaborative platform for rapid prototyping.
+ThePrototype is an online collaborative platform for rapid prototyping. Visit [theprototype.app](https://theprototype.app)
+
+[![video](https://img.youtube.com/vi/yR21_x4jV7g/maxresdefault.jpg)](https://www.youtube.com/watch?v=yR21_x4jV7g&list=PLBSyotD7wAZvjCW3ZSKQbNpb-9_f7Q3YM&index=2)
 
 # Start private development server
 
