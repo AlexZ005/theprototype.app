@@ -75,19 +75,23 @@
 		$camSave.position.copy($globalCamera.position)
 		$camSave.rotation.copy($globalCamera.rotation)
 		$camSave.zoom = $globalCamera.zoom
-		// console.log($orbitControls)
-		// console.log($globalCamera.parent)
+		$camSave.fov = $globalCamera.fov
 		let playerToSpecate = $globalScene.getObjectByName(user)
-		// console.log(playerToSpecate);
-		// console.log($globalCamera);
-		// $globalCamera.position.set(0, 0, 0);
+
 		if (playerToSpecate) {
-			// $globalScene.add($globalCamera)
 			$globalScene.getObjectByName(user).visible = false
 			$globalCamera.position.set(playerToSpecate.position.x, playerToSpecate.position.y, playerToSpecate.position.z);
 			$globalCamera.rotation.set(playerToSpecate.rotation.x, playerToSpecate.rotation.y, playerToSpecate.rotation.z);
-			// $globalCamera.lookAt(playerToSpecate.position);
+
 			playerToSpecate.attach($globalCamera);
+			if ($userdata) {
+				$userdata.forEach(element => {
+					if (element[0] === user)
+					if (element[4]) $globalCamera.fov = element[4]
+				})
+			}
+			
+			$globalCamera.updateProjectionMatrix()
 			//send to peers that you are spectating
 			$peers.send({ type: 'specator', peerId: $peers.peer.id, watching: user });
 

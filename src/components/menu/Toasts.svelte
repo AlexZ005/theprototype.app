@@ -176,6 +176,9 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
                 $specatorMode = false;
                 $globalCamera.position.copy($camSave.position)
                 $globalCamera.rotation.copy($camSave.rotation)
+                $globalCamera.fov = $camSave.fov
+                $globalCamera.updateProjectionMatrix()
+
 
                 //specating has ended send camera position once to appear for peers
                 $peers.send({ type: 'camera', peerId: $peers.peer.id, position: $globalCamera.position.toArray(), rotation: $globalCamera.rotation.toArray() });
