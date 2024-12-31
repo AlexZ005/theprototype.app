@@ -5,6 +5,7 @@
 	import Objects from './Objects.svelte';
 	import { VRButton } from '@threlte/xr'
 
+	let allowPlay = true;
 	let resizing = $state(false);
 	let classActive =
 		'group inline-flex items-center justify-center hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300';
@@ -64,25 +65,27 @@
 	}
 
 	function checkPlay() {
-		// console.log('locking')
 		const vrButton = document.getElementById('vrButton')?.querySelector('button');
 		if (vrButton?.textContent === 'Enter VR' && localStorage.getItem('vrOverride') !== 'true') {
 			$isVRMode = true;
 			vrButton.click();
 		} else {
-			if ($isLocked === null || allowPlay === true)
+			if ($isLocked === null && allowPlay === true)
 			$isLocked	= true
 		}
 	}
 
-	//Timeout for pointer lock
-	//on ESC release have delay
-	let allowPlay;
-	if ($isLocked === false) {	
+	$effect(() => {
+		//Timeout for pointer lock
+		//on ESC release have delay
+	if ($isLocked === false) {
+		$isLocked = null;
+		allowPlay = false;
 		setTimeout(() => {
 			allowPlay = true;
 		}, 2000)
 	}
+	});
 </script>
 
 <BottomNav

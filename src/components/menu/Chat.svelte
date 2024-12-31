@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../../styles/chat.css';
 	import { peers, messages, chatHidden } from '../../stores/appStore';
-
+	import { isLocked } from '../../stores/sceneStore'
 	let message;
 </script>
 
@@ -17,6 +17,7 @@
 			</ul>
 		</div>
 	</div>
+	{#if !$isLocked}
 	<div
 		id="chat-input"
 		class="rounded-lg border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
@@ -35,4 +36,5 @@
 			on:click={() => $peers.sendMessage(message)}
 		/>
 	</div>
+	{/if}
 </div>

@@ -8,8 +8,8 @@
 
 {#if !$isLocked}
 <Flow />
-<Menu />
 {/if}
+<Menu />
 
 <Canvas>
   <Scene />
