@@ -79,19 +79,20 @@
 										if (data.handedness == 'left') {
 											//console.log("Left Paddle Down");
 											if (i == 1) {
-												dolly.rotateY(-THREE.MathUtils.degToRad(1));
+												// dolly.rotateY(-THREE.MathUtils.degToRad(1));
+
 											}
 											if (i == 3) {
 												//center selected object on dolly
                                                 // console.log("Left Thumbstick Down");
-												dolly.position.x = $selectedObject.position.x;
-												dolly.position.y = $selectedObject.position.y;
-												dolly.position.z = $selectedObject.position.z;
+												// dolly.position.x = $selectedObject.position.x;
+												// dolly.position.y = $selectedObject.position.y;
+												// dolly.position.z = $selectedObject.position.z;
 											}
 										} else {
 											//console.log("Right Paddle Down");
 											if (i == 1) {
-												dolly.rotateY(THREE.MathUtils.degToRad(1));
+												// dolly.rotateY(THREE.MathUtils.degToRad(1));
 											}
 										}
 									} else {
@@ -101,10 +102,10 @@
 											//use the paddle buttons to rotate
 											if (data.handedness == 'left') {
 												//console.log("Left Paddle Down");
-												dolly.rotateY(-THREE.MathUtils.degToRad(Math.abs(value)));
+												// dolly.rotateY(-THREE.MathUtils.degToRad(Math.abs(value)));
 											} else {
 												//console.log("Right Paddle Down");
-												dolly.rotateY(THREE.MathUtils.degToRad(Math.abs(value)));
+												// dolly.rotateY(THREE.MathUtils.degToRad(Math.abs(value)));
 											}
 										}
 									}
