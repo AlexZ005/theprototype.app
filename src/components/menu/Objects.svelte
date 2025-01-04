@@ -1,6 +1,6 @@
 <script>
     let { element } = $props();
-    let isExpanded = false;
+    let isExpanded = $state(false);
     let previouslySelectedObject;
     import { Tooltip, ListgroupItem } from 'flowbite-svelte';
     import { toggleExpand } from '../../stores/appStore';
@@ -42,7 +42,7 @@
                 // keep UI state for previously selected object
                 if (saved)
                 saved.querySelector("p > button > div > div")?.click();
-                if (saved.querySelector("p > button > div > div") !== null)
+                if (saved?.querySelector("p > button > div > div") !== null)
                 configure($objectsGroup.getObjectByProperty('uuid', save), 1);
             }, 100);
 
