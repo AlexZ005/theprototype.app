@@ -25,7 +25,7 @@
 		<input
 			type="text"
 			id="message"
-			class="chat-input text-gray-800 dark:text-gray-200"
+			class="chat-input text-gray-800 dark:text-gray-600"
 			bind:value={message}
 		/>
 		<input
