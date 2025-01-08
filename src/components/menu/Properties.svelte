@@ -145,6 +145,21 @@ function sendUpdate() {
             override: true
         });
     }
+
+function sendTransformUpdate() {
+    if (typeof $TControls.object !== 'undefined')
+			if (typeof $TControls.object.parent !== 'undefined')
+				if (typeof $TControls.object.uuid !== 'undefined') {
+					$TControls.visible = true;
+					$peers.send({
+						type: 'move',
+						uuid: $TControls.object.uuid,
+						pos: $TControls.object.position.toArray(),
+						rot: $TControls.object.rotation.toArray(),
+						scale: $TControls.object.scale.toArray()
+					});
+				}
+}
 </script>
   
   <Drawer
@@ -266,28 +281,40 @@ function sendUpdate() {
     
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posx" step="0.1" min={min_position_x} max={max_position_x} bind:value={$selectedObject.position.x} />
+            <Range id="posx" step="0.1" min={min_position_x} max={max_position_x} bind:value={$selectedObject.position.x}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.position.x} />
+        <NumberInput bind:value={$selectedObject.position.x} 
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posy" step="0.1" min={min_position_y} max={max_position_y} bind:value={$selectedObject.position.y} />
+            <Range id="posy" step="0.1" min={min_position_y} max={max_position_y} bind:value={$selectedObject.position.y}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.position.y} />
+        <NumberInput bind:value={$selectedObject.position.y}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span class="w-2/3 text-right pr-2 truncate">
-            <Range id="posz" step="0.1" min={min_position_z} max={max_position_z} bind:value={$selectedObject.position.z} />
+            <Range id="posz" step="0.1" min={min_position_z} max={max_position_z} bind:value={$selectedObject.position.z}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.position.z} />
+        <NumberInput bind:value={$selectedObject.position.z}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
@@ -296,28 +323,40 @@ function sendUpdate() {
     
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posx" step="0.01" min={min_rotation_x} max={max_rotation_x} bind:value={$selectedObject.rotation.x} />
+            <Range id="posx" step="0.01" min={min_rotation_x} max={max_rotation_x} bind:value={$selectedObject.rotation.x}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.rotation.x} />
+        <NumberInput bind:value={$selectedObject.rotation.x}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posy" step="0.01" min={min_rotation_y} max={max_rotation_y} bind:value={$selectedObject.rotation.y} />
+            <Range id="posy" step="0.01" min={min_rotation_y} max={max_rotation_y} bind:value={$selectedObject.rotation.y}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.rotation.y} />
+        <NumberInput bind:value={$selectedObject.rotation.y}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span class="w-2/3 text-right pr-2 truncate">
-            <Range id="posz" step="0.01" min={min_rotation_z} max={max_rotation_z} bind:value={$selectedObject.rotation.z} />
+            <Range id="posz" step="0.01" min={min_rotation_z} max={max_rotation_z} bind:value={$selectedObject.rotation.z}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.rotation.z} />
+        <NumberInput bind:value={$selectedObject.rotation.z}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
@@ -326,28 +365,40 @@ function sendUpdate() {
     
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posx" step="0.1" min={min_scale_x} max={max_scale_x} bind:value={$selectedObject.scale.x} />
+            <Range id="posx" step="0.1" min={min_scale_x} max={max_scale_x} bind:value={$selectedObject.scale.x}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.scale.x} />
+        <NumberInput bind:value={$selectedObject.scale.x}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span  class="w-2/3 text-right pr-2 truncate">
-            <Range id="posy" step="0.1" min={min_scale_y} max={max_scale_y} bind:value={$selectedObject.scale.y} />
+            <Range id="posy" step="0.1" min={min_scale_y} max={max_scale_y} bind:value={$selectedObject.scale.y}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.scale.y} />
+        <NumberInput bind:value={$selectedObject.scale.y}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
 
     <div class="flex items-center space-x-2 p-1">
         <span class="w-2/3 text-right pr-2 truncate">
-            <Range id="posz" step="0.1" min={min_scale_z} max={max_scale_z} bind:value={$selectedObject.scale.z} />
+            <Range id="posz" step="0.1" min={min_scale_z} max={max_scale_z} bind:value={$selectedObject.scale.z}
+            onchange={() => { sendTransformUpdate(); }}
+            />
         </span>
         <span class="w-1/3">
-        <NumberInput bind:value={$selectedObject.scale.z} />
+        <NumberInput bind:value={$selectedObject.scale.z}
+        onchange={() => { sendTransformUpdate(); }}
+        />
         </span>
     </div>
     </AccordionItem>

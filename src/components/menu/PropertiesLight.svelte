@@ -97,6 +97,21 @@
             override: true
         });
     }
+
+	function sendTransformUpdate() {
+    if (typeof $TControls.object !== 'undefined')
+			if (typeof $TControls.object.parent !== 'undefined')
+				if (typeof $TControls.object.uuid !== 'undefined') {
+					$TControls.visible = true;
+					$peers.send({
+						type: 'move',
+						uuid: $TControls.object.uuid,
+						pos: $TControls.object.position.toArray(),
+						rot: $TControls.object.rotation.toArray(),
+						scale: $TControls.object.scale.toArray()
+					});
+				}
+}
 </script>
 
 <Drawer
@@ -284,10 +299,13 @@
 							min={min_position_x}
 							max={max_position_x}
 							bind:value={$selectedObject.position.x}
+							onchange={() => { sendTransformUpdate(); }}
 						/>
 					</span>
 					<span class="w-1/3">
-						<NumberInput bind:value={$selectedObject.position.x} />
+						<NumberInput bind:value={$selectedObject.position.x}
+						onchange={() => { sendTransformUpdate(); }}
+						/>
 					</span>
 				</div>
 
@@ -298,10 +316,13 @@
 							min={min_position_y}
 							max={max_position_y}
 							bind:value={$selectedObject.position.y}
+							onchange={() => { sendTransformUpdate(); }}
 						/>
 					</span>
 					<span class="w-1/3">
-						<NumberInput bind:value={$selectedObject.position.y} />
+						<NumberInput bind:value={$selectedObject.position.y}
+						onchange={() => { sendTransformUpdate(); }}
+						/>
 					</span>
 				</div>
 
@@ -312,10 +333,13 @@
 							min={min_position_z}
 							max={max_position_z}
 							bind:value={$selectedObject.position.z}
+							onchange={() => { sendTransformUpdate(); }}
 						/>
 					</span>
 					<span class="w-1/3">
-						<NumberInput bind:value={$selectedObject.position.z} />
+						<NumberInput bind:value={$selectedObject.position.z}
+						onchange={() => { sendTransformUpdate(); }}
+						/>
 					</span>
 				</div>
             </AccordionItem>
