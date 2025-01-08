@@ -36,7 +36,7 @@ export class PeerConnection {
 		if (!regex.test(location.hostname)) {
 		this.peer = new Peer(id, {
 			secure: true,
-			host: '192.168.88.209',
+			host: 'localhost',
 			port: 9001
 		});} else {
 			this.peer = new Peer(id)

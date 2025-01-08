@@ -6,7 +6,7 @@
 		{
 			"type": "shell",
 			"label": "peerjs",
-			"command": "\"peerjs --port 9000 --sslkey \"certs\\localhost.key\" --sslcert \"certs\\localhost.crt\"",
+			"command": "\"peerjs --port 9001 --sslkey \"certs\\localhost.key\" --sslcert \"certs\\localhost.crt\"",
 			"group": "build",
 			"detail": "starts peerjs service with ssl parameters",
             "hide": true
