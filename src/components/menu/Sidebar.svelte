@@ -23,7 +23,8 @@
 		Radio,
 		Dropdown,
 		Drawer,
-		Navbar
+		Navbar,
+		Card
 	} from 'flowbite-svelte';
 	import { Hamburger } from 'svelte-hamburgers';
 	import invert from 'invert-color';
@@ -302,7 +303,17 @@ style="width: 120px; height: 55px; background-color: rgba(100, 123, 155, 1); top
 			>
 				<svelte:fragment slot="icon">⚙️</svelte:fragment>
 			</SidebarItem>
+
+			<SidebarItem
+				label="Docs"
+				{spanClass}
+				style="padding-right: 40px"
+				on:click={() => { window.open('https://github.com/AlexZ005/theprototype.app/wiki', '_blank') } }
+			>
+				<svelte:fragment slot="icon">📖</svelte:fragment>
+			</SidebarItem>
 		</SidebarGroup>
+	<Card class="border-0"/>
 	</SidebarWrapper>
 </Sidebar>
 </Drawer>
