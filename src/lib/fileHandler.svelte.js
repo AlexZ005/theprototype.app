@@ -87,17 +87,12 @@ export async function importFile(file, name) {
 			controls.attach(scene);
 			sendObjects(null, scene);
 
-			let checklight = sceneObjects.getObjectByProperty('type', 'HemisphereLight')
-			console.log(checklight);
-			if (typeof checklight === 'undefined') {
-				checklight = sceneObjects.getObjectByProperty('type', 'AmbientLight')
-				if (typeof checklight === 'undefined') checklight = sceneObjects.getObjectByProperty('type', 'DirectionalLight')
-					if (typeof checklight === 'undefined') {
-						console.log('No light found, adding default light');
-						// showToast('No light found, adding default light');
-						fixLight.set(true);
-					}
-			}
+			fixLight.set(true);
+			sceneObjects.traverse((object) => {
+				if (object.isLight) {
+				  fixLight.set(false);
+				}
+			  });
 			
 		});
 	} catch (error) {

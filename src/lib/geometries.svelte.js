@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { toggleExpand } from '../stores/appStore.js';
+import { toggleExpand, fixLight } from '../stores/appStore.js';
 import { globalScene, objectsGroup, TControls, lockedObjects, selectedObject } from '../stores/sceneStore.js';
 
 //Access scene Store
@@ -79,6 +79,7 @@ export function createLight(command, uuid) {
         return null
     }       
     if (light){
+        fixLight.set(false);
         if (uuid) light.uuid = uuid
         sceneObjects.add(light);
         //Trigger reactivity for UI list of objects

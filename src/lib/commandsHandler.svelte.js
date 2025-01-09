@@ -124,17 +124,12 @@ export function sceneCommand(command) {
                 peer.send({type: 'create', command: command, uuid: uuid});
                 peer.send({type: 'lock', uuid: uuid, peerId: peer.peer.id});
 
-                let checklight = sceneObjects.getObjectByProperty('type', 'HemisphereLight')
-                console.log(checklight);
-                if (typeof checklight === 'undefined') {
-                    checklight = sceneObjects.getObjectByProperty('type', 'AmbientLight')
-                    if (typeof checklight === 'undefined') checklight = sceneObjects.getObjectByProperty('type', 'DirectionalLight')
-                        if (typeof checklight === 'undefined') {
-                            console.log('No light found, adding default light');
-                            // showToast('No light found, adding default light');
-                            fixLight.set(true);
-                        }
-                }
+                fixLight.set(true);
+                sceneObjects.traverse((object) => {
+                    if (object.isLight) {
+                        fixLight.set(false);
+                    }
+                    });
     
         }
         else if (command.startsWith('/light')) {
