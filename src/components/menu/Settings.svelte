@@ -9,7 +9,6 @@
 		propertiesClose,
 		libraryClose
 	} from '../../stores/appStore.js';
-	import { onMount } from 'svelte';
 
 	//Rounded corners for options
 	let coverClass =
@@ -17,7 +16,11 @@
 	let topcoverName =
 		'w-40 flex-shrink-0 px-4 rounded-tl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ' +
 		coverClass;
+	let middlecoverName =
+		'w-40 flex-shrink-0 px-4 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ' +
+		coverClass;
 	let topcoverDescription = 'w-full px-5 rounded-tr-lg ' + coverClass;
+	let middlecoverDescription = 'w-full px-5 ' + coverClass;
 	let bottomCoverName =
 		'w-40 flex-shrink-0 px-4 rounded-bl-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ' +
 		coverClass;
@@ -30,7 +33,7 @@
 	title="Settings"
 	bind:open={$settingsOpen}
 	outsideclose
-	on:open={() => {
+	onopen={() => {
 		if (!$closeMenu) {
 			$closeMenu = true;
 			status[0] = true;
@@ -52,7 +55,7 @@
 			$propertiesClose = true;
 		}
 	}}
-	on:close={() => {
+	onclose={() => {
 		if (status[0]) {
 			$closeMenu = false;
 			status[0] = false;
@@ -83,7 +86,7 @@
 					<p class={topcoverName}>
 						<Checkbox
 							bind:checked={$vrOverride}
-							on:click={() => {
+							onclick={() => {
 								if (localStorage.getItem('vrOverride')) localStorage.removeItem('vrOverride');
 								else localStorage.setItem('vrOverride', 'true');
 							}}>&nbsp;VR override</Checkbox
@@ -95,7 +98,7 @@
 					<p class={bottomCoverName}>
 						<Checkbox
 							bind:checked={$showGrid}
-							on:click={() => {
+							onclick={() => {
 								if (localStorage.getItem('showGrid')) localStorage.removeItem('showGrid');
 								else localStorage.setItem('showGrid', 'false');
 							}}>&nbsp;Show grid</Checkbox
@@ -106,10 +109,29 @@
 			</AccordionItem>
 			<AccordionItem>
 				<svelte:fragment slot="header">About</svelte:fragment>
+				<div class="flex">
+					<p class={topcoverName}>
+						Version
+					</p>
+					<p class={topcoverDescription}>alpha</p>
+				</div>
+				<div class="flex">
+					<p class={middlecoverName}>
+						Dev Builds
+					</p>
+					<p class={middlecoverDescription}><a href="https://alexz005.github.io/theprototype">https://alexz005.github.io/theprototype</a></p>
+				</div>
+				<div class="flex">
+					<p class={bottomCoverName}>
+						Source Code
+					</p>
+					<p class={bottomCoverDescription}><a href="https://github.com/AlexZ005/theprototype.app" target="_blank">https://github.com/AlexZ005/theprototype.app</a></p>
+				</div>
+
 			</AccordionItem>
 		</Accordion>
 	</div>
 	<svelte:fragment slot="footer">
-		<Button>Reset settings</Button>
+		<Button onclick={() => localStorage.clear()}>Reset settings</Button>
 	</svelte:fragment>
 </Modal>

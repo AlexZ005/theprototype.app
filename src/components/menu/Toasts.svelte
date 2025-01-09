@@ -142,9 +142,16 @@ style="position: absolute; top: 65px; left: 50%; max-width: 500px; transform: tr
         <div class="mb-1 text-base font-medium text-black-700 dark:text-brack-500 inline-flex items-center">
             
             <p class="text-sm font-medium text-gray-500 dark:text-gray-800 pr-4 overflow-hidden max-w-80">
-                This is a pre-alpha version of the application.<br />
-                Some features may be incomplete or buggy.
+                This is an alpha release.<br />
             </p>
+            <Button
+            color="primary"
+            class="nob rounded bg-blue-500 text-white dark:bg-green-600 dark:text-gray-200 dark:hover:bg-green-700"
+            onclick={() => {
+                window.open('https://github.com/users/AlexZ005/projects/2', '_blank');
+            }}
+            >Roadmap</Button
+        >
         </div>
     
     </Toast>
