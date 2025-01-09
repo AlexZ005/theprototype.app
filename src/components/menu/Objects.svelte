@@ -3,7 +3,7 @@
     let isExpanded = $state(false);
     let previouslySelectedObject;
     import { Tooltip, ListgroupItem } from 'flowbite-svelte';
-    import { toggleExpand } from '../../stores/appStore';
+    import { toggleExpand, lightPropertiesClose, scenePropertiesClose} from '../../stores/appStore';
     import { objectsGroup, TControls, selectedObject, lockedObjects } from '../../stores/sceneStore';
     import { sceneCommand } from '$lib/commandsHandler.svelte';
     import {
@@ -52,6 +52,7 @@
     });
 
     function select(uuid) {
+
         if (!$lockedObjects.find((lockedUuid) => lockedUuid[1] === uuid)) {
             // showSidebar(null);
             previouslySelectedObject = $selectedObject;
@@ -62,12 +63,17 @@
             $TControls.detach();
             selectedObject.set($objectsGroup.getObjectByProperty('uuid', uuid));
         }
+
+        // Ensure the correct sidebar properties are open
+        if (!$lightPropertiesClose || !$propertiesClose)
+        configure($selectedObject, 1);
+
     }
 
-	function configure(item, delay = 100) {
+	function configure(item, selected) {
         // The delay adds cool effect
         // setTimeout(() => {
-            select(item.uuid)
+            if (!selected) select(item.uuid)
 			if (item.type.endsWith('Light')) {
                 showSidebar('lightProperties');
 			} else {
