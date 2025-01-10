@@ -83,7 +83,8 @@ export class PeerConnection {
 					// waitingForApproval.update((value) => value);
 				}
 			})
-   
+			//Trigger reactivity to hide connnection request toast
+			waitingForApproval.update((value) => value);
 
 			// This block prevents unauthorized peers from accessing data
 			const users = get(userdata);
