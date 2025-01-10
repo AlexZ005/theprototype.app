@@ -46,6 +46,7 @@ export function clearToast(toast) {
 
 export const loading = writable([]);
 export const loadingcount = writable([]);
+export const loadingFile = writable([]);
 
 export const messages = writable([]);
 

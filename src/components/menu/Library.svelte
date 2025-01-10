@@ -1,11 +1,12 @@
 <script>
 	import {
 		Drawer,
+		Spinner,
 		CloseButton,
 		Select,
 		Modal
 	} from 'flowbite-svelte';
-	import { peers, chatHidden, libraryClose, toggleExpand } from '../../stores/appStore.js';
+	import { peers, chatHidden, libraryClose, toggleExpand, loadingFile } from '../../stores/appStore.js';
 	import { sineIn } from 'svelte/easing';
 	import { loadFile } from '$lib/fileHandler.svelte';
 	import { onMount } from 'svelte';
@@ -118,9 +119,19 @@
 	{#each item as object}
 		{#if object.variants['glTF-Binary']}
 			<br />
+			{#if $loadingFile.includes(object.name)}
+				<button>
+					<div class="h-14 w-14 dark:border-gray-800 animate-pulse">
+						<Spinner size={14}  />
+					</div>
+					<p class="pb-4 text-white dark:text-slate-200 animate-pulse">{object.name}</p>
+				</button>
+			{:else}
 			<button
 				onclick={() => {
 					let url = `/library/${selected.name}/${object.name}/glTF-Binary/${object.variants['glTF-Binary']}`;
+					$loadingFile.push(object.name);
+					$loadingFile = $loadingFile
 					loadFile(url, object.name);
 				}}
 			>
@@ -130,6 +141,7 @@
 				/>
 				<p class="pb-4 text-white dark:text-slate-200">{object.name}</p>
 			</button>
+			{/if}
 		{/if}
 	{/each}
 </Drawer>

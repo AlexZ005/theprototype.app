@@ -2,7 +2,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { objectsGroup, TControls } from '../stores/sceneStore.js';
 import { sendObjects } from './commandsHandler.svelte';
-import { peers, fixLight } from '../stores/appStore';
+import { peers, fixLight, loadingFile } from '../stores/appStore';
 
 //Access objects Store
 let sceneObjects = $state();
@@ -15,6 +15,10 @@ TControls.subscribe(value => { controls = value });
 //Access peers Store
 let peer = $state();
 peers.subscribe(value => { peer = value });
+
+//loadingFile Store
+let loadingNames = $state();
+loadingFile.subscribe(value => { loadingNames = value });
 
 export function save(format) {
 	console.log('Saving...');        
@@ -58,6 +62,9 @@ export async function loadFile(url, name) {
 				console.error(`Unsupported file type: ${url}`);
 				reject(new Error(`Unsupported file type: ${url}`));
 			}
+			let index = loadingNames.findIndex(x => x.id == name);
+			if (index) loadingNames.splice(index,1);
+			loadingFile.update((value) => value);
 		} catch (error) {
 			console.error(`Error loading file: ${url}`, error);
 			reject(error);
