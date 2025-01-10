@@ -140,7 +140,6 @@ export class PeerConnection {
 				} else if(data.type == 'object') {
 					createObject(data, data.uuids, data.override, data.groupuuid, data.pos, data.rot, data.scale);
 				} else if(data.type == 'objectParameters') {
-					console.log('paramter ' + data)
 					objectParameters(data);
 				} else if(data.type == 'delete') {
 					deleteObject(data.uuid);

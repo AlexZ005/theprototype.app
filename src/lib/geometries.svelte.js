@@ -42,7 +42,7 @@ export function createGeometry(command, uuid) {
         sceneObjects.add(object);
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
-        console.log('createGeometry: ' + geometry);
+        // console.log('createGeometry: ' + geometry);
         if (!uuid) controls.attach(object);
         if (!uuid) selectedObject.set(object);
         return object.uuid
@@ -84,7 +84,7 @@ export function createLight(command, uuid) {
         sceneObjects.add(light);
         //Trigger reactivity for UI list of objects
         objectsGroup.update((value) => value);
-        console.log('createLight: ' + light);
+        // console.log('createLight: ' + light);
         if (!uuid) controls.attach(light);
         if (!uuid) selectedObject.set(light);
         return light.uuid

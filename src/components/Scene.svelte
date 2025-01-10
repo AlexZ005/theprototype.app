@@ -97,7 +97,7 @@
 	const t3 = new Vector3()
 	useTask(() => {
 		if (!playerMesh) return
-		console.log('test')
+		// console.log('test')
 		playerMesh.getWorldPosition(t3)
 		smoothPlayerPosX.set(t3.x, {
 		hard: !positionHasBeenSet

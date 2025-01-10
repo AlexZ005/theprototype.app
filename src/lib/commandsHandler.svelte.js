@@ -204,9 +204,9 @@ export function handleDisconnected(peerId) {
 export function checkLocks(data) {
 
 
-    console.log(users);
-    console.log("this.connections")
-    console.log(peer.peer.connections)
+    // console.log(users);
+    // console.log("this.connections")
+    // console.log(peer.peer.connections)
 
     setTimeout(() => {
 
@@ -225,7 +225,7 @@ export function checkLocks(data) {
         }, 500)
 
 
-    console.log(peer.peer.connections);
+    // console.log(peer.peer.connections);
     
     locked.forEach((objectLock) => {
 
@@ -267,9 +267,7 @@ export async function colorObject(uuid, color, near, far) {
 }
 
 export async function objectParameters(data) {
-    console.log(data)
     if (data.parameter == 'visible') {
-        console.log("visible: " + data.visible);
         let mesh = sceneObjects.getObjectByProperty('uuid', data.uuid);
         if (mesh) mesh.visible = data.visible;
     } else if (data.parameter == 'material') {
@@ -395,7 +393,7 @@ export function sendObject(conn, element, groupuuid) {
         if (element.type == "Group") {
             if (element.parent.parent.parent !== null) {
                 groupuuid = element.parent.uuid
-                console.log("group uuid: " + groupuuid);
+                // console.log("group uuid: " + groupuuid);
             }
             element.getWorldPosition(test);
             conn.send({
@@ -425,7 +423,6 @@ export function sendObject(conn, element, groupuuid) {
             //then use send objects to send children
             element.getWorldPosition(test);
             groupuuid = element.parent.uuid
-            console.log("GG group uuid: " + groupuuid);
             // Send each object as a JSON object
             let elementClone = element.clone();
             elementClone.uuid = element.uuid;
@@ -444,7 +441,7 @@ export function sendObject(conn, element, groupuuid) {
             exporter.parse(
                 element,
                 function (result) {
-                    console.log('packing gltf');
+                    // console.log('packing gltf');
                     element.getWorldPosition(test);
                     // if (element.name === "Rug001")
                         // console.log("Rug001 pos: " + element.position.x + " " + element.position.y + " " + element.position.z)

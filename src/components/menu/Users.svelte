@@ -27,12 +27,12 @@
     let openDropdown = $state(false);
   	let profileSettingsModal = $state(false);
 
-	$effect(() => {
-		Object.keys($peers.connections).forEach((element) => {
-			// if(element != peerId)
-			console.log(element);
-		});
-	});
+	// $effect(() => {
+	// 	Object.keys($peers.connections).forEach((element) => {
+	// 		// if(element != peerId)
+	// 		console.log(element);
+	// 	});
+	// });
 
 	let classProfileSettings = 'z-10 z-10 inline-flex w-40 flex-shrink-0 flex-shrink-0 items-center rounded-s-lg border\
 	 border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 focus:outline-none\
@@ -50,7 +50,7 @@
 
 			//find and update, same for image
 			$userdata.forEach(element => {
-				console.log("for "  + element[0])
+				// console.log("for "  + element[0])
 				if (element[0] === $peers.peer.id)
 					element[2] = avatarImage
 			})
@@ -337,7 +337,7 @@
 
 					//find and update, same for image
 					$userdata.forEach(element => {
-						console.log("for "  + element[0])
+						// console.log("for "  + element[0])
 						if (element[0] === $peers.peer.id)
 							element[1] = $username
 					})

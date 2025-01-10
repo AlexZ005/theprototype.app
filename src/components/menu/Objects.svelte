@@ -100,8 +100,8 @@
 			var el = $objectsGroup.getObjectByProperty('uuid', item.uuid);
 
 			if(el.parent.parent.parent !== null) {
-                console.log("muchas")
-                console.log(el.parent.parent.parent)
+                // console.log("muchas")
+                // console.log(el.parent.parent.parent)
                 el.parent?.remove(el);
                 sceneCommand('/clear ' + el.uuid);
 
