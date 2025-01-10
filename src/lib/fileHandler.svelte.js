@@ -1,6 +1,6 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import { objectsGroup, TControls } from '../stores/sceneStore.js';
+import { objectsGroup, TControls, selectedObject } from '../stores/sceneStore.js';
 import { sendObjects } from './commandsHandler.svelte';
 import { peers, fixLight, loadingFile } from '../stores/appStore';
 
@@ -93,6 +93,9 @@ export async function importFile(file, name) {
 			objectsGroup.update((value) => value);
 			controls.attach(scene);
 			sendObjects(null, scene);
+			
+			selectedObject.set(sceneObjects.getObjectByProperty('uuid', scene.uuid));
+            peer.send({ type: 'lock', uuid: scene.uuid, peerId: peer.peer.id });
 
 			fixLight.set(true);
 			sceneObjects.traverse((object) => {
