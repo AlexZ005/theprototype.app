@@ -277,12 +277,19 @@ export async function deleteObject(uuid) {
 
 
 export async function createObject(object, uuid, override, groupuuid, pos, rot, scale) {
+    let parent;
     if (uuid == null) {
     let mesh = loader.parse(object.element);
-    if (override)
-    sceneObjects.remove(sceneObjects.getObjectByProperty('uuid', mesh.uuid));
-    if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override)
-    sceneObjects.add(mesh);
+    if (override) {
+        let overrideObject = sceneObjects.getObjectByProperty('uuid', mesh.uuid)
+        parent = overrideObject.parent
+        parent.remove(overrideObject);
+        parent.add(mesh)
+    } else if (sceneObjects.getObjectByProperty('uuid', mesh.uuid) == null || override) {
+        let group = sceneObjects.getObjectByProperty('uuid', groupuuid)
+        if (group) group.add(mesh)
+        else sceneObjects.add(mesh);
+    }
     } else {
         // console.log("Adding GLTF object " + uuid)
         const loader = new GLTFLoader();
@@ -378,14 +385,35 @@ function sendObject(conn, element, groupuuid) {
             sendObject(conn, element, element.uuid, groupuuid);
         } else if (element.type.endsWith('Light')) {
             element.getWorldPosition(test);
+            groupuuid = element.parent.uuid
             // Send each object as a JSON object
             conn.send({
                 type: 'object',
                 element: element.toJSON(),
+                groupuuid: groupuuid,
                 pos: test.toArray(),
                 rot: element.rotation.toArray(),
                 scale: element.scale.toArray()
             });
+        } else if (element.children.length > 0) {
+            //send only this object without children
+            //then use send objects to send children
+            element.getWorldPosition(test);
+            groupuuid = element.parent.uuid
+            console.log("GG group uuid: " + groupuuid);
+            // Send each object as a JSON object
+            let elementClone = element.clone();
+            elementClone.uuid = element.uuid;
+            elementClone.children = [];
+            conn.send({
+                type: 'object',
+                element: elementClone.toJSON(),
+                groupuuid: groupuuid,
+                pos: test.toArray(),
+                rot: element.rotation.toArray(),
+                scale: element.scale.toArray()
+            });
+            sendObject(conn, element, element.uuid);
         } else {
             const exporter = new GLTFExporter({outputEncoding: 'json'});
             exporter.parse(
