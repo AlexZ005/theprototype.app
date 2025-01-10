@@ -21,6 +21,7 @@ import { sineIn } from 'svelte/easing';
 import { sendObject } from '$lib/commandsHandler.svelte';
 
 let color = $state();
+let selectedMaterial = $state(null);
 
 let moving;
 let { min_position_x, max_position_x, min_position_y, max_position_y, min_position_z, max_position_z,
@@ -141,10 +142,6 @@ $effect(() => {
 })
 
 function sendUpdate(caseType) {
-    //visible
-    //cast shadow
-    //receive shadow
-    //material
     if (caseType === "visible")
         $peers.send({ type: 'objectParameters', parameter: 'visible', uuid: $selectedObject.uuid, visible: $selectedObject.visible });
     else if (caseType === "castShadow")
@@ -430,14 +427,18 @@ function sendTransformUpdate() {
             onchange={() => { sendUpdate('visible'); }}>Visible</Checkbox>
         </p>
         {#if typeof $selectedObject?.material?.type !== "undefined"}
-        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type}
+        <p class="mb-4 font-semibold text-gray-900 dark:text-white" style="margin-bottom: -40px;">{$selectedObject.material.type}</p>
+        <Select id="select-underline" underline class="mt-2" items={materials} bind:value={selectedMaterial}
             on:change={(event) => {
-                console.log(event.srcElement.value);
+                console.log("bind:value={ " + $selectedObject.material.type )
+                // console.log(event.srcElement.value);
                 $selectedObject.material = new THREE[event.srcElement.value];
+                selectedMaterial = null;
                 sendUpdate('material');
             }}
         />
         {/if}
+        <br />
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">Shadow</p>
         <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
             <li class="w-full">
