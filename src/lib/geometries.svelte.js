@@ -128,7 +128,8 @@ export function createGroup(command, uuid, groupuuid, name, groupparent, pos, ro
         // Attach the group to its parent, if specified
         if (groupparent) {
             let groupParent = sceneObjects.getObjectByProperty('uuid', groupparent)
-            groupParent.attach(group);
+            if (groupParent) groupParent.attach(group);
+            else sceneObjects.attach(group);
             if(pos && rot && scale) {
                 group.position.set(pos[0], pos[1], pos[2]);
                 group.rotation.set(rot[0], rot[1], rot[2]);

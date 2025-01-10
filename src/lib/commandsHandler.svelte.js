@@ -330,7 +330,7 @@ export async function createObject(object, uuid, override, groupuuid, pos, rot, 
             sceneObjects.add(mesh)
             if (groupuuid){
                 let group = sceneObjects.getObjectByProperty('uuid', groupuuid)
-                group.attach(mesh)
+                if (group) group.attach(mesh)
                 // if (group.parent.parent.parent !== null) {
                 // mesh.position.set(0, 0, 0);
                 // mesh.rotation.set(0, 0, 0);
