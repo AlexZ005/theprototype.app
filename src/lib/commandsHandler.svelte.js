@@ -266,6 +266,31 @@ export async function colorObject(uuid, color, near, far) {
     }
 }
 
+export async function objectParameters(data) {
+    console.log(data)
+    if (data.parameter == 'visible') {
+        console.log("visible: " + data.visible);
+        let mesh = sceneObjects.getObjectByProperty('uuid', data.uuid);
+        if (mesh) mesh.visible = data.visible;
+    } else if (data.parameter == 'material') {
+        let mesh = sceneObjects.getObjectByProperty('uuid', data.uuid);
+        if (mesh) {
+            if (data.material == 'MeshBasicMaterial') mesh.material = new THREE.MeshBasicMaterial();
+            if (data.material == 'MeshStandardMaterial') mesh.material = new THREE.MeshStandardMaterial();
+            if (data.material == 'MeshPhongMaterial') mesh.material = new THREE.MeshPhongMaterial();
+            if (data.material == 'MeshToonMaterial') mesh.material = new THREE.MeshToonMaterial();
+            if (data.material == 'ShadowMaterial') mesh.material = new THREE.ShadowMaterial();
+        }
+            
+    } else if (data.parameter == 'castShadow') {
+        let mesh = sceneObjects.getObjectByProperty('uuid', data.uuid);
+        if (mesh) mesh.castShadow = data.castShadow;
+    } else if (data.parameter == 'receiveShadow') {
+        let mesh = sceneObjects.getObjectByProperty('uuid', data.uuid);
+        if (mesh) mesh.receiveShadow = data.receiveShadow;
+    }
+}
+
 export async function deleteObject(uuid) {
     let object = sceneObjects.getObjectByProperty('uuid', uuid)
     object.parent?.remove(object);
@@ -357,7 +382,7 @@ export function sendObjects(peerId, element) {
 
 }
 
-function sendObject(conn, element, groupuuid) {
+export function sendObject(conn, element, groupuuid) {
     let objects = [];
     let test = new THREE.Vector3();
     if (typeof element !== 'undefined') {

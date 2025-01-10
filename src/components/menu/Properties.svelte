@@ -18,6 +18,8 @@ import ColorPicker,{ ChromeVariant }  from 'svelte-awesome-color-picker';
 import CustomWrapper from '$lib/ColorWrapper.svelte';
 import { sineIn } from 'svelte/easing';
 
+import { sendObject } from '$lib/commandsHandler.svelte';
+
 let color = $state();
 
 let moving;
@@ -38,7 +40,7 @@ let rerenderSelectGroup = $state(0)
 let materials = [
     { value: 'MeshBasicMaterial', name: 'Basic' },
     { value: 'MeshStandardMaterial', name: 'Standard' },
-    { value: 'MeshNormalMaterial', name: 'Normals' },
+    // { value: 'MeshNormalMaterial', name: 'Normals' },
     { value: 'MeshPhongMaterial', name: 'Phong' },
     { value: 'MeshToonMaterial', name: 'Toon' },
     { value: 'ShadowMaterial', name: 'Shadow' }
@@ -138,12 +140,30 @@ $effect(() => {
     }
 })
 
-function sendUpdate() {        
-        $peers.send({
-            type: 'object',
-            element: $selectedObject.toJSON(),
-            override: true
-        });
+function sendUpdate(caseType) {
+    //visible
+    //cast shadow
+    //receive shadow
+    //material
+    if (caseType === "visible")
+        $peers.send({ type: 'objectParameters', parameter: 'visible', uuid: $selectedObject.uuid, visible: $selectedObject.visible });
+    else if (caseType === "castShadow")
+        $peers.send({ type: 'objectParameters', parameter: 'castShadow', uuid: $selectedObject.uuid, castShadow: $selectedObject.castShadow });
+    else if (caseType === "receiveShadow")
+        $peers.send({ type: 'objectParameters', parameter: 'receiveShadow', uuid: $selectedObject.uuid, receiveShadow: $selectedObject.receiveShadow });
+    else if (caseType === "material")
+        $peers.send({ type: 'objectParameters', parameter: 'material', uuid: $selectedObject.uuid, material: $selectedObject.material.type });
+    else {
+        // Backup case by resending entire hierarchy of objects
+        $peers.send({type: 'delete', uuid: $selectedObject.uuid, peerId: $peers.peer.id});
+        sendObject($peers, $selectedObject.parent, $selectedObject.uuid);
+    }
+    // conn = peer.connections[peerId];
+    //     $peers.send({
+    //         type: 'object',
+    //         element: $selectedObject.toJSON(),
+    //         override: true
+    //     });
     }
 
 function sendTransformUpdate() {
@@ -407,14 +427,14 @@ function sendTransformUpdate() {
         <svelte:fragment slot="header">Material</svelte:fragment>
         <p class="mb-4 font-semibold text-gray-900 dark:text-white">
             <Checkbox bind:checked={$selectedObject.visible}
-            onchange={() => { sendUpdate(); }}>Visible</Checkbox>
+            onchange={() => { sendUpdate('visible'); }}>Visible</Checkbox>
         </p>
         {#if typeof $selectedObject?.material?.type !== "undefined"}
         <Select id="select-underline" underline class="mt-2" items={materials} bind:value={$selectedObject.material.type}
             on:change={(event) => {
                 console.log(event.srcElement.value);
                 $selectedObject.material = new THREE[event.srcElement.value];
-                sendUpdate();
+                sendUpdate('material');
             }}
         />
         {/if}
@@ -422,13 +442,13 @@ function sendTransformUpdate() {
         <ul class="items-center w-full rounded-lg border border-gray-200 sm:flex dark:bg-gray-800 dark:border-gray-600 divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-600">
             <li class="w-full">
                 <Checkbox bind:checked={$selectedObject.castShadow}
-                    onchange={() => { sendUpdate(); }}
+                    onchange={() => { sendUpdate('castShadow'); }}
                     class="p-3">Cast
                 </Checkbox>
             </li>
             <li class="w-full">
                 <Checkbox bind:checked={$selectedObject.receiveShadow}
-                    onchange={() => { sendUpdate(); }} 
+                    onchange={() => { sendUpdate('receiveShadow'); }} 
                     class="p-3">Receive
                 </Checkbox>
             </li>
